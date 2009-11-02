@@ -8,6 +8,7 @@
 
 (ns hiccup
   "Efficiently generate HTML from a Clojure data structure."
+  (:use clojure.contrib.def)
   (:use clojure.contrib.java-utils))
 
 (defn escape-html
@@ -27,7 +28,7 @@
     (not value)   nil
     :otherwise    [(as-str key) (escape-html value)]))
 
-(defn- make-attrs
+(defn make-attrs
   "Turn a map into a string of HTML attributes, sorted by attribute name."
   [attrs]
   (apply str
@@ -35,14 +36,13 @@
       (if attr
         (str " " attr "=\"" value "\"")))))
 
-(defn- make-tag
-  "Wrap some content in an HTML tag."
-  [tag attrs content]
-  (str* "<" tag (map-to-attrs attrs) ">"
-          content
-        "</" tag ">"))
+(defvar- re-tag
+  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"
+  "Regular expression that parses a CSS-style id and class from a tag name.")
 
-(defn- make-closed-tag
-  "Make a closed XML tag with no content."
-  [tag attrs]
-  (str* "<" tag (map-to-attrs attrs) " />"))
+(defn make-start-tag
+  "Create the start of a tag, given a tag name with optional CSS-style syntax
+  to denote the id and classes."
+  [tag]
+  (let [[_ tag id classes] (re-matches re-tag (as-str tag))]
+    (str "<" tag (make-attrs {:id id, :class classes}))))
