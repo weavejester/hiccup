@@ -46,3 +46,23 @@
   [tag]
   (let [[_ tag id classes] (re-matches re-tag (as-str tag))]
     (str "<" tag (make-attrs {:id id, :class classes}))))
+
+(defn literal?
+  "True if the object is a literal string, keyword, number or quoted object."
+  [x]
+  (or (string? x)
+      (number? x)
+      (keyword? x)
+      (and (seq? x) (= (first x) 'quote))))
+
+(defmacro optimize
+  "Pre-compile an expression when the arguments are all literals."
+  [func & args]
+  (if (every? literal? args)
+    (eval (list* func args))
+    (list* func args)))
+
+(defn compile-tag
+  [tag & content]
+  `(let [sb# (StringBuffer.)]
+     (.append sb# (optimize make-start-tag ~tag))))
