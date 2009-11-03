@@ -28,7 +28,7 @@
     (not value)   nil
     :otherwise    [(as-str key) (escape-html value)]))
 
-(defn make-attrs
+(defn- make-attrs
   "Turn a map into a string of HTML attributes, sorted by attribute name."
   [attrs]
   (apply str
@@ -47,22 +47,38 @@
   (let [[_ tag id classes] (re-matches re-tag (as-str tag))]
     (str "<" tag (make-attrs {:id id, :class classes}))))
 
+(defn make-tag-attrs
+  "Create the attributes for a tag, if the second element of the vector is a
+  map."
+  [attrs]
+  (if (map? attrs)
+    (make-attrs attrs)
+    ""))
+
 (defn literal?
-  "True if the object is a literal string, keyword, number or quoted object."
+  "True if the object is a literal string, keyword, number, map, vector or
+  quoted object."
   [x]
   (or (string? x)
       (number? x)
       (keyword? x)
-      (and (seq? x) (= (first x) 'quote))))
+      (vector? x)
+      (map? x)
+      (and (list? x)
+           (= (first x) 'quote))))
 
-(defmacro optimize
+(defn- prec
   "Pre-compile an expression when the arguments are all literals."
   [func & args]
   (if (every? literal? args)
     (eval (list* func args))
     (list* func args)))
 
-(defn compile-tag
+(defmacro html-tag
+  "Efficiently create a HTML tag."
   [tag & content]
   `(let [sb# (StringBuffer.)]
-     (.append sb# (optimize make-start-tag ~tag))))
+     (.append sb# ~(prec `make-start-tag tag))
+     (.append sb# ~(prec `make-tag-attrs (first content)))
+     (.append sb# ">")
+     (.toString sb#)))
