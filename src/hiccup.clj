@@ -67,18 +67,30 @@
       (and (list? x)
            (= (first x) 'quote))))
 
-(defn- prec
-  "Pre-compile an expression when the arguments are all literals."
-  [func & args]
-  (if (every? literal? args)
-    (eval (list* func args))
-    (list* func args)))
+(defn blank?
+  "True if its argument is nil or a blank string"
+  [s]
+  (or (nil? s) (= s "")))
+
+(defmacro concat-strs
+  "An way of concatenating strings that precompiles functions with literal
+  arguments for efficiency."
+  [& forms]
+  (let [buffer (gensym "sb")]
+   `(let [~buffer (StringBuffer.)]
+     ~@(remove nil?
+         (for [form forms]
+           (if (or (literal? form) (every? literal? (rest form)))
+             (let [value (eval form)]
+               (if-not (blank? value)
+                 `(.append ~buffer ~value)))
+            `(.append ~buffer ~form))))
+       (.toString ~buffer))))
 
 (defmacro html-tag
   "Efficiently create a HTML tag."
   [tag & content]
-  `(let [sb# (StringBuffer.)]
-     (.append sb# ~(prec `make-start-tag tag))
-     (.append sb# ~(prec `make-tag-attrs (first content)))
-     (.append sb# ">")
-     (.toString sb#)))
+  (concat-strs
+    (make-start-tag tag)
+    (make-tag-attrs (first content))
+    ">"))
