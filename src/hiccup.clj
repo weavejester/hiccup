@@ -72,25 +72,25 @@
   [s]
   (or (nil? s) (= s "")))
 
-(defmacro concat-strs
-  "An way of concatenating strings that precompiles functions with literal
-  arguments for efficiency."
-  [& forms]
-  (let [buffer (gensym "sb")]
-   `(let [~buffer (StringBuffer.)]
-     ~@(remove nil?
-         (for [form forms]
-           (if (or (literal? form) (every? literal? (rest form)))
-             (let [value (eval form)]
-               (if-not (blank? value)
-                 `(.append ~buffer ~value)))
-            `(.append ~buffer ~form))))
-       (.toString ~buffer))))
+(defmacro append-strs
+  "Append strings to a string buffer, pre-compiling functions with literal
+  arguments."
+  [buffer & forms]
+  `(do
+    ~@(remove nil?
+        (for [form forms]
+          (if (and (list? form) (every? literal? (rest form)))
+            (let [value (eval form)]
+              (if-not (blank? value)
+               `(.append ~buffer ~value)))
+             `(.append ~buffer ~form))))))
 
 (defmacro html-tag
   "Efficiently create a HTML tag."
   [tag & content]
-  (concat-strs
-    (make-start-tag tag)
-    (make-tag-attrs (first content))
-    ">"))
+  `(let [buffer# (StringBuffer.)]
+     (append-strs buffer#
+       (make-start-tag ~tag)
+       (make-tag-attrs ~(first content))
+       ">")
+     (.toString buffer#)))
