@@ -81,7 +81,7 @@
   [tag]
   (list "</" (as-str tag) ">"))
 
-(defn- remove-attrs
+(defn remove-attrs
   "Remove optional attribute map from content."
   [content]
   (if (map? (first content))
@@ -98,8 +98,7 @@
     (pre-compile `(make-start-tag ~tag))
     (pre-compile `(make-tag-attrs ~(first content)))
     (list ">")
-    (for [item (remove-attrs content)]
-      (compile-html item))
+    (mapcat compile-html (remove-attrs content))
     (pre-compile `(make-end-tag ~tag))))
 
 (defmethod compile-html IPersistentList
@@ -108,9 +107,9 @@
 
 (defmethod compile-html :default
   [x]
-  (pre-compile `(str ~x)))
+  (list (pre-compile `(str ~x))))
 
-(defn- collapse-strs
+(defn collapse-strs
   "Concatenate adjacent strings in a sequence."
   [coll]
   (reduce
@@ -121,7 +120,7 @@
     '()
     (reverse coll)))
 
-(defn- build-str-concat
+(defn build-str-concat
   "Build code to string concatenate a sequence of forms."
   [coll]
   (let [buffer (gensym "buffer")]
@@ -134,5 +133,4 @@
   "Efficiently compile a Clojure data structure to HTML"
   [& content]
   (build-str-concat
-    (for [item content]
-      (compile-html item))))
+    (mapcat compile-html content)))
