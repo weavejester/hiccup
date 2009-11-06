@@ -31,9 +31,10 @@
        (= 'quote (first x))))
 
 (defn literal?
-  "True if the value is a not a list or a quoted value."
+  "True if the value is a literal value."
   [x]
-  (or (not (list? x))
+  (or (and (not (list? x))
+           (not (symbol? x)))
       (quoted? x)))
 
 (defn- format-attr
@@ -106,6 +107,30 @@
 (defmethod render-html :default
   [x]
   (list (as-str x)))
+
+(defn compile-tag
+  "Attempt to pre-render a HTML tag."
+  [tag-name content]
+  (if (literal? tag-name)
+    `(list ~@(render-tag tag-name content))
+    `(render-tag ~tag-name ~content)))
+
+(defn compile-attrs
+  "Attempt to pre-render an attribute map."
+  [attrs content]
+  (if (map? attrs)
+    `(list ~@(render-attrs attrs content))
+    `(render-attrs ~attrs ~content)))
+
+;(defn compile-content
+;  "Attempt to pre-render the contents of a tag."
+;  [content]
+;  (list*
+;    ">"
+;    (render-html
+;      (if (map? (first content))
+;        (rest content)
+;        content))))
 
 (defn collapse-strs
   "Concatenate adjacent strings in a sequence."
