@@ -9,9 +9,11 @@
 (ns hiccup
   "Efficiently generate HTML from a Clojure data structure."
   (:use clojure.contrib.def)
-  (:use clojure.contrib.java-utils)
-  (:import clojure.lang.IPersistentVector)
-  (:import clojure.lang.IPersistentList))
+  (:use clojure.contrib.java-utils))
+
+(derive clojure.lang.IPersistentVector ::vector)
+(derive clojure.lang.IPersistentList ::list)
+(derive clojure.lang.ISeq ::seq)
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -22,25 +24,17 @@
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
 
-(defn literal?
-  "True if the value is a literal string, keyword, number, map, vector, nil
-  or a quoted value."
+(defn quoted?
+  "True if the form is a quoted value."
   [x]
-  (or (string? x)
-      (number? x)
-      (keyword? x)
-      (vector? x)
-      (map? x)
-      (nil? x)
-      (and (list? x)
-           (= (first x) 'quote))))
+  (and (list? x)
+       (= 'quote (first x))))
 
-(defn- pre-compile
-  "Pre-compile a form if its arguments are all literals."
-  [form]
-  (if (every? literal? (rest form))
-    (eval form)
-    (list form)))
+(defn literal?
+  "True if the value is a not a list or a quoted value."
+  [x]
+  (or (not (list? x))
+      (quoted? x)))
 
 (defn- format-attr
   "Turn a key-value pair into a pair of attribute-value strings."
@@ -53,7 +47,7 @@
 (defn- make-attrs
   "Turn a map into a string of HTML attributes, sorted by attribute name."
   [attrs]
-  (apply str
+  (remove nil?
     (for [[attr value] (sort (map format-attr attrs))]
       (if attr
         (str " " attr "=\"" value "\"")))))
@@ -62,52 +56,56 @@
   #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"
   "Regular expression that parses a CSS-style id and class from a tag name.")
 
-(defn make-start-tag
-  "Create the start of a tag, given a tag name with optional CSS-style syntax
-  to denote the id and classes."
+(defn parse-tag-name
+  "Parse the id and classes from a tag name."
   [tag]
-  (let [[_ tag id classes] (re-matches re-tag (as-str tag))]
-    (list "<" tag (make-attrs {:id id, :class classes}))))
+  (rest (re-matches re-tag (as-str tag))))
 
-(defn make-tag-attrs
-  "Create the attributes for a tag, if the second element of the vector is a
-  map."
-  [attrs]
-  (if (map? attrs)
-    (list (make-attrs attrs))))
+(defmulti render-html
+  "Render a Clojure data structure to a seq of HTML at runtime."
+  type)
 
-(defn make-end-tag
-  "Create an ending tag."
-  [tag]
-  (list "</" (as-str tag) ">"))
+(defn render-tag
+  "Render a HTML tag."
+  [tag-name content]
+  (let [[tag id class] (parse-tag-name tag-name)
+        attributes     (make-attrs {:id id, :class class})]
+    (concat
+      (list* "<" tag attributes)
+      content
+      (list "</" tag ">"))))
 
-(defn remove-attrs
-  "Remove optional attribute map from content."
-  [content]
-  (if (map? (first content))
-    (rest content)
+(defn render-attrs
+  "Render an attribute map."
+  [attrs content]
+  (concat
+    (if (map? attrs)
+      (make-attrs attrs))
     content))
 
-(defmulti compile-html
-  "Compile a Clojure data structure value to a seq of strings and forms."
-  (fn [x] (type x)))
+(defn render-content
+  "Render the contents of a tag."
+  [content]
+  (list*
+    ">"
+    (render-html
+      (if (map? (first content))
+        (rest content)
+        content))))
 
-(defmethod compile-html IPersistentVector
+(defmethod render-html ::vector
   [[tag & content]]
-  (concat
-    (pre-compile `(make-start-tag ~tag))
-    (pre-compile `(make-tag-attrs ~(first content)))
-    (list ">")
-    (mapcat compile-html (remove-attrs content))
-    (pre-compile `(make-end-tag ~tag))))
+  (render-tag tag
+    (render-attrs (first content)
+      (render-content content))))
 
-(defmethod compile-html IPersistentList
-  [form]
-  form)
+(defmethod render-html ::seq
+  [coll]
+  (mapcat render-html coll))
 
-(defmethod compile-html :default
+(defmethod render-html :default
   [x]
-  (list (pre-compile `(str ~x))))
+  (list (as-str x)))
 
 (defn collapse-strs
   "Concatenate adjacent strings in a sequence."
@@ -120,17 +118,7 @@
     '()
     (reverse coll)))
 
-(defn build-str-concat
-  "Build code to string concatenate a sequence of forms."
-  [coll]
-  (let [buffer (gensym "buffer")]
-   `(let [~buffer (StringBuffer.)]
-     ~@(for [x (collapse-strs coll)]
-        `(.append ~buffer ~x))
-       (.toString ~buffer))))
-
-(defmacro html
-  "Efficiently compile a Clojure data structure to HTML"
-  [& content]
-  (build-str-concat
-    (mapcat compile-html content)))
+;(defmacro html
+;  "Efficiently compile a Clojure data structure into a list of HTML."
+;  [& content]
+;  `(list ~@(mapcat compile-html content)))
