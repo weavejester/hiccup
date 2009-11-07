@@ -11,10 +11,6 @@
   (:use clojure.contrib.def)
   (:use clojure.contrib.java-utils))
 
-(derive clojure.lang.IPersistentVector ::vector)
-(derive clojure.lang.IPersistentList ::list)
-(derive clojure.lang.ISeq ::seq)
-
 (defn escape-html
   "Change special characters into HTML character entities."
   [string]
@@ -23,19 +19,6 @@
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
-
-(defn quoted?
-  "True if the form is a quoted value."
-  [x]
-  (and (list? x)
-       (= 'quote (first x))))
-
-(defn literal?
-  "True if the value is a literal value."
-  [x]
-  (or (and (not (list? x))
-           (not (symbol? x)))
-      (quoted? x)))
 
 (defn- format-attr
   "Turn a key-value pair into a pair of attribute-value strings."
@@ -61,6 +44,9 @@
   "Parse the id and classes from a tag name."
   [tag]
   (rest (re-matches re-tag (as-str tag))))
+
+(derive clojure.lang.IPersistentVector ::vector)
+(derive clojure.lang.ISeq ::seq)
 
 (defmulti render-html
   "Render a Clojure data structure to a seq of HTML at runtime."
@@ -108,6 +94,27 @@
   [x]
   (list (as-str x)))
 
+(defn quoted?
+  "True if the form is a quoted value."
+  [x]
+  (and (list? x)
+       (= 'quote (first x))))
+
+(defn literal?
+  "True if the value is a literal value."
+  [x]
+  (or (and (not (list? x))
+           (not (symbol? x)))
+      (quoted? x)))
+
+(derive clojure.lang.IPersistentList ::form)
+(derive clojure.lang.Symbol ::form)
+
+(defmulti compile-html
+  "Render a Clojure data structure to a seq of HTML at compile-time when
+  possible, at runtime when not."
+  type)
+
 (defn compile-tag
   "Attempt to pre-render a HTML tag."
   [tag-name content]
@@ -119,18 +126,39 @@
   "Attempt to pre-render an attribute map."
   [attrs content]
   (if (map? attrs)
-    `(list ~@(render-attrs attrs content))
-    `(render-attrs ~attrs ~content)))
+    (render-attrs attrs content)
+    (if (not (literal? attrs))
+     `(render-attrs ~attrs ~content)
+      content)))
 
-;(defn compile-content
-;  "Attempt to pre-render the contents of a tag."
-;  [content]
-;  (list*
-;    ">"
-;    (render-html
-;      (if (map? (first content))
-;        (rest content)
-;        content))))
+(defn compile-content
+  "Attempt to pre-render the contents of a tag."
+  [content]
+  (list*
+    ">"
+    (if (map? (first content))
+      (mapcat compile-html (rest content))
+      (if (literal? (first content))
+        (mapcat compile-html content)
+        `(concat
+           (render-html ~(take 2 content))
+          ~(compile-html (drop 2 content)))))))
+
+(defmethod compile-html ::vector
+  [[tag & content]]
+  (compile-tag tag
+    (compile-attrs (first content)
+      (compile-content content))))
+
+(defmethod compile-html ::form
+  [form]
+  (if (quoted? form)
+    (render-html form)
+   `(render-html ~form)))
+
+(defmethod compile-html :default
+  [x]
+  (render-html x))
 
 (defn collapse-strs
   "Concatenate adjacent strings in a sequence."
@@ -143,7 +171,7 @@
     '()
     (reverse coll)))
 
-;(defmacro html
-;  "Efficiently compile a Clojure data structure into a list of HTML."
-;  [& content]
-;  `(list ~@(mapcat compile-html content)))
+(defmacro html
+  "Efficiently render a Clojure data structure into a seq of HTML."
+  [& content]
+  `(list ~@(map (comp collapse-strs compile-html) content)))
