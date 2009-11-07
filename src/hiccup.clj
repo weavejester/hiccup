@@ -119,7 +119,7 @@
   "Attempt to pre-render a HTML tag."
   [tag-name content]
   (if (literal? tag-name)
-    `(list ~@(render-tag tag-name content))
+    (render-tag tag-name content)
     `(render-tag ~tag-name ~content)))
 
 (defn compile-attrs
@@ -128,21 +128,22 @@
   (if (map? attrs)
     (render-attrs attrs content)
     (if (not (literal? attrs))
-     `(render-attrs ~attrs ~content)
+     `((render-attrs ~attrs ~content))
       content)))
 
 (defn compile-content
   "Attempt to pre-render the contents of a tag."
   [content]
-  (list*
-    ">"
-    (if (map? (first content))
-      (mapcat compile-html (rest content))
-      (if (literal? (first content))
-        (mapcat compile-html content)
-        `(concat
-           (render-html ~(take 2 content))
-          ~(compile-html (drop 2 content)))))))
+  `(cons
+     ">"
+     ~@(if (map? (first content))
+        (mapcat compile-html (rest content))
+        (if (literal? (first content))
+          (mapcat compile-html content)
+          (concat
+            (for [x (take 2 content)]
+              `(render-html ~x))
+            (map compile-html (drop 2 content)))))))
 
 (defmethod compile-html ::vector
   [[tag & content]]
@@ -153,8 +154,8 @@
 (defmethod compile-html ::form
   [form]
   (if (quoted? form)
-    (render-html form)
-   `(render-html ~form)))
+    `(render-html form)
+    `((render-html ~form))))
 
 (defmethod compile-html :default
   [x]
@@ -174,4 +175,8 @@
 (defmacro html
   "Efficiently render a Clojure data structure into a seq of HTML."
   [& content]
-  `(list ~@(map (comp collapse-strs compile-html) content)))
+  `(concat 
+     ~@(for [x (collapse-strs (mapcat compile-html content))]
+         (if (string? x)
+           `(list ~x)
+           x))))
