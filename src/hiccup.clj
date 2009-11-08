@@ -103,9 +103,39 @@
 (defn literal?
   "True if the value is a literal value."
   [x]
-  (or (and (not (list? x))
+  (or (and (not (seq? x))
            (not (symbol? x)))
       (quoted? x)))
+
+(defn- collapse-strs
+  "Concatenate adjacent strings in a sequence."
+  [coll]
+  (reduce
+    (fn [xs y]
+      (if (and (string? (first xs)) (string? y))
+        (cons (str y (first xs)) (rest xs))
+        (cons y xs)))
+    '()
+    (reverse coll)))
+
+(defn build-seq
+  "Create code that will build an output seq from a list of literals and
+  forms."
+  [coll]
+  (let [coll (collapse-strs coll)]
+    (if (every? literal? coll)
+      coll
+     `((concat ~@(for [x coll]
+                   (if (literal? x)
+                     `(list ~x)
+                      x)))))))
+
+(defn wrap-list
+  "Wrap a seq in an `list form if a bare list."
+  [coll]
+  (if (symbol? (first coll))
+    coll
+    `(list ~@coll)))
 
 (derive clojure.lang.IPersistentList ::form)
 (derive clojure.lang.Symbol ::form)
@@ -120,7 +150,7 @@
   [tag-name content]
   (if (literal? tag-name)
     (render-tag tag-name content)
-    `(render-tag ~tag-name ~content)))
+   `((render-tag ~tag-name ~content))))
 
 (defn compile-attrs
   "Attempt to pre-render an attribute map."
@@ -128,22 +158,23 @@
   (if (map? attrs)
     (render-attrs attrs content)
     (if (not (literal? attrs))
-     `((render-attrs ~attrs ~content))
+     `((render-attrs ~attrs ~(wrap-list content)))
       content)))
 
 (defn compile-content
   "Attempt to pre-render the contents of a tag."
   [content]
-  `(cons
-     ">"
-     ~@(if (map? (first content))
+  (build-list
+    (cons
+      ">"
+      (if (map? (first content))
         (mapcat compile-html (rest content))
         (if (literal? (first content))
           (mapcat compile-html content)
           (concat
             (for [x (take 2 content)]
               `(render-html ~x))
-            (map compile-html (drop 2 content)))))))
+            (map compile-html (drop 2 content))))))))
 
 (defmethod compile-html ::vector
   [[tag & content]]
@@ -154,29 +185,14 @@
 (defmethod compile-html ::form
   [form]
   (if (quoted? form)
-    `(render-html form)
+    `((render-html ~(rest form)))
     `((render-html ~form))))
 
 (defmethod compile-html :default
   [x]
   (render-html x))
 
-(defn collapse-strs
-  "Concatenate adjacent strings in a sequence."
-  [coll]
-  (reduce
-    (fn [xs y]
-      (if (and (string? (first xs)) (string? y))
-        (cons (str y (first xs)) (rest xs))
-        (cons y xs)))
-    '()
-    (reverse coll)))
-
 (defmacro html
   "Efficiently render a Clojure data structure into a seq of HTML."
   [& content]
-  `(concat 
-     ~@(for [x (collapse-strs (mapcat compile-html content))]
-         (if (string? x)
-           `(list ~x)
-           x))))
+  (wrap-list (build-list (mapcat compile-html content))))
