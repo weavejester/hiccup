@@ -164,7 +164,9 @@
       (literal? (first content))
         (mapcat compile-html content)
       :else
-        (list "blah"))))
+        (concat
+          (take 2 content)
+          (mapcat compile-html (drop 2 content))))))
 
 (defmethod compile-html ::vector
   [[tag & content]]
