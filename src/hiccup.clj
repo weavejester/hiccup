@@ -61,8 +61,9 @@
   [[tag content]]
   (let [[tag id class]  (parse-tag-name tag)
         tag-attrs       {:id id, :class class}
-        [attrs content] (if (map? (first content))
-                          [(merge tag-attrs (first content)), (rest content)]
+        map-attrs       (first content)
+        [attrs content] (if (map? map-attrs)
+                          [(merge tag-attrs map-attrs) (rest content)]
                           [tag-attrs content])]
     (if (or content (container-tags tag))
       (str "<" tag (make-attrs attrs) ">"
