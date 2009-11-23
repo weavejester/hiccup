@@ -88,3 +88,7 @@
 (deftest attrs-bool-false
   (is (= (html [:input {:type "checkbox" :checked false}])
          "<input type=\"checkbox\" />")))
+
+(deftest attrs-nil
+  (is (= (html [:span {:class nil} "foo"])
+         "<span>foo</span>")))
