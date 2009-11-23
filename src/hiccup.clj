@@ -58,12 +58,13 @@
   type)
 
 (defmethod render-html IPersistentVector
-  [[tag content]]
+  [[tag & content]]
   (let [[tag id class]  (parse-tag-name tag)
-        tag-attrs       {:id id, :class class}
+        tag-attrs       {:id id
+                         :class (if class (.replace class "." " "))}
         map-attrs       (first content)
         [attrs content] (if (map? map-attrs)
-                          [(merge tag-attrs map-attrs) (rest content)]
+                          [(merge tag-attrs map-attrs) (next content)]
                           [tag-attrs content])]
     (if (or content (container-tags tag))
       (str "<" tag (make-attrs attrs) ">"
