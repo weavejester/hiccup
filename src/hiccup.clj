@@ -7,7 +7,7 @@
 ;; this software.
 
 (ns hiccup
-  "Efficiently generate HTML from a Clojure data structure."
+  "Dynamically generates HTML from a Clojure data structure."
   (:use clojure.contrib.def)
   (:use clojure.contrib.java-utils))
 
@@ -49,30 +49,35 @@
     "strong" "style" "textarea" "ul"}
   "A list of tags that need an explicit ending tag when rendered.")
 
-(defn parse-tag-name
+(defn- parse-tag-name
   "Parse the id and classes from a tag name."
   [tag]
   (rest (re-matches re-tag (as-str tag))))
 
+(defn- parse-element
+  "Ensure a tag vector is of the form [tag-name attrs content]."
+  [[tag & content]]
+  (let [[tag id class] (parse-tag-name tag)
+        tag-attrs      {:id id
+                        :class (if class (.replace class "." " "))}
+        map-attrs      (first content)]
+    (if (map? map-attrs)
+      [tag (merge tag-attrs map-attrs) (next content)]
+      [tag tag-attrs content])))
+
 (declare render-html)
 
-(defn render-tag
+(defn- render-tag
   "Render a HTML tag represented as a vector."
-  [[tag & content]]
-  (let [[tag id class]  (parse-tag-name tag)
-        tag-attrs       {:id id
-                         :class (if class (.replace class "." " "))}
-        map-attrs       (first content)
-        [attrs content] (if (map? map-attrs)
-                          [(merge tag-attrs map-attrs) (next content)]
-                          [tag-attrs content])]
+  [element]
+  (let [[tag attrs content] (parse-element element)]
     (if (or content (container-tags tag))
       (str "<" tag (make-attrs attrs) ">"
            (render-html content)
            "</" tag ">")
       (str "<" tag (make-attrs attrs) " />"))))
 
-(defn render-html
+(defn- render-html
   "Render a Clojure data structure to a string of HTML."
   [data]
   (cond
@@ -81,6 +86,6 @@
     :otherwise     (as-str data)))
 
 (defn html
-  "Render Clojure data structures to HTML."
+  "Render Clojure data structures to a string of HTML."
   [& content]
   (render-html content))
