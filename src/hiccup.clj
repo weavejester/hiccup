@@ -9,18 +9,17 @@
 (ns hiccup
   "Efficiently generate HTML from a Clojure data structure."
   (:use clojure.contrib.def)
-  (:use clojure.contrib.java-utils)
-  (:import clojure.lang.IPersistentVector)
-  (:import clojure.lang.ISeq))
+  (:use clojure.contrib.java-utils))
 
 (defn escape-html
   "Change special characters into HTML character entities."
-  [string]
-  (.. (as-str string)
-    (replace "&"  "&amp;")
-    (replace "<"  "&lt;")
-    (replace ">"  "&gt;")
-    (replace "\"" "&quot;")))
+  [text]
+  (let [#^String string (as-str text)]
+    (.. string
+      (replace "&"  "&amp;")
+      (replace "<"  "&lt;")
+      (replace ">"  "&gt;")
+      (replace "\"" "&quot;"))))
 
 (def h escape-html)   ;; alias for escape-html
 
@@ -55,11 +54,10 @@
   [tag]
   (rest (re-matches re-tag (as-str tag))))
 
-(defmulti render-html
-  "Render a Clojure data structure to a string of HTML."
-  type)
+(declare render-html)
 
-(defmethod render-html IPersistentVector
+(defn render-tag
+  "Render a HTML tag represented as a vector."
   [[tag & content]]
   (let [[tag id class]  (parse-tag-name tag)
         tag-attrs       {:id id
@@ -74,12 +72,13 @@
            "</" tag ">")
       (str "<" tag (make-attrs attrs) " />"))))
 
-(defmethod render-html ISeq
-  [coll]
-  (apply str (map render-html coll)))
-
-(defmethod render-html :default [x]
-  (as-str x))
+(defn render-html
+  "Render a Clojure data structure to a string of HTML."
+  [data]
+  (cond
+    (vector? data) (render-tag data)
+    (seq? data)    (apply str (map render-html data))
+    :otherwise     (as-str data)))
 
 (defn html
   "Render Clojure data structures to HTML."
