@@ -49,7 +49,7 @@
  ([group checked? value]
     [:input {:type "radio"
              :name group
-             :id   (str group "-" value)
+             :id   (str (as-str group) "-" (as-str value))
              :value value
              :checked checked?}]))
 
