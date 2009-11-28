@@ -8,7 +8,6 @@
 
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use hiccup)
   (:use clojure.contrib.java-utils))
 
 (defn- input-field
