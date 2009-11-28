@@ -42,10 +42,10 @@
              :checked checked?}]))
 
 (defn radio-button
- "Creates a radio button."
- ([group] (radio-button group nil))
- ([group checked?] (radio-button group checked? "true"))
- ([group checked? value]
+  "Creates a radio button."
+  ([group] (radio-button group nil))
+  ([group checked?] (radio-button group checked? "true"))
+  ([group checked? value]
     [:input {:type "radio"
              :name group
              :id   (str (as-str group) "-" (as-str value))
