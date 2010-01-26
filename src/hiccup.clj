@@ -8,10 +8,9 @@
 
 (ns hiccup
   "Dynamically generates HTML from a Clojure data structure."
-  (:use hiccup.optimizer
-        hiccup.renderer))
+  (:use hiccup.compiler))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
   [& content]
-  `(str ~@(map optimize content)))
+  `(str ~@(map compile-tag content)))

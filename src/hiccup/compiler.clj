@@ -6,7 +6,7 @@
 ;; terms of this license. You must not remove this notice, or any other, from
 ;; this software.
 
-(ns hiccup.optimizer
+(ns hiccup.compiler
   "Optimizes tag vectors into S-expressions when possible."
   (:use hiccup.renderer))
 
@@ -37,7 +37,7 @@
            (and (seq? x)
                 (not= (first x) `quote)))))
 
-(defn optimize [element]
+(defn compile-tag [element]
   (case-pattern element
     [& (every? lit? content)]
       (render-tag (eval element))
@@ -45,5 +45,5 @@
       `(render-tag
          [~@(for [x content]
               (if (vector? x)
-                (optimize x)
+                (compile-tag x)
                 x))])))
