@@ -1,2 +1,4 @@
-classes/*
+classes
+lib
 hiccup.jar
+pom.xml
