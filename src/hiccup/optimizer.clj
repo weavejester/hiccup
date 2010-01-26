@@ -8,7 +8,7 @@
 
 (ns hiccup.optimizer
   "Optimizes tag vectors into S-expressions when possible."
-  (:use hiccup))
+  (:use hiccup.renderer))
 
 (defmacro match-pattern
   "Match and destructure the supplied pattern."
@@ -28,7 +28,7 @@
   `(or ~@(for [[pattern body] (partition 2 clauses)]
            `(match-pattern ~target ~pattern ~body))))
 
-(defn lit? 
+(defn lit?
   "True if x is a literal value that can be rendered as-is."
   [x]
   (not (or (symbol? x)
@@ -40,9 +40,10 @@
 (defn optimize [element]
   (case-pattern element
     [& (every? lit? content)]
-      (html (eval element))
+      (render-tag (eval element))
     [& content]
-      `(html [~@(for [x content]
-                  (if (vector? x)
-                    (optimize x)
-                    x))])))
+      `(render-tag
+         [~@(for [x content]
+              (if (vector? x)
+                (optimize x)
+                x))])))
