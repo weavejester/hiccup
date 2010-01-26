@@ -14,7 +14,7 @@
   "Match and destructure the supplied pattern."
   [target pattern & body]
   (let [binds (map #(if (seq? %) (last %) %) pattern)
-        preds (remove #(= % '&) pattern)
+        preds (remove symbol? pattern)
         target-sym (gensym target)
         length-eq? (if-not (contains? (set pattern) '&)
                     `((= (count ~target-sym) ~(count pattern))))]
@@ -29,14 +29,20 @@
            `(match-pattern ~target ~pattern ~body))))
 
 (defn lit? 
-  "True if x is a literal value."
+  "True if x is a literal value that can be rendered as-is."
   [x]
-  (or (not (seq? x))
-      (not= (first x) 'quote)))
+  (not (or (symbol? x)
+           (and (vector? x)
+                (not (every? lit? x)))
+           (and (seq? x)
+                (not= (first x) `quote)))))
 
 (defn optimize [element]
   (case-pattern element
-    [(lit? tag)]
-      (html [tag])
-    [(lit? tag) (map? attrs)]
-      (html [tag attrs])))
+    [& (every? lit? content)]
+      (html (eval element))
+    [& content]
+      `(html [~@(for [x content]
+                  (if (vector? x)
+                    (optimize x)
+                    x))])))

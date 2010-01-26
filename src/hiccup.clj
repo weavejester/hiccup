@@ -28,7 +28,7 @@
   [name value]
   (str " " (as-str name) "=\"" (escape-html value) "\""))
 
-(defn- make-attrs
+(defn make-attrs
   "Turn a map into a string of sorted HTML attributes."
   [attrs]
   (apply str
