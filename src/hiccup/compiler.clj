@@ -101,7 +101,7 @@
   `(or ~@(for [[pattern body] (partition 2 clauses)]
            `(match-pattern ~target ~pattern ~body))))
 
-(defn literal?
+(defn- literal?
   "True if x is a literal value that can be rendered as-is."
   [x]
   (and (not (symbol? x))
@@ -112,6 +112,16 @@
 
 (declare compile-html)
 
+(defn- compile-partial-tag
+  "Compile an element when only the tag and attributes are literal."
+  [tag attrs content]
+  (let [[tag attrs _] (parse-element [tag attrs])]
+    (if (or content (container-tags tag))
+      `(str ~(str "<" tag (make-attrs attrs) ">")
+            ~@(compile-html content)
+            ~(str "</" tag ">"))
+       (str "<" tag (make-attrs attrs) " />"))))
+
 (defn compile-tag 
   "Pre-compile a single tag vector where possible."
   [element]
@@ -119,12 +129,7 @@
     [& (every? literal? content)]
       (render-tag (eval element))
     [(literal? tag) (map? attrs) & content]
-      (let [[tag attrs _] (parse-element [tag attrs])]
-        (if (or content (container-tags tag))
-          `(str ~(str "<" tag (make-attrs attrs) ">")
-                ~@(compile-html content)
-                ~(str "</" tag ">"))
-           (str "<" tag (make-attrs attrs) " />")))
+      (compile-partial-tag tag attrs content)
     [& content]
       `(render-tag [~@(compile-html content)])))
 
