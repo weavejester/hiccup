@@ -137,6 +137,7 @@
   "Pre-compile data structures into HTML where possible."
   [content]
   (for [c content]
-    (if (vector? c)
-      (compile-tag c)
-      c)))
+    (cond
+      (vector? c)  (compile-tag c)
+      (literal? c) c
+      :else        `(render-html ~c))))

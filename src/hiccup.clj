@@ -13,4 +13,4 @@
 (defmacro html
   "Render Clojure data structures to a string of HTML."
   [& content]
-  `(str ~@(map compile-tag content)))
+  `(str ~@(compile-html content)))
