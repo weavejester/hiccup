@@ -83,23 +83,10 @@
     (seq? data)    (apply str (map render-html data))
     :otherwise     (as-str data)))
 
-(defmacro match-pattern
-  "Match and destructure the supplied pattern."
-  [target pattern & body]
-  (let [binds (map #(if (seq? %) (last %) %) pattern)
-        preds (remove symbol? pattern)
-        target-sym (gensym target)
-        length-eq? (if-not (contains? (set pattern) '&)
-                    `((= (count ~target-sym) ~(count pattern))))]
-    `(let [~target-sym ~target, [~@binds] ~target-sym]
-       (when (and ~@length-eq? ~@preds)
-         ~@body))))
-
-(defmacro case-pattern
-  "A case statement that employs match-pattern."
-  [target & clauses]
-  `(or ~@(for [[pattern body] (partition 2 clauses)]
-           `(match-pattern ~target ~pattern ~body))))
+(defn- quoted?
+  "True if x is a quoted symbol."
+  [x]
+  (and (seq? x) (= (first x) `quote)))
 
 (defn- literal?
   "True if x is a literal value that can be rendered as-is."
@@ -108,7 +95,7 @@
        (or (not (vector? x))
            (every? literal? x))
        (or (not (seq? x))
-           (= (first x) `quote))))
+           (quoted? x))))
 
 (declare compile-html)
 
@@ -124,14 +111,14 @@
 
 (defn compile-tag 
   "Pre-compile a single tag vector where possible."
-  [element]
-  (case-pattern element
-    [& (every? literal? content)]
+  [[tag attrs & content :as element]]
+  (cond
+    (every? literal? element)
       (render-tag (eval element))
-    [(literal? tag) (map? attrs) & content]
+    (and (literal? tag) (map? attrs))
       (compile-partial-tag tag attrs content)
-    [& content]
-      `(render-tag [~@(compile-html content)])))
+    :else
+      `(render-tag [~@(compile-html element)])))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
