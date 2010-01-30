@@ -34,8 +34,8 @@
       (for [[attr value] attrs]
         (cond
           (true? value) (format-attr attr attr)
-          (not value)   ""
-          :otherwise    (format-attr attr value))))))
+          (not value) ""
+          :else (format-attr attr value))))))
 
 (defvar- re-tag
   #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"
@@ -80,22 +80,23 @@
   [data]
   (cond
     (vector? data) (render-tag data)
-    (seq? data)    (apply str (map render-html data))
-    :otherwise     (as-str data)))
+    (seq? data) (apply str (map render-html data))
+    :else (as-str data)))
 
-(defn- quoted?
-  "True if x is a quoted symbol."
+(defn- unknown?
+  "True if the type of x is unknown, i.e. if x is an unevaluated form or
+  symbol."
   [x]
-  (and (seq? x) (= (first x) `quote)))
+  (or (symbol? x)
+      (and (seq? x)
+           (not= (first x) `quote))))
 
 (defn- literal?
   "True if x is a literal value that can be rendered as-is."
   [x]
-  (and (not (symbol? x))
+  (and (not (unknown? x))
        (or (not (vector? x))
-           (every? literal? x))
-       (or (not (seq? x))
-           (quoted? x))))
+           (every? literal? x))))
 
 (declare compile-html)
 
@@ -117,8 +118,15 @@
       (render-tag (eval element))
     (and (literal? tag) (map? attrs))
       (compile-partial-tag tag attrs content)
+    (and (literal? tag) (not (unknown? attrs)))
+      (compile-partial-tag tag {} (cons attrs content))
     :else
-      `(render-tag [~@(compile-html element)])))
+      `(render-tag
+         [~(first element)
+          ~@(for [x (rest element)]
+              (if (vector? x)
+                (compile-tag x)
+                x))])))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
