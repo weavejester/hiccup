@@ -100,7 +100,7 @@
 
 (declare compile-html)
 
-(defn- compile-partial-tag
+(defn- compile-partial
   "Compile an element when only the tag and attributes are literal."
   [tag attrs content]
   (let [[tag attrs _] (parse-element [tag attrs])]
@@ -110,16 +110,16 @@
             ~(str "</" tag ">"))
        (str "<" tag (make-attrs attrs) " />"))))
 
-(defn compile-tag 
+(defn- compile-tag 
   "Pre-compile a single tag vector where possible."
   [[tag attrs & content :as element]]
   (cond
     (every? literal? element)
       (render-tag (eval element))
     (and (literal? tag) (map? attrs))
-      (compile-partial-tag tag attrs content)
+      (compile-partial tag attrs content)
     (and (literal? tag) (not (unknown? attrs)))
-      (compile-partial-tag tag {} (cons attrs content))
+      (compile-partial tag {} (cons attrs content))
     :else
       `(render-tag
          [~(first element)
@@ -127,6 +127,19 @@
               (if (vector? x)
                 (compile-tag x)
                 x))])))
+
+(defn collapse-strs
+  "Collapse nested str expressions into one, where possible."
+  [expr]
+  (if (seq? expr)
+    (cons
+      (first expr)
+      (mapcat
+       #(if (and (seq? %) (= (first %) (first expr) `str))
+          (rest (collapse-strs %))
+          (list (collapse-strs %)))
+        (rest expr)))
+    expr))
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
