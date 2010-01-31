@@ -1,5 +1,5 @@
-(ns test.hiccup.core
-  (:use clojure.contrib.test-is)
+(ns test.hiccup.core-test
+  (:use clojure.test)
   (:use hiccup.core))
 
 (deftest tag-text

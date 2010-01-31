@@ -1,5 +1,5 @@
-(ns test.hiccup.form-helpers
-  (:use clojure.contrib.test-is)
+(ns test.hiccup.form-helpers-test
+  (:use clojure.test)
   (:use hiccup.core)
   (:use hiccup.form-helpers))
 
@@ -17,7 +17,7 @@
               " type=\"checkbox\" value=\"true\" />"))))
 
 (deftest test-select-options
-  (are (= (html _1) _2)
+  (are [x y] (= (html x) y)
     (select-options ["foo" "bar" "baz"])
       "<option>foo</option><option>bar</option><option>baz</option>"
     (select-options ["foo" "bar"] "bar")
