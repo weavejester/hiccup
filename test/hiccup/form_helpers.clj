@@ -1,6 +1,6 @@
 (ns test.hiccup.form-helpers
   (:use clojure.contrib.test-is)
-  (:use hiccup)
+  (:use hiccup.core)
   (:use hiccup.form-helpers))
 
 (deftest test-hidden-field

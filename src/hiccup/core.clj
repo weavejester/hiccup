@@ -6,7 +6,7 @@
 ;; terms of this license. You must not remove this notice, or any other, from
 ;; this software.
 
-(ns hiccup
+(ns hiccup.core
   "Dynamically generates HTML from a Clojure data structure."
   (:use hiccup.compiler))
 

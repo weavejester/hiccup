@@ -1,6 +1,6 @@
-(ns test.hiccup
+(ns test.hiccup.core
   (:use clojure.contrib.test-is)
-  (:use hiccup))
+  (:use hiccup.core))
 
 (deftest tag-text
   (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
