@@ -9,7 +9,7 @@ Syntax
 
 Here is a basic example of Hiccup syntax:
 
-    user=> (use 'hiccup)
+    user=> (use 'hiccup.core)
     nil
     user=> (html [:span {:class "foo"} "bar"])
     "<span class=\"foo\">bar</span>"
