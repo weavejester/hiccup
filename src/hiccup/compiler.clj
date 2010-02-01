@@ -10,7 +10,8 @@
   "Renders a tree of vectors into a string of HTML. Pre-compiles where
   possible."
   (:use clojure.contrib.def
-        clojure.contrib.java-utils))
+        clojure.contrib.java-utils)
+  (:import java.util.Map))
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -83,9 +84,14 @@
     (seq? data) (apply str (map render-html data))
     :else (as-str data)))
 
-(defn- unknown?
-  "True if the type of x is unknown, i.e. if x is an unevaluated form or
-  symbol."
+(defn- not-hint?
+  "True if x is not hinted to be the supplied type."
+  [x type]
+  (if-let [hint (-> x meta :tag)]
+    (not (isa? (eval hint) type))))
+
+(defn- uneval?
+  "True if x is an unevaluated form or symbol."
   [x]
   (or (symbol? x)
       (and (seq? x)
@@ -94,7 +100,7 @@
 (defn- literal?
   "True if x is a literal value that can be rendered as-is."
   [x]
-  (and (not (unknown? x))
+  (and (not (uneval? x))
        (or (not (vector? x))
            (every? literal? x))))
 
@@ -118,7 +124,7 @@
       (render-tag (eval element))
     (and (literal? tag) (map? attrs))
       (compile-partial tag attrs content)
-    (and (literal? tag) (not (unknown? attrs)))
+    (and (literal? tag) (or (not (uneval? attrs)) (not-hint? attrs Map)))
       (compile-partial tag {} (cons attrs content))
     :else
       `(render-tag
