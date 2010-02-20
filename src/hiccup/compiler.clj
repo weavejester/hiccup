@@ -90,6 +90,12 @@
   (if-let [hint (-> x meta :tag)]
     (not (isa? (eval hint) type))))
 
+(defn- hint?
+  "True if x is hinted to be the supplied type."
+  [x type]
+  (if-let [hint (-> x meta :tag)]
+    (isa? (eval hint) type)))
+
 (defn- uneval?
   "True if x is an unevaluated form or symbol."
   [x]
@@ -154,4 +160,5 @@
     (cond
       (vector? c)  (compile-tag c)
       (literal? c) c
-      :else        `(render-html ~c))))
+      (hint? c String) c
+      :else `(render-html ~c))))
