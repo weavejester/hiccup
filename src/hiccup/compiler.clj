@@ -112,7 +112,7 @@
 
 (declare compile-html)
 
-(defn- compile-partial
+(defn- compile-lit-tag+attrs
   "Compile an element when only the tag and attributes are literal."
   [tag attrs content]
   (let [[tag attrs _] (parse-element [tag attrs])]
@@ -122,16 +122,38 @@
             ~(str "</" tag ">"))
        (str "<" tag (make-attrs attrs) " />"))))
 
+(defn compile-lit-tag
+  "Compile an element when only the tag is literal."
+  [tag [attrs & content :as element]]
+  (let [[tag tag-attrs _] (parse-element [tag])]
+    `(if (map? ~attrs)
+       ~(if (or content (container-tags tag))
+          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) ">"
+                ~@(compile-html content)
+                ~(str "</" tag ">"))
+          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) "/>"))
+       ~(if (or element (container-tags tag))
+          `(str ~(str "<" tag ">") 
+                ~@(compile-html element)
+                ~(str "</" tag ">"))
+           (str "<" tag " />")))))
+
 (defn- compile-tag 
   "Pre-compile a single tag vector where possible."
   [[tag attrs & content :as element]]
   (cond
+    ;; e.g. [:span "foo"]
     (every? literal? element)
       (render-tag (eval element))
+    ;; e.g. [:span {} x]
     (and (literal? tag) (map? attrs))
-      (compile-partial tag attrs content)
+      (compile-lit-tag+attrs tag attrs content)
+    ;; e.g. [:span #^String x]
     (and (literal? tag) (or (not (uneval? attrs)) (not-hint? attrs Map)))
-      (compile-partial tag {} (cons attrs content))
+      (compile-lit-tag+attrs tag {} (cons attrs content))
+    ;; e.g. [:span x]
+    (literal? tag)
+      (compile-lit-tag tag (cons attrs content))
     :else
       `(render-tag
          [~(first element)
