@@ -22,6 +22,8 @@
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
 
+(def h escape-html)  ;; Alias for escape-html
+
 (defn- format-attr
   "Turn a name/value pair into an attribute stringp"
   [name value]
