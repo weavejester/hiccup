@@ -68,7 +68,9 @@
          "<xml a=\"1\" b=\"2\" c=\"3\" />")))
 
 (deftest tag-class-sugar
-  (is (= (html [:div.foo]) "<div class=\"foo\"></div>")))
+  (is (= (html [:div.foo]) "<div class=\"foo\"></div>"))
+  (is (= (html [:div.foo (str "bar" "baz")])
+         "<div class=\"foo\">barbaz</div>")))
 
 (deftest tag-many-class-sugar
   (is (= (html [:div.a.b]) "<div class=\"a b\"></div>"))

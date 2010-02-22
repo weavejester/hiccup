@@ -135,10 +135,10 @@
                 ~(str "</" tag ">"))
           `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) "/>"))
        ~(if (or element (container-tags tag))
-          `(str ~(str "<" tag ">") 
+          `(str ~(str "<" tag (make-attrs tag-attrs) ">") 
                 ~@(compile-html element)
                 ~(str "</" tag ">"))
-           (str "<" tag " />")))))
+           (str "<" tag (make-attrs tag-attrs) " />")))))
 
 (defn- compile-tag 
   "Pre-compile a single tag vector where possible."
