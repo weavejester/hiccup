@@ -117,7 +117,7 @@
 (defn- compile-lit-tag+attrs
   "Compile an element when only the tag and attributes are literal."
   [tag attrs content]
-  (let [[tag attrs _] (parse-element [tag attrs])]
+  (let [[tag attrs _] (parse-element [tag (eval attrs)])]
     (if (or content (container-tags tag))
       `(str ~(str "<" tag (make-attrs attrs) ">")
             ~@(compile-html content)

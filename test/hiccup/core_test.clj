@@ -47,13 +47,12 @@
 (deftest blank-attribute-map
   (is (= (html [:xml {}]) "<xml />")))
 
-(comment
 (deftest escaped-chars
   (is (= (escape-html "\"") "&quot;"))
   (is (= (escape-html "<") "&lt;"))
   (is (= (escape-html ">") "&gt;"))
   (is (= (escape-html "&") "&amp;")))
-)
+
 (deftest escaped-attrs
   (is (= (html [:div {:id "\""}])
          "<div id=\"&quot;\"></div>")))
@@ -93,3 +92,9 @@
 (deftest attrs-nil
   (is (= (html [:span {:class nil} "foo"])
          "<span>foo</span>")))
+
+(deftest attrs-are-evaluated
+  (is (= (html [:img {:src (str "/foo" "/bar")}])
+         "<img src=\"/foo/bar\" />"))
+  (is (= (html [:div {:id (str "a" "b")} (str "foo")])
+         "<div id=\"ab\">foo</div>")))
