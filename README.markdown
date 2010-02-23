@@ -20,7 +20,7 @@ the tag's attributes. Every other element is considered part of the
 tag's body.
 
 Hiccup is intelligent enough to render different HTML tags in different
-ways:
+ways, in order to accommodate browser quirks:
 
     user=> (html [:script])
     "<script></script>"
@@ -41,3 +41,9 @@ convenient:
                    (for [x (range 1 4)]
                      [:li x])])
     "<ul><li>1</li><li>2</li><li>3</li></ul>"
+
+Credits
+-------
+
+* [James Reeves](http://github.com/weavejester)
+* [David Santiago](http://github.com/davidsantiago)
