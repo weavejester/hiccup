@@ -115,7 +115,7 @@
 (defn- not-implicit-map?
   "True if we can infer that x is not a map."
   [x]
-  (or (and (seq? x) (= (first x) `for))
+  (or (and (seq? x) (= (name (first x)) "for"))
       (not (uneval? x))
       (not-hint? x Map)))
 
@@ -174,11 +174,11 @@
 (defmulti compile-form
   "Pre-compile certain standard forms, where possible."
   {:private true}
-  first)
+  (comp keyword name first))
 
-(defmethod compile-form `for
-  [[_ bindings & body]]
-  `(apply str (for ~bindings ~@(compile-html body))))
+(defmethod compile-form :for
+  [[form bindings body]]
+  `(apply str (for ~bindings (html ~body))))
 
 (defmethod compile-form :default
   [expr]
