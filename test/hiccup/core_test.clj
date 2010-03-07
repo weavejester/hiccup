@@ -51,7 +51,8 @@
   (is (= (escape-html "\"") "&quot;"))
   (is (= (escape-html "<") "&lt;"))
   (is (= (escape-html ">") "&gt;"))
-  (is (= (escape-html "&") "&amp;")))
+  (is (= (escape-html "&") "&amp;"))
+  (is (= (escape-html "foo") "foo")))
 
 (deftest escaped-attrs
   (is (= (html [:div {:id "\""}])
@@ -108,4 +109,8 @@
 (deftest optimized-forms-work-correctly
   (is (= (html [:ul (for [n (range 3)]
                       [:li n])])
-         "<ul><li>0</li><li>1</li><li>2</li></ul>")))
+         "<ul><li>0</li><li>1</li><li>2</li></ul>"))
+  (is (= (html [:div (if true
+                       [:span "foo"]
+                       [:span "bar"])])
+         "<div><span>foo</span></div>")))

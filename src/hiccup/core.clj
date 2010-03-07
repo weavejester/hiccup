@@ -177,8 +177,12 @@
   (comp keyword name first))
 
 (defmethod compile-form :for
-  [[form bindings body]]
+  [[_ bindings body]]
   `(apply str (for ~bindings (html ~body))))
+
+(defmethod compile-form :if
+  [[_ condition & body]]
+  `(if ~condition ~@(for [x body] `(html ~x))))
 
 (defmethod compile-form :default
   [expr]
