@@ -209,6 +209,7 @@
       (vector? expr) (compile-tag expr)
       (literal? expr) expr
       (hint? expr String) expr
+      (hint? expr Number) expr
       (seq? expr) (compile-form expr)
       :else `(render-html ~expr))))
 
