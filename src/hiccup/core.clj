@@ -164,6 +164,19 @@
                 (compile-tag x)
                 x))])))
 
+(defmulti compile-form
+  "Pre-compile certain standard forms, where possible."
+  {:private true}
+  first)
+
+(defmethod compile-form `for
+  [[_ bindings & body]]
+  `(for ~bindings ~@(compile-html body)))
+
+(defmethod compile-form :default
+  [expr]
+  `(render-html ~expr))
+
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."
   [expr]
@@ -180,12 +193,13 @@
 (defn- compile-html
   "Pre-compile data structures into HTML where possible."
   [content]
-  (for [c content]
+  (for [expr content]
     (cond
-      (vector? c)  (compile-tag c)
-      (literal? c) c
-      (hint? c String) c
-      :else `(render-html ~c))))
+      (vector? expr) (compile-tag expr)
+      (literal? expr) expr
+      (hint? expr String) expr
+      (seq? expr) (compile-form expr)
+      :else `(render-html ~expr))))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."

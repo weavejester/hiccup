@@ -100,3 +100,12 @@
          "<img src=\"/foo/bar\" />"))
   (is (= (html [:div {:id (str "a" "b")} (str "foo")])
          "<div id=\"ab\">foo</div>")))
+
+(deftest content-can-be-vars
+  (is (= (let [x "foo"] (html [:span x]))
+         "<span>foo</span>")))
+
+(deftest optimized-forms-work-correctly
+  (is (= (html [:ul (for [n (range 3)]
+                      [:li n])])
+         "<ul><li>0</li><li>1</li><li>2</li></ul>")))
