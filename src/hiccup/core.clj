@@ -112,6 +112,13 @@
        (or (not (vector? x))
            (every? literal? x))))
 
+(defn- not-implicit-map?
+  "True if we can infer that x is not a map."
+  [x]
+  (or (and (seq? x) (= (first x) `for))
+      (not (uneval? x))
+      (not-hint? x Map)))
+
 (declare compile-html)
 
 (defn- compile-lit-tag+attrs
@@ -151,7 +158,7 @@
     (and (literal? tag) (map? attrs))
       (compile-lit-tag+attrs tag attrs content)
     ;; e.g. [:span #^String x]
-    (and (literal? tag) (or (not (uneval? attrs)) (not-hint? attrs Map)))
+    (and (literal? tag) (not-implicit-map? attrs))
       (compile-lit-tag+attrs tag {} (cons attrs content))
     ;; e.g. [:span x]
     (literal? tag)
@@ -171,7 +178,7 @@
 
 (defmethod compile-form `for
   [[_ bindings & body]]
-  `(for ~bindings ~@(compile-html body)))
+  `(apply str (for ~bindings ~@(compile-html body))))
 
 (defmethod compile-form :default
   [expr]
