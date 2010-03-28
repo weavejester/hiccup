@@ -45,9 +45,14 @@
     (sort
       (for [[attr value] attrs]
         (cond
-          (true? value) (format-attr attr attr)
-          (not value) ""
-          :else (format-attr attr value))))))
+          (true? value)
+            (if (= *html-mode* :xml)
+              (format-attr attr attr)
+              (str " " (as-str attr)))
+          (not value)
+            ""
+          :else
+            (format-attr attr value))))))
 
 (defvar- re-tag
   #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"

@@ -125,3 +125,9 @@
   (is (= (html {:mode :xml} [:br]) "<br />"))
   (is (= (html {:mode :sgml} [:br]) "<br>"))
   (is (= (html {:mode :html} [:br]) "<br>")))
+
+(deftest mode-bool-attrs
+  (is (= (html {:mode :xml} [:input {:type "checkbox" :checked true}])
+         "<input checked=\"checked\" type=\"checkbox\" />"))
+  (is (= (html {:mode :sgml} [:input {:type "checkbox" :checked true}])
+         "<input checked type=\"checkbox\">")))
