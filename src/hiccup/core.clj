@@ -13,6 +13,8 @@
         clojure.contrib.java-utils)
   (:import java.util.Map))
 
+(def *html-mode* :xml)
+
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
@@ -23,6 +25,13 @@
     (replace "\"" "&quot;")))
 
 (def h escape-html)  ;; Alias for escape-html
+
+(defn tag-end
+  "Return the ending part of a self-closing tag."
+  []
+  (if (= *html-mode* :xml)
+    " />"
+    ">"))
 
 (defn- format-attr
   "Turn a name/value pair into an attribute stringp"
@@ -76,7 +85,7 @@
       (str "<" tag (make-attrs attrs) ">"
            (render-html content)
            "</" tag ">")
-      (str "<" tag (make-attrs attrs) " />"))))
+      (str "<" tag (make-attrs attrs) (tag-end)))))
 
 (defn render-html
   "Render a Clojure data structure to a string of HTML."
@@ -129,7 +138,7 @@
       `(str ~(str "<" tag (make-attrs attrs) ">")
             ~@(compile-html content)
             ~(str "</" tag ">"))
-       (str "<" tag (make-attrs attrs) " />"))))
+       (str "<" tag (make-attrs attrs) (tag-end)))))
 
 (defn compile-lit-tag
   "Compile an element when only the tag is literal."
@@ -140,12 +149,13 @@
           `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) ">"
                 ~@(compile-html content)
                 ~(str "</" tag ">"))
-          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) "/>"))
+          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs))
+                (tag-end)))
        ~(if (or element (container-tags tag))
           `(str ~(str "<" tag (make-attrs tag-attrs) ">") 
                 ~@(compile-html element)
                 ~(str "</" tag ">"))
-           (str "<" tag (make-attrs tag-attrs) " />")))))
+           (str "<" tag (make-attrs tag-attrs) (tag-end))))))
 
 (defn- compile-tag 
   "Pre-compile a single tag vector where possible."
@@ -215,5 +225,11 @@
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
-  [& content]
-  (collapse-strs `(str ~@(compile-html content))))
+  [options & content]
+  (letfn [(make-html [content]
+            (collapse-strs `(str ~@(compile-html content))))]
+    (if-let [mode (and (map? options) (:mode options))]
+      (binding [*html-mode* mode]
+        `(binding [*html-mode* ~mode]
+           ~(make-html content)))
+      (make-html (cons options content)))))

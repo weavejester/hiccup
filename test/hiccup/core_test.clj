@@ -119,3 +119,9 @@
   (let [string "x", number 1]
     (is (= (html [:span #^String string]) "<span>x</span>"))
     (is (= (html [:span #^Integer number]) "<span>1</span>"))))
+
+(deftest mode-ending-tag
+  (is (= (html [:br]) "<br />"))
+  (is (= (html {:mode :xml} [:br]) "<br />"))
+  (is (= (html {:mode :sgml} [:br]) "<br>"))
+  (is (= (html {:mode :html} [:br]) "<br>")))
