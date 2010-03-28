@@ -35,8 +35,8 @@
          "<p>a</p><p>b</p>")))
 
 (deftest nested-tags
-  (is (= (html [:div [:p]] "<div><p /></div>")))
-  (is (= (html [:div [:b]] "<div><b></b></div>")))
+  (is (= (html [:div [:p]]) "<div><p /></div>"))
+  (is (= (html [:div [:b]]) "<div><b></b></div>"))
   (is (= (html [:p [:span [:a "foo"]]])
          "<p><span><a>foo</a></span></p>")))
 
