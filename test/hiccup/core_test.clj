@@ -58,15 +58,22 @@
   (is (= (html [:div {:id "\""}])
          "<div id=\"&quot;\"></div>")))
 
-(deftest attrs-can-be-strs
+(deftest attr-keys-can-be-strs
   (is (= (html [:img {"id" "foo"}]) "<img id=\"foo\" />")))
 
-(deftest attrs-can-be-symbols
+(deftest attr-key-can-be-symbols
   (is (= (html [:img {'id "foo"}]) "<img id=\"foo\" />")))
 
 (deftest attr-keys-different-types
   (is (= (html [:xml {:a "1", 'b "2", "c" "3"}])
          "<xml a=\"1\" b=\"2\" c=\"3\" />")))
+
+(deftest attrs-can-contain-vars
+  (let [x "foo"]
+    (is (= (html [:xml {:x x}]) "<xml x=\"foo\" />"))
+    (is (= (html [:xml {x "x"}]) "<xml foo=\"x\" />"))
+    (is (= (html [:xml {:x x} "bar"])
+           "<xml x=\"foo\">bar</xml>"))))
 
 (deftest tag-class-sugar
   (is (= (html [:div.foo]) "<div class=\"foo\"></div>"))

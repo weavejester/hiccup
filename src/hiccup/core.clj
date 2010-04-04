@@ -38,7 +38,7 @@
   [name value]
   (str " " (as-str name) "=\"" (escape-html value) "\""))
 
-(defn make-attrs
+(defn render-attrs
   "Turn a map into a string of sorted HTML attributes."
   [attrs]
   (apply str
@@ -53,6 +53,21 @@
             ""
           :else
             (format-attr attr value))))))
+
+(defn- uneval?
+  "True if x is an unevaluated form or symbol."
+  [x]
+  (or (symbol? x)
+      (and (seq? x)
+           (not= (first x) `quote))))
+
+(defn compile-attrs
+  "Turn a map with unevaluated symbols into an expression that will render the
+  corresponding attributes."
+  [attrs]
+  (if (some uneval? (mapcat identity attrs))
+    `(render-attrs ~attrs)
+    (render-attrs attrs)))
 
 (defvar- re-tag
   #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"
@@ -87,10 +102,10 @@
   [element]
   (let [[tag attrs content] (parse-element element)]
     (if (or content (container-tags tag))
-      (str "<" tag (make-attrs attrs) ">"
+      (str "<" tag (render-attrs attrs) ">"
            (render-html content)
            "</" tag ">")
-      (str "<" tag (make-attrs attrs) (tag-end)))))
+      (str "<" tag (render-attrs attrs) (tag-end)))))
 
 (defn render-html
   "Render a Clojure data structure to a string of HTML."
@@ -112,18 +127,11 @@
   (if-let [hint (-> x meta :tag)]
     (isa? (eval hint) type)))
 
-(defn- uneval?
-  "True if x is an unevaluated form or symbol."
-  [x]
-  (or (symbol? x)
-      (and (seq? x)
-           (not= (first x) `quote))))
-
-(defn- literal?
+(defn literal?
   "True if x is a literal value that can be rendered as-is."
   [x]
   (and (not (uneval? x))
-       (or (not (vector? x))
+       (or (not (or (vector? x) (map? x)))
            (every? literal? x))))
 
 (defn- not-implicit-map?
@@ -138,12 +146,12 @@
 (defn- compile-lit-tag+attrs
   "Compile an element when only the tag and attributes are literal."
   [tag attrs content]
-  (let [[tag attrs _] (parse-element [tag (eval attrs)])]
+  (let [[tag attrs _] (parse-element [tag attrs])]
     (if (or content (container-tags tag))
-      `(str ~(str "<" tag (make-attrs attrs) ">")
+      `(str ~(str "<" tag) ~(compile-attrs attrs) ">"
             ~@(compile-html content)
             ~(str "</" tag ">"))
-       (str "<" tag (make-attrs attrs) (tag-end)))))
+      `(str "<" ~tag ~(compile-attrs attrs) ~(tag-end)))))
 
 (defn compile-lit-tag
   "Compile an element when only the tag is literal."
@@ -151,16 +159,16 @@
   (let [[tag tag-attrs _] (parse-element [tag])]
     `(if (map? ~attrs)
        ~(if (or content (container-tags tag))
-          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs)) ">"
+          `(str ~(str "<" tag) (render-attrs (merge ~tag-attrs ~attrs)) ">"
                 ~@(compile-html content)
                 ~(str "</" tag ">"))
-          `(str ~(str "<" tag) (make-attrs (merge ~tag-attrs ~attrs))
-                (tag-end)))
+          `(str ~(str "<" tag) (render-attrs (merge ~tag-attrs ~attrs))
+                ~(tag-end)))
        ~(if (or element (container-tags tag))
-          `(str ~(str "<" tag (make-attrs tag-attrs) ">") 
+          `(str ~(str "<" tag (render-attrs tag-attrs) ">")
                 ~@(compile-html element)
                 ~(str "</" tag ">"))
-           (str "<" tag (make-attrs tag-attrs) (tag-end))))))
+          (str "<" tag (render-attrs tag-attrs) (tag-end))))))
 
 (defn- compile-tag 
   "Pre-compile a single tag vector where possible."
