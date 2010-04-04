@@ -26,7 +26,7 @@
 
 (def h escape-html)  ;; Alias for escape-html
 
-(defn tag-end
+(defn- tag-end
   "Return the ending part of a self-closing tag."
   []
   (if (= *html-mode* :xml)
@@ -38,7 +38,7 @@
   [name value]
   (str " " (as-str name) "=\"" (escape-html value) "\""))
 
-(defn render-attrs
+(defn- render-attrs
   "Turn a map into a string of sorted HTML attributes."
   [attrs]
   (apply str
@@ -61,12 +61,12 @@
       (and (seq? x)
            (not= (first x) `quote))))
 
-(defn compile-attrs
+(defn- compile-attrs
   "Turn a map with unevaluated symbols into an expression that will render the
   corresponding attributes."
   [attrs]
   (if (some uneval? (mapcat identity attrs))
-    `(render-attrs ~attrs)
+    `(#'render-attrs ~attrs)
     (render-attrs attrs)))
 
 (defvar- re-tag
@@ -97,7 +97,7 @@
 
 (declare render-html)
 
-(defn render-tag
+(defn- render-tag
   "Render a HTML tag represented as a vector."
   [element]
   (let [[tag attrs content] (parse-element element)]
@@ -107,7 +107,7 @@
            "</" tag ">")
       (str "<" tag (render-attrs attrs) (tag-end)))))
 
-(defn render-html
+(defn- render-html
   "Render a Clojure data structure to a string of HTML."
   [data]
   (cond
@@ -127,7 +127,7 @@
   (if-let [hint (-> x meta :tag)]
     (isa? (eval hint) type)))
 
-(defn literal?
+(defn- literal?
   "True if x is a literal value that can be rendered as-is."
   [x]
   (and (not (uneval? x))
@@ -153,16 +153,16 @@
             ~(str "</" tag ">"))
       `(str "<" ~tag ~(compile-attrs attrs) ~(tag-end)))))
 
-(defn compile-lit-tag
+(defn- compile-lit-tag
   "Compile an element when only the tag is literal."
   [tag [attrs & content :as element]]
   (let [[tag tag-attrs _] (parse-element [tag])]
     `(if (map? ~attrs)
        ~(if (or content (container-tags tag))
-          `(str ~(str "<" tag) (render-attrs (merge ~tag-attrs ~attrs)) ">"
+          `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs)) ">"
                 ~@(compile-html content)
                 ~(str "</" tag ">"))
-          `(str ~(str "<" tag) (render-attrs (merge ~tag-attrs ~attrs))
+          `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs))
                 ~(tag-end)))
        ~(if (or element (container-tags tag))
           `(str ~(str "<" tag (render-attrs tag-attrs) ">")
@@ -187,7 +187,7 @@
     (literal? tag)
       (compile-lit-tag tag (cons attrs content))
     :else
-      `(render-tag
+      `(#'render-tag
          [~(first element)
           ~@(for [x (rest element)]
               (if (vector? x)
@@ -209,7 +209,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(render-html ~expr))
+  `(#'render-html ~expr))
 
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."
@@ -234,7 +234,7 @@
       (hint? expr String) expr
       (hint? expr Number) expr
       (seq? expr) (compile-form expr)
-      :else `(render-html ~expr))))
+      :else `(#'render-html ~expr))))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
