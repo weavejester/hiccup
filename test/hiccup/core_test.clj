@@ -113,6 +113,12 @@
   (is (= (let [x "foo"] (html [:span x]))
          "<span>foo</span>")))
 
+(deftest content-can-be-forms
+  (is (= (html [:span (str (+ 1 1))])
+         "<span>2</span>"))
+  (is (= (html [:span ({:foo "bar"} :foo)])
+         "<span>bar</span>")))
+
 (deftest optimized-forms
   (is (= (html [:ul (for [n (range 3)]
                       [:li n])])

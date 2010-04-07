@@ -134,10 +134,16 @@
        (or (not (or (vector? x) (map? x)))
            (every? literal? x))))
 
+(defn- form-name
+  "Get the name of the supplied form."
+  [form]
+  (if (and (seq? form) (symbol? (first form)))
+    (name (first form))))
+
 (defn- not-implicit-map?
   "True if we can infer that x is not a map."
   [x]
-  (or (and (seq? x) (= (name (first x)) "for"))
+  (or (= (form-name x) "for")
       (not (uneval? x))
       (not-hint? x Map)))
 
@@ -197,13 +203,13 @@
 (defmulti compile-form
   "Pre-compile certain standard forms, where possible."
   {:private true}
-  (comp keyword name first))
+  form-name)
 
-(defmethod compile-form :for
+(defmethod compile-form "for"
   [[_ bindings body]]
   `(apply str (for ~bindings (html ~body))))
 
-(defmethod compile-form :if
+(defmethod compile-form "if"
   [[_ condition & body]]
   `(if ~condition ~@(for [x body] `(html ~x))))
 
@@ -218,7 +224,7 @@
     (cons
       (first expr)
       (mapcat
-       #(if (and (seq? %) (= (first %) (first expr) `str))
+       #(if (and (seq? %) (symbol? (first %)) (= (first %) (first expr) `str))
           (rest (collapse-strs %))
           (list (collapse-strs %)))
         (rest expr)))
