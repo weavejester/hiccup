@@ -252,3 +252,30 @@
         `(binding [*html-mode* ~mode]
            ~(make-html content)))
       (make-html (cons options content)))))
+
+(defmacro defelem
+  "Defines a function adding an optional map argument in the first position.
+   fdecl has the same form used by clojure.core/defn. The resuting function must return a vector.
+   If the first argument passed to the result function is a map, it will be inserted as second element in vector.
+   If in that position there is a map already, both will be merged"
+  [name & fdecl]
+  (let [[m fdecl] (if (string? (first fdecl))
+                    [{:doc (first fdecl)} (next fdecl)]
+                    [{} fdecl])
+        [m fdecl] (if (map? (first fdecl))
+                    [(conj m (first fdecl)) (next fdecl)]
+                    [m fdecl])
+        [m fdecl] (if (map? (last fdecl))
+                    [(conj m (last fdecl)) (butlast fdecl)]
+                    [m fdecl])
+        m (conj (or (meta name) {}) m)]
+
+    `(defn ~name ~m [& [atts# & more# :as args#]]
+       (let [f# (fn ~name ~@fdecl)]
+         (if (map? atts#)
+           (let [[tag# & r#] (apply f# more#)]
+             (vec (if (map? (first r#))
+                    (list* tag# (merge (first r#) atts#) (next r#))
+                    (list* tag# atts# r#))))
+           (apply f# args#))))))
+
