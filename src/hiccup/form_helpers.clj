@@ -8,29 +8,31 @@
 
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use clojure.contrib.java-utils))
+  (:use
+     clojure.contrib.java-utils
+     [hiccup.core :only (defelem)]))
 
 (defn- input-field
   "Creates a new <input> element."
   [type name value]
   [:input {:type type, :name name, :value value, :id name}])
 
-(defn hidden-field
+(defelem hidden-field
   "Creates a hidden input field."
   ([name] (hidden-field name nil))
   ([name value] (input-field "hidden" name value)))
 
-(defn text-field
+(defelem text-field
   "Creates a new text input field."
   ([name] (text-field name nil))
   ([name value] (input-field "text" name value)))
 
-(defn password-field
+(defelem password-field
   "Creates a new password field."
   ([name] (password-field name nil))
   ([name value] (input-field "password" name value)))
 
-(defn check-box
+(defelem check-box
   "Creates a check box."
   ([name] (check-box name nil))
   ([name checked?] (check-box name checked? "true"))
@@ -41,7 +43,7 @@
              :value value
              :checked checked?}]))
 
-(defn radio-button
+(defelem radio-button
   "Creates a radio button."
   ([group] (radio-button group nil))
   ([group checked?] (radio-button group checked? "true"))
@@ -52,7 +54,7 @@
              :value value
              :checked checked?}]))
 
-(defn select-options
+(defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
   ([coll selected]
@@ -62,39 +64,39 @@
           [:option {:value val :selected (= val selected)} text])
         [:option {:selected (= x selected)} x]))))
 
-(defn drop-down
+(defelem drop-down
   "Creates a drop-down box using the <select> tag."
   ([name options] (drop-down name options nil))
   ([name options selected]
     [:select {:name name :id name}
       (select-options options selected)]))
 
-(defn text-area
+(defelem text-area
   "Creates a text area element."
   ([name] (text-area name nil))
   ([name value] [:textarea {:name name, :id name} value]))
 
-(defn file-upload
+(defelem file-upload
   "Creates a file upload input."
   [name]
   (input-field "file" name nil))
 
-(defn label
+(defelem label
   "Creates a label for an input field with the supplied name."
   [name text]
   [:label {:for name} text])
 
-(defn submit-button
+(defelem submit-button
   "Creates a submit button."
   [text]
   [:input {:type "submit" :value text}])
 
-(defn reset-button
+(defelem reset-button
   "Creates a form reset button."
   [text]
   [:input {:type "reset" :value text}])
 
-(defn form-to
+(defelem form-to
   "Create a form that points to a particular method and route.
   e.g. (form-to [:put \"/post\"]
          ...)"
