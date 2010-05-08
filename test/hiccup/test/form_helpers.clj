@@ -1,4 +1,4 @@
-(ns test.hiccup.form-helpers-test
+(ns hiccup.test.form-helpers
   (:use clojure.test)
   (:use hiccup.core)
   (:use hiccup.form-helpers))
