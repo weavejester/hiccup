@@ -13,7 +13,7 @@ Here is a basic example of Hiccup syntax:
     nil
     user=> (html [:span {:class "foo"} "bar"])
     "<span class=\"foo\">bar</span>"
-    
+
 The first element of the vector is used as the tag name. The second
 attribute can optionally be a map, in which case it is used to supply
 the tag's attributes. Every other element is considered part of the
@@ -47,3 +47,4 @@ Credits
 
 * [James Reeves](http://github.com/weavejester)
 * [David Santiago](http://github.com/davidsantiago)
+* [Sebastián Bernardo Galkin](http://github.com/paraseba)
