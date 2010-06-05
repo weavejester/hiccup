@@ -7,7 +7,10 @@
 ;; this software.
 
 (ns hiccup.page-helpers
-  "Functions for generating document and header boilerplate.")
+  "Functions for generating various common elements."
+  (:import java.net.URLEncoder)
+  (:use [clojure.contrib.java-utils :only (as-str)]
+        [clojure.contrib.str-utils :only (str-join)]))
 
 (def doctype
   {:html4
@@ -62,3 +65,11 @@
   "Wrap a collection in an unordered list"
   [coll]
   [:ol (for [x coll] [:li x])])
+
+(defn encode-params
+  "Turn a map of parameters into a urlencoded string."
+  [params]
+  (letfn [(encode [s] (URLEncoder/encode (as-str s)))]
+    (str-join "&"
+      (for [[k v] params]
+        (str (encode k) "=" (encode v))))))
