@@ -80,4 +80,9 @@
     (url \"/group/\" 4 \"/products\" {:page 9})
     => \"/group/4/products?page=9\""
   [& args]
-  ())
+  (let [params (last args)
+        args   (butlast args)]
+    (str (apply str args)
+         (if (map? params)
+           (str "?" (encode-params params))
+           params))))
