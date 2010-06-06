@@ -73,3 +73,11 @@
     (str-join "&"
       (for [[k v] params]
         (str (encode k) "=" (encode v))))))
+
+(defn url
+  "Creates a URL string from a variable list of arguments and an optional
+  parameter map as the last argument. For example:
+    (url \"/group/\" 4 \"/products\" {:page 9})
+    => \"/group/4/products?page=9\""
+  [& args]
+  ())
