@@ -104,7 +104,10 @@
     (is (= (html {:mode :xml} [:input {:type "checkbox" :checked true}])
            "<input checked=\"checked\" type=\"checkbox\" />"))
     (is (= (html {:mode :sgml} [:input {:type "checkbox" :checked true}])
-           "<input checked type=\"checkbox\">"))))
+           "<input checked type=\"checkbox\">")))
+  (testing "laziness and binding scope"
+    (is (= (html {:mode :sgml} [:html [:link] (list [:link])])
+           "<html><link><link></html>"))))
 
 (deftest defelem-macro
   (testing "one overload function"

@@ -225,14 +225,14 @@
 (defn- compile-html
   "Pre-compile data structures into HTML where possible."
   [content]
-  (for [expr content]
-    (cond
-      (vector? expr) (compile-tag expr)
-      (literal? expr) expr
-      (hint? expr String) expr
-      (hint? expr Number) expr
-      (seq? expr) (compile-form expr)
-      :else `(#'render-html ~expr))))
+  (doall (for [expr content]
+           (cond
+            (vector? expr) (compile-tag expr)
+            (literal? expr) expr
+            (hint? expr String) expr
+            (hint? expr Number) expr
+            (seq? expr) (compile-form expr)
+            :else `(#'render-html ~expr)))))
 
 (defmacro html
   "Render Clojure data structures to a string of HTML."
