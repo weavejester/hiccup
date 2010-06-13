@@ -245,26 +245,21 @@
            ~(make-html content)))
       (make-html (cons options content)))))
 
+(defn add-optional-attrs
+  "Add an optional attribute argument to a function that returns a vector tag."
+  [func]
+  (fn [& args]
+    (if (map? (first args))
+      (let [[tag & body] (apply func (rest args))]
+        (if (map? (first body))
+          (apply vector tag (merge (first body) (first args)) (rest body))
+          (apply vector tag (first args) body)))
+      (apply func args))))
+
 (defmacro defelem
   "Defines a function that will return a tag vector. If the first argument
   passed to the resulting function is a map, it merges it with the attribute
   map of the returned tag value."
   [name & fdecl]
-  (let [[m fdecl] (if (string? (first fdecl))
-                    [{:doc (first fdecl)} (next fdecl)]
-                    [{} fdecl])
-        [m fdecl] (if (map? (first fdecl))
-                    [(conj m (first fdecl)) (next fdecl)]
-                    [m fdecl])
-        [m fdecl] (if (map? (last fdecl))
-                    [(conj m (last fdecl)) (butlast fdecl)]
-                    [m fdecl])
-        m (conj (or (meta name) {}) m)]
-    `(defn ~name ~m [& [atts# & more# :as args#]]
-       (let [f# (fn ~name ~@fdecl)]
-         (if (map? atts#)
-           (let [[tag# & r#] (apply f# more#)]
-             (vec (if (map? (first r#))
-                    (list* tag# (merge (first r#) atts#) (next r#))
-                    (list* tag# atts# r#))))
-           (apply f# args#))))))
+  `(do (defn ~name ~@fdecl)
+       (alter-var-root (var ~name) add-optional-attrs)))
