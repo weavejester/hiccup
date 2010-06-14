@@ -245,6 +245,17 @@
            ~(make-html content)))
       (make-html (cons options content)))))
 
+(defmacro defhtml
+  "Define a function, but wrap its output in an implicit html macro."
+  [name & fdecl]
+  (let [[fhead fbody] (split-with #(not (or (list? %) (vector? %))) fdecl)
+        wrap-html (fn [[args & body]] `(~args (html ~@body)))]
+    `(defn ~name
+       ~@fhead
+       ~@(if (vector? (first fbody))
+           (wrap-html fbody)
+           (map wrap-html fbody)))))
+
 (defn add-optional-attrs
   "Add an optional attribute argument to a function that returns a vector tag."
   [func]
