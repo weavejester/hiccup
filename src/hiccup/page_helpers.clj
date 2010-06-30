@@ -1,7 +1,8 @@
 (ns hiccup.page-helpers
   "Functions for generating various common elements."
   (:import java.net.URLEncoder)
-  (:use [clojure.contrib.java-utils :only (as-str)]
+  (:use [hiccup.core :only (defelem)]
+        [clojure.contrib.java-utils :only (as-str)]
         [clojure.contrib.str-utils :only (str-join)]))
 
 (def doctype
@@ -43,7 +44,7 @@
   [:script {:type "text/javascript"}
     (str "//<![CDATA[\n" script "\n//]]>")])
 
-(defn link-to
+(defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
   [url & content]
   [:a {:href url} content])
