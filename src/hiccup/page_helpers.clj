@@ -49,12 +49,12 @@
   [url & content]
   [:a {:href url} content])
 
-(defn unordered-list
+(defelem unordered-list
   "Wrap a collection in an unordered list"
   [coll]
   [:ul (for [x coll] [:li x])])
 
-(defn ordered-list
+(defelem ordered-list
   "Wrap a collection in an unordered list"
   [coll]
   [:ol (for [x coll] [:li x])])
