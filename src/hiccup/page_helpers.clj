@@ -1,7 +1,7 @@
 (ns hiccup.page-helpers
   "Functions for generating various common elements."
   (:import java.net.URLEncoder)
-  (:use [hiccup.core :only (defelem)]
+  (:use [hiccup.core :only (defelem html)]
         [clojure.contrib.java-utils :only (as-str)]
         [clojure.contrib.str-utils :only (str-join)]))
 
@@ -25,6 +25,13 @@
           "xml:lang" lang
           :lang lang}
     contents])
+
+(defmacro html4
+  "Create a HTML 4 document with the supplied contents."
+  [& contents]
+  `(html {:mode :sgml}
+         (doctype :html4)
+         [:html ~@contents]))
 
 (defn include-js
   "Include a list of external javascript files."

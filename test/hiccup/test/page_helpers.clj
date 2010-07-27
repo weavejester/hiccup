@@ -17,3 +17,9 @@
     (url {:a "b"})       "?a=b"
     (url "foo" {:a "&"}) "foo?a=%26"
     (url "/foo/" 1 "/bar" {:page 2}) "/foo/1/bar?page=2"))
+
+(deftest html4-test
+  (is (= (html4 [:body [:p "Hello" [:br] "World"]])
+         (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
+              "\"http://www.w3.org/TR/html4/strict.dtd\">\n"
+              "<html><body><p>Hello<br>World</p></body></html>"))))
