@@ -30,8 +30,25 @@
   "Create a HTML 4 document with the supplied contents."
   [& contents]
   `(html {:mode :sgml}
-         (doctype :html4)
-         [:html ~@contents]))
+     (doctype :html4)
+     [:html ~@contents]))
+
+(defmacro xhtml
+  "Create a XHTML 1.0 document with the supplied contents. Accepts an optional
+  map as the first argument, containing any of the following options:
+    :lang    - The language of the document
+    :strict? - If true, use XHTML Strict, otherwise Transitional.
+               Defaults to true."
+  [options & contents]
+  (if-not (map? options)
+    `(xhtml {} ~options ~@contents)
+    `(let [options# ~options]
+       (html {:mode :xml}
+         (if (options# :strict? true)
+           (doctype :xhtml-strict)
+           (doctype :xhtml-transitional))
+         (xhtml-tag (options# :lang)
+           ~@contents)))))
 
 (defn include-js
   "Include a list of external javascript files."
