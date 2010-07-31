@@ -54,3 +54,10 @@
               "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
               "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
               "<body>Hello World</body></html>"))))
+
+(deftest html5-test
+  (testing "HTML mode"
+    (is (html5 [:body [:p "Hello" [:br] "World"]])
+        "<!DOCTYPE html>\n<html><body><p>Hello<br>World</p></body><html>")
+    (is (html5 {:lang "en"} [:body "Hello World"])
+        "<!DOCTYPE html>\n<html lang=\"en\"><body>Hello World</body><html>")))

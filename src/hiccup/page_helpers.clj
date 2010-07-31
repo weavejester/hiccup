@@ -26,6 +26,11 @@
           :lang lang}
     contents])
 
+(defn xml-declaration
+  "Create a standard XML declaration for the following encoding."
+  [encoding]
+  (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
+
 (defmacro html4
   "Create a HTML 4 document with the supplied contents."
   [& contents]
@@ -49,13 +54,31 @@
     `(let [options# ~options]
        (html {:mode :xml}
          (if (options# :xml-decl? true)
-           (str "<?xml version=\"1.0\" encoding=\""
-                (options# :encoding "UTF-8") "\"?>\n"))
+           (xml-declaration (options# :encoding "UTF-8")))
          (if (options# :strict? true)
            (doctype :xhtml-strict)
            (doctype :xhtml-transitional))
          (xhtml-tag (options# :lang)
            ~@contents)))))
+
+(defmacro html5
+  "Create a HTML5 document with the supplied contents."
+  [options & contents]
+  (if-not (map? options)
+    `(html5 {} ~options ~@contents)
+    (if (options :xml?)
+      `(let [options# ~options]
+         (html {:mode :xml}
+           (if (options# :xml-decl? true)
+             (xml-declaration (options# :encoding "UTF-8")))
+           (doctype :html5)
+           (xhtml-tag (options# :lang)
+             ~@contents)))
+      `(let [options# ~options]
+         (html {:mode :html}
+           (doctype :html5)
+           [:html {:lang (options# :lang)}
+             ~@contents])))))
 
 (defn include-js
   "Include a list of external javascript files."
