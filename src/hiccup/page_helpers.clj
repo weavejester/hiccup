@@ -36,14 +36,21 @@
 (defmacro xhtml
   "Create a XHTML 1.0 document with the supplied contents. Accepts an optional
   map as the first argument, containing any of the following options:
-    :lang    - The language of the document
-    :strict? - If true, use XHTML Strict, otherwise Transitional.
-               Defaults to true."
+    :lang      - The language of the document
+    :encoding  - The character encoding of the document, defaults to UTF-8.
+    :strict?   - If true, use XHTML Strict, otherwise Transitional.
+                 Defaults to true.
+    :xml-decl? - If true, use a <?xml ...?> declaration. Defaults to true.
+                 Included because IE6 forces quirks mode if doctype isn't the
+                 first line of the document."
   [options & contents]
   (if-not (map? options)
     `(xhtml {} ~options ~@contents)
     `(let [options# ~options]
        (html {:mode :xml}
+         (if (options# :xml-decl? true)
+           (str "<?xml version=\"1.0\" encoding=\""
+                (options# :encoding "UTF-8") "\"?>\n"))
          (if (options# :strict? true)
            (doctype :xhtml-strict)
            (doctype :xhtml-transitional))
