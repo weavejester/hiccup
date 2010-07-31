@@ -16,7 +16,7 @@
    (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
         "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
    :html5
-   "<!DOCTYPE html>"})
+   "<!DOCTYPE html>\n"})
 
 (defn xhtml-tag
   "Create an XHTML tag for the specified language."
@@ -32,34 +32,27 @@
   (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
 (defmacro html4
-  "Create a HTML 4 document with the supplied contents."
+  "Create a HTML 4 document with the supplied contents. The first argument
+  may be an optional attribute map."
   [& contents]
   `(html {:mode :sgml}
      (doctype :html4)
      [:html ~@contents]))
 
 (defmacro xhtml
-  "Create a XHTML 1.0 document with the supplied contents. Accepts an optional
-  map as the first argument, containing any of the following options:
-    :lang      - The language of the document
-    :encoding  - The character encoding of the document, defaults to UTF-8.
-    :strict?   - If true, use XHTML Strict, otherwise Transitional.
-                 Defaults to true.
-    :xml-decl? - If true, use a <?xml ...?> declaration. Defaults to true.
-                 Included because IE6 forces quirks mode if doctype isn't the
-                 first line of the document."
+  "Create a XHTML 1.0 strict document with the supplied contents. The first
+  argument may be an optional attribute may. The following attributes are
+  treated specially:
+    :lang     - The language of the document
+    :encoding - The character encoding of the document, defaults to UTF-8."
   [options & contents]
   (if-not (map? options)
     `(xhtml {} ~options ~@contents)
     `(let [options# ~options]
        (html {:mode :xml}
-         (if (options# :xml-decl? true)
-           (xml-declaration (options# :encoding "UTF-8")))
-         (if (options# :strict? true)
-           (doctype :xhtml-strict)
-           (doctype :xhtml-transitional))
-         (xhtml-tag (options# :lang)
-           ~@contents)))))
+         (xml-declaration (options# :encoding "UTF-8"))
+         (doctype :xhtml-strict)
+         (xhtml-tag (options# :lang) ~@contents)))))
 
 (defmacro html5
   "Create a HTML5 document with the supplied contents."
@@ -69,16 +62,13 @@
     (if (options :xml?)
       `(let [options# ~options]
          (html {:mode :xml}
-           (if (options# :xml-decl? true)
-             (xml-declaration (options# :encoding "UTF-8")))
+           (xml-declaration (options# :encoding "UTF-8"))
            (doctype :html5)
-           (xhtml-tag (options# :lang)
-             ~@contents)))
+           (xhtml-tag (options# :lang) ~@contents)))
       `(let [options# ~options]
          (html {:mode :html}
            (doctype :html5)
-           [:html {:lang (options# :lang)}
-             ~@contents])))))
+           [:html {:lang (options# :lang)} ~@contents])))))
 
 (defn include-js
   "Include a list of external javascript files."

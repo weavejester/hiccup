@@ -37,27 +37,26 @@
               "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
               "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
               "<body>Hello World</body></html>")))
-  (is (= (xhtml {:strict? false} [:body "Hello World"])
-         (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-              "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
-              "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
-              "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
-              "<body>Hello World</body></html>")))
   (is (= (xhtml {:encoding "ISO-8859-1"} [:body "Hello World"])
          (str "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
               "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-              "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-              "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
-              "<body>Hello World</body></html>")))
-  (is (= (xhtml {:xml-decl? false} [:body "Hello World"])
-         (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
               "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
               "<html xmlns=\"http://www.w3.org/1999/xhtml\">"
               "<body>Hello World</body></html>"))))
 
 (deftest html5-test
   (testing "HTML mode"
-    (is (html5 [:body [:p "Hello" [:br] "World"]])
-        "<!DOCTYPE html>\n<html><body><p>Hello<br>World</p></body><html>")
-    (is (html5 {:lang "en"} [:body "Hello World"])
-        "<!DOCTYPE html>\n<html lang=\"en\"><body>Hello World</body><html>")))
+    (is (= (html5 [:body [:p "Hello" [:br] "World"]])
+           "<!DOCTYPE html>\n<html><body><p>Hello<br>World</p></body></html>"))
+    (is (= (html5 {:lang "en"} [:body "Hello World"])
+           "<!DOCTYPE html>\n<html lang=\"en\"><body>Hello World</body></html>")))
+  (testing "XML mode"
+    (is (= (html5 {:xml? true} [:body [:p "Hello" [:br] "World"]])
+           (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">"
+                "<body><p>Hello<br />World</p></body></html>")))
+    (is (= (html5 {:xml? true, :lang "en"} [:body "Hello World"])
+           (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                "<!DOCTYPE html>\n"
+                "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
+                "<body>Hello World</body></html>")))))
