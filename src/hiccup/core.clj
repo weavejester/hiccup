@@ -154,19 +154,21 @@
 (defn- compile-lit-tag
   "Compile an element when only the tag is literal."
   [tag [attrs & content :as element]]
-  (let [[tag tag-attrs _] (parse-element [tag])]
-    `(if (map? ~attrs)
-       ~(if (or content (container-tags tag))
-          `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs)) ">"
-                ~@(compile-html content)
-                ~(str "</" tag ">"))
-          `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs))
-                ~(tag-end)))
-       ~(if (or element (container-tags tag))
-          `(str ~(str "<" tag (render-attrs tag-attrs) ">")
-                ~@(compile-html element)
-                ~(str "</" tag ">"))
-          (str "<" tag (render-attrs tag-attrs) (tag-end))))))
+  (let [[tag tag-attrs _] (parse-element [tag])
+        attrs-sym         (gensym "attrs")]
+    `(let [~attrs-sym ~attrs]
+       (if (map? ~attrs-sym)
+         ~(if (or content (container-tags tag))
+            `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs-sym))
+                  ">" ~@(compile-html content)
+                  ~(str "</" tag ">"))
+            `(str ~(str "<" tag) (#'render-attrs (merge ~tag-attrs ~attrs-sym))
+                  ~(tag-end)))
+         ~(if (or element (container-tags tag))
+            `(str ~(str "<" tag (render-attrs tag-attrs) ">")
+                  ~@(compile-html (cons attrs-sym content))
+                  ~(str "</" tag ">"))
+            (str "<" tag (render-attrs tag-attrs) (tag-end)))))))
 
 (defn- compile-tag 
   "Pre-compile a single tag vector where possible."
