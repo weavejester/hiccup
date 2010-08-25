@@ -84,8 +84,8 @@
            "<div id=\"ab\">foo</div>")))
   (testing "type hints"
     (let [string "x", number 1]
-      (is (= (html [:span #^String string]) "<span>x</span>"))
-      (is (= (html [:span #^Integer number]) "<span>1</span>"))))
+      (is (= (html [:span ^String string]) "<span>x</span>"))
+      (is (= (html [:span ^Integer number]) "<span>1</span>"))))
   (testing "optimized forms"
     (is (= (html [:ul (for [n (range 3)]
                         [:li n])])

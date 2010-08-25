@@ -10,7 +10,7 @@
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. #^String (as-str text)
+  (.. ^String (as-str text)
     (replace "&"  "&amp;")
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
@@ -81,7 +81,7 @@
   [[tag & content]]
   (let [[tag id class] (parse-tag-name tag)
         tag-attrs      {:id id
-                        :class (if class (.replace #^String class "." " "))}
+                        :class (if class (.replace ^String class "." " "))}
         map-attrs      (first content)]
     (if (map? map-attrs)
       [tag (merge tag-attrs map-attrs) (next content)]
@@ -180,7 +180,7 @@
     ;; e.g. [:span {} x]
     (and (literal? tag) (map? attrs))
       (compile-lit-tag+attrs tag attrs content)
-    ;; e.g. [:span #^String x]
+    ;; e.g. [:span ^String x]
     (and (literal? tag) (not-implicit-map? attrs))
       (compile-lit-tag+attrs tag {} (cons attrs content))
     ;; e.g. [:span x]
