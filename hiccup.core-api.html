@@ -1,0 +1,142 @@
+<html>
+  <head>
+    <title>hiccup.core API reference (Hiccup)</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <!-- TODO: are we using these (from clojure.org)? If so, add the files -->
+    <script src="file/view/code_highlighter.js" type="text/javascript"></script>
+    <script src="file/view/clojure.js" type="text/javascript"></script>
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
+  <body>
+    <div id="AllContentContainer">
+      <div id="Header">
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">Hiccup</a></h1>
+      </div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
+<div class="menu">
+  <div class="WikiCustomNav WikiElement wiki">
+    <a class="wiki_link" href="index.html">Overview</a><br />
+    <a class="wiki_link" href="api-index.html">API Index</a><br />
+    <a class="wiki_link" href="#">Namespaces:</a>
+    <ul id="left-sidebar-list">
+      <li><a href="hiccup.core-api.html" class="wiki_link">hiccup.core</a></li><li><a href="hiccup.form-helpers-api.html" class="wiki_link">hiccup.form-helpers</a></li><li><a href="hiccup.page-helpers-api.html" class="wiki_link">hiccup.page-helpers</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#toc0">Overview</a>
+    <div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.core/add-optional-attrs">add-optional-attrs</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.core/defelem">defelem</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.core/defhtml">defhtml</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.core/escape-html">escape-html</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.core/html">html</a>
+    </div>
+    <br />
+  </div>
+</div>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">hiccup.core</span></h1>
+by <span id="author">Unknown</span><br />
+<br />Usage:
+<pre>
+(ns your-namespace
+  (:require <span id="long-name">hiccup.core</span>))
+</pre><pre>
+</pre><h2>Overview</h2>
+<pre id="namespace-docstr">Renders a tree of vectors into a string of HTML. Pre-compiles where
+possible.</pre>
+<br />
+<h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.core/add-optional-attrs">add-optional-attrs</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (add-optional-attrs func)
+</pre>
+  <pre id="var-docstr">Add an optional attribute argument to a function that returns a vector tag.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/eab5903f0df80e73cb944ad3f2a95b3e83293e58/src/hiccup/core.clj#L261" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.core/defelem">defelem</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (defelem name &amp; fdecl)
+</pre>
+  <pre id="var-docstr">Defines a function that will return a tag vector. If the first argument
+passed to the resulting function is a map, it merges it with the attribute
+map of the returned tag value.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/eab5903f0df80e73cb944ad3f2a95b3e83293e58/src/hiccup/core.clj#L272" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.core/defhtml">defhtml</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (defhtml name &amp; fdecl)
+</pre>
+  <pre id="var-docstr">Define a function, but wrap its output in an implicit html macro.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/eab5903f0df80e73cb944ad3f2a95b3e83293e58/src/hiccup/core.clj#L250" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.core/escape-html">escape-html</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (escape-html text)
+</pre>
+  <pre id="var-docstr">Change special characters into HTML character entities.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/eab5903f0df80e73cb944ad3f2a95b3e83293e58/src/hiccup/core.clj#L10" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.core/html">html</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (html options &amp; content)
+</pre>
+  <pre id="var-docstr">Render Clojure data structures to a string of HTML.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/eab5903f0df80e73cb944ad3f2a95b3e83293e58/src/hiccup/core.clj#L239" id="var-source">Source</a>
+</div>
+
+
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">Copyright 2009-2010 James Reeves</div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
+</html>

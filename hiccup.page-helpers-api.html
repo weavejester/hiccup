@@ -1,0 +1,235 @@
+<html>
+  <head>
+    <title>hiccup.page-helpers API reference (Hiccup)</title>
+    <link href="static/favicon.png" rel="icon" />
+    <link href="static/favicon.png" rel="shortcut icon" />
+    <link media="all" type="text/css" href="static/clojure.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/wiki.css" rel="stylesheet" />
+    <link media="all" type="text/css" href="static/internal.css" rel="stylesheet" />
+    <!-- TODO: are we using these (from clojure.org)? If so, add the files -->
+    <script src="file/view/code_highlighter.js" type="text/javascript"></script>
+    <script src="file/view/clojure.js" type="text/javascript"></script>
+    <style>.menuWrapper{height: 36px;}</style>
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="http://www.wikispaces.com/_/2009051601/s/internal_ie.css" type="text/css" />
+    <![endif]-->
+  </head>
+<!--
+This document was auto-generated from the source by the clojure autodoc system.
+To report errors or ask questions about the overall documentation structure, formatting,
+etc., contact Tom Faulhaber (google mail name: tomfaulhaber).
+For errors in the documentation of a particular namespace, contact the author of that
+namespace.
+-->
+  <body>
+    <div id="AllContentContainer">
+      <div id="Header">
+	<a id="Logo" href="index.html"><img alt="Clojure" height="100" width="100" src="static/clojure-icon.gif" /></a>
+	<h1><a title="page header title" id="page-header" href="index.html">Hiccup</a></h1>
+      </div>
+      <div id="leftcolumn"><div style="text-align: center;"></div>
+<div class="menu">
+  <div class="WikiCustomNav WikiElement wiki">
+    <a class="wiki_link" href="index.html">Overview</a><br />
+    <a class="wiki_link" href="api-index.html">API Index</a><br />
+    <a class="wiki_link" href="#">Namespaces:</a>
+    <ul id="left-sidebar-list">
+      <li><a href="hiccup.core-api.html" class="wiki_link">hiccup.core</a></li><li><a href="hiccup.form-helpers-api.html" class="wiki_link">hiccup.form-helpers</a></li><li><a href="hiccup.page-helpers-api.html" class="wiki_link">hiccup.page-helpers</a></li>
+    </ul>
+  </div>
+</div>
+</div>
+      <div id="rightcolumn">
+	<div id="Content">
+	  <div class="contentBox"><div class="innerContentBox">
+              <div id="content_view" class="wiki wikiPage">
+                <div id="right-sidebar"><div id="toc">
+  <h1 class="nopad">Table of Contents</h1>
+  <div style="margin-left: 1em;" class="toc-section">
+    <a href="#toc0">Overview</a>
+    <div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/encode-params">encode-params</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/html4">html4</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/html5">html5</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/include-css">include-css</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/include-js">include-js</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/javascript-tag">javascript-tag</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/link-to">link-to</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/ordered-list">ordered-list</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/unordered-list">unordered-list</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/url">url</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/xhtml">xhtml</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/xhtml-tag">xhtml-tag</a>
+    </div><div style="margin-left: 1em;" class="toc-entry">
+      <a href="#hiccup.page-helpers/xml-declaration">xml-declaration</a>
+    </div>
+    <br />
+  </div>
+</div>
+</div>
+                <div id="content-tag"><h1 id="overview">API for <span id="namespace-name">hiccup.page-helpers</span></h1>
+by <span id="author">Unknown</span><br />
+<br />Usage:
+<pre>
+(ns your-namespace
+  (:require <span id="long-name">hiccup.page-helpers</span>))
+</pre><pre>
+</pre><h2>Overview</h2>
+<pre id="namespace-docstr">Functions for generating various common elements.</pre>
+<br />
+<h2>Public Variables and Functions</h2>
+<div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/encode-params">encode-params</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (encode-params params)
+</pre>
+  <pre id="var-docstr">Turn a map of parameters into a urlencoded string.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L106" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/html4">html4</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (html4 &amp; contents)
+</pre>
+  <pre id="var-docstr">Create a HTML 4 document with the supplied contents. The first argument
+may be an optional attribute map.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L34" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/html5">html5</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (html5 options &amp; contents)
+</pre>
+  <pre id="var-docstr">Create a HTML5 document with the supplied contents.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L57" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/include-css">include-css</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (include-css &amp; styles)
+</pre>
+  <pre id="var-docstr">Include a list of external stylesheet files.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L79" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/include-js">include-js</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (include-js &amp; scripts)
+</pre>
+  <pre id="var-docstr">Include a list of external javascript files.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L73" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/javascript-tag">javascript-tag</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (javascript-tag script)
+</pre>
+  <pre id="var-docstr">Wrap the supplied javascript up in script tags and a CDATA section.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L85" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/link-to">link-to</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (link-to url &amp; content)
+</pre>
+  <pre id="var-docstr">Wraps some content in a HTML hyperlink with the supplied URL.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L91" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/ordered-list">ordered-list</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (ordered-list coll)
+</pre>
+  <pre id="var-docstr">Wrap a collection in an unordered list</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L101" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/unordered-list">unordered-list</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (unordered-list coll)
+</pre>
+  <pre id="var-docstr">Wrap a collection in an unordered list</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L96" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/url">url</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (url &amp; args)
+</pre>
+  <pre id="var-docstr">Creates a URL string from a variable list of arguments and an optional
+parameter map as the last argument. For example:
+  (url "/group/" 4 "/products" {:page 9})
+  =&gt; "/group/4/products?page=9"</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L114" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/xhtml">xhtml</h2>
+  <span id="var-type">macro</span><br />
+  <pre id="var-usage">Usage: (xhtml options &amp; contents)
+</pre>
+  <pre id="var-docstr">Create a XHTML 1.0 strict document with the supplied contents. The first
+argument may be an optional attribute may. The following attributes are
+treated specially:
+  :lang     - The language of the document
+  :encoding - The character encoding of the document, defaults to UTF-8.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L42" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/xhtml-tag">xhtml-tag</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (xhtml-tag lang &amp; contents)
+</pre>
+  <pre id="var-docstr">Create an XHTML tag for the specified language.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L21" id="var-source">Source</a>
+</div><div id="var-entry">
+  <br />
+  <hr />
+  <h2 id="hiccup.page-helpers/xml-declaration">xml-declaration</h2>
+  <span id="var-type">function</span><br />
+  <pre id="var-usage">Usage: (xml-declaration encoding)
+</pre>
+  <pre id="var-docstr">Create a standard XML declaration for the following encoding.</pre>
+  <a href="http://github.com/weavejester/hiccup/blob/ee8388393b966ef342e565c1c9801f6c78291b3d/src/hiccup/page_helpers.clj#L29" id="var-source">Source</a>
+</div>
+
+
+</div>
+              </div>
+            </div>
+          </div>
+	</div>
+	<div id="foot">
+	  <div style="text-align: center;" id="copyright">Copyright 2009-2010 James Reeves</div>
+	</div>
+      </div>
+      <div id="DesignedBy">Logo &amp; site design by <a title="Visit Tom Hickey's website." href="http://www.tomhickey.com">Tom Hickey</a>.<br />
+      Clojure auto-documentation system by Tom Faulhaber.</div>
+    </div>
+    <!-- /AllContentContainer -->
+  </body>
+
+</html>
