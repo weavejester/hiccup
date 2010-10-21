@@ -60,3 +60,10 @@
                 "<!DOCTYPE html>\n"
                 "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body>Hello World</body></html>")))))
+
+(deftest mail-to-test
+  (testing "mail-to helper"
+    (is (= (mail-to "foo@example.com")
+           [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
+    (is (= (mail-to "foo@example.com" "foo")
+           [:a {:href "mailto:foo@example.com"} "foo"]))))
