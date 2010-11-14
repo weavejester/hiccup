@@ -4,10 +4,32 @@
      clojure.contrib.java-utils
      [hiccup.core :only (defelem)]))
 
+(def *group* nil)
+
+(defmacro with-group
+  "Group together a set of related form fields for use with the Ring
+  nested-params middleware."
+  [group & body]
+  `(binding [*group* (conj *group* (name ~group))]
+     ~@body))
+
+(defn- make-name
+  "Create a field name from the supplied argument the current field group."
+  [name]
+  (reduce #(str (name %1) "[" %2 "]") name *group*))
+
+(defn make-id
+  "Create a field id from the supplied argument and current field group."
+  [name]
+  (reduce #(str (name %1) "-" %2) name *group*))
+
 (defn- input-field
   "Creates a new <input> element."
   [type name value]
-  [:input {:type type, :name name, :value value, :id name}])
+  [:input {:type  type
+           :name  (make-name name)
+           :id    (make-id name)
+           :value value}])
 
 (defelem hidden-field
   "Creates a hidden input field."
@@ -30,8 +52,8 @@
   ([name checked?] (check-box name checked? "true"))
   ([name checked? value]
     [:input {:type "checkbox"
-             :name name
-             :id   name
+             :name (make-name name)
+             :id   (make-id name)
              :value value
              :checked checked?}]))
 
@@ -41,8 +63,8 @@
   ([group checked?] (radio-button group checked? "true"))
   ([group checked? value]
     [:input {:type "radio"
-             :name group
-             :id   (str (as-str group) "-" (as-str value))
+             :name (make-name group)
+             :id   (make-name (str (as-str group) "-" (as-str value)))
              :value value
              :checked checked?}]))
 
@@ -60,13 +82,15 @@
   "Creates a drop-down box using the <select> tag."
   ([name options] (drop-down name options nil))
   ([name options selected]
-    [:select {:name name :id name}
+    [:select {:name (make-name name), :id (make-id name)}
       (select-options options selected)]))
 
 (defelem text-area
   "Creates a text area element."
   ([name] (text-area name nil))
-  ([name value] [:textarea {:name name, :id name} value]))
+  ([name value]
+    [:textarea {:name (make-name name), :id (make-id name)}
+       value]))
 
 (defelem file-upload
   "Creates a file upload input."
@@ -76,7 +100,7 @@
 (defelem label
   "Creates a label for an input field with the supplied name."
   [name text]
-  [:label {:for name} text])
+  [:label {:for (make-name name)} text])
 
 (defelem submit-button
   "Creates a submit button."

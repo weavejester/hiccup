@@ -125,3 +125,10 @@
 (deftest test-form-to-with-extr-atts
   (is (= (html (form-to {:class "classy"} [:post "/path"] "foo" "bar"))
          "<form action=\"/path\" class=\"classy\" method=\"POST\">foobar</form>")))
+
+(deftest test-with-group
+  (is (= (with-group :foo
+           (text-field :bar)
+           (text-field :baz)))
+      (str "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"text\" />"
+           "<input id=\"foo-baz\" name=\"foo[baz]\" type=\"text\" />")))
