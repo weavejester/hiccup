@@ -4,24 +4,26 @@
      clojure.contrib.java-utils
      [hiccup.core :only (defelem)]))
 
-(def *group* nil)
+(def *group* [])
 
 (defmacro with-group
   "Group together a set of related form fields for use with the Ring
   nested-params middleware."
   [group & body]
-  `(binding [*group* (conj *group* (name ~group))]
+  `(binding [*group* (conj *group* (as-str ~group))]
      ~@body))
 
 (defn- make-name
   "Create a field name from the supplied argument the current field group."
   [name]
-  (reduce #(str (name %1) "[" %2 "]") name *group*))
+  (reduce #(str %1 "[" %2 "]")
+          (conj *group* (as-str name))))
 
 (defn make-id
   "Create a field id from the supplied argument and current field group."
   [name]
-  (reduce #(str (name %1) "-" %2) name *group*))
+  (reduce #(str %1 "-" %2)
+          (conj *group* (as-str name))))
 
 (defn- input-field
   "Creates a new <input> element."
@@ -64,7 +66,7 @@
   ([group checked? value]
     [:input {:type "radio"
              :name (make-name group)
-             :id   (make-name (str (as-str group) "-" (as-str value)))
+             :id   (make-id (str (as-str group) "-" (as-str value)))
              :value value
              :checked checked?}]))
 
@@ -100,7 +102,7 @@
 (defelem label
   "Creates a label for an input field with the supplied name."
   [name text]
-  [:label {:for (make-name name)} text])
+  [:label {:for (make-id name)} text])
 
 (defelem submit-button
   "Creates a submit button."

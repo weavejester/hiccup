@@ -127,8 +127,33 @@
          "<form action=\"/path\" class=\"classy\" method=\"POST\">foobar</form>")))
 
 (deftest test-with-group
-  (is (= (with-group :foo
-           (text-field :bar)
-           (text-field :baz)))
-      (str "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"text\" />"
-           "<input id=\"foo-baz\" name=\"foo[baz]\" type=\"text\" />")))
+  (testing "hidden-field"
+    (is (= (with-group :foo (html (hidden-field :bar "val")))
+           "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"hidden\" value=\"val\" />")))
+  (testing "text-field"
+    (is (= (with-group :foo (html (text-field :bar)))
+           "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"text\" />")))
+  (testing "checkbox"
+    (is (= (with-group :foo (html (check-box :bar)))
+           "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"checkbox\" value=\"true\" />")))
+  (testing "password-field"
+    (is (= (with-group :foo (html (password-field :bar)))
+           "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"password\" />")))
+  (testing "radio-button"
+    (is (= (with-group :foo (html (radio-button :bar false "val")))
+           "<input id=\"foo-bar-val\" name=\"foo[bar]\" type=\"radio\" value=\"val\" />")))
+  (testing "drop-down"
+    (is (= (with-group :foo (html (drop-down :bar [])))
+           (str "<select id=\"foo-bar\" name=\"foo[bar]\"></select>"))))
+  (testing "text-area"
+    (is (= (with-group :foo (html (text-area :bar)))
+           (str "<textarea id=\"foo-bar\" name=\"foo[bar]\"></textarea>"))))
+  (testing "file-upload"
+    (is (= (with-group :foo (html (file-upload :bar)))
+           "<input id=\"foo-bar\" name=\"foo[bar]\" type=\"file\" />")))
+  (testing "label"
+    (is (= (with-group :foo (html (label :bar "Bar")))
+           "<label for=\"foo-bar\">Bar</label>")))
+  (testing "multiple with-groups"
+    (is (= (with-group :foo (with-group :bar (html (text-field :baz))))
+           "<input id=\"foo-bar-baz\" name=\"foo[bar][baz]\" type=\"text\" />"))))
