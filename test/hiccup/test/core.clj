@@ -40,6 +40,9 @@
   (testing "seqs are expanded"
     (is (= (html [:body (list "foo" "bar")]) "<body>foobar</body>"))
     (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>")))
+  (testing "vecs don't expand - error if vec doesn't have tag name"
+    (is (thrown? IllegalArgumentException
+                 (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
     (is (= (html [:div [:p]]) "<div><p /></div>"))
     (is (= (html [:div [:b]]) "<div><b></b></div>"))

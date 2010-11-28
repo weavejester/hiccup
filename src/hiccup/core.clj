@@ -57,6 +57,8 @@
 (defn- normalize-element
   "Ensure a tag vector is of the form [tag-name attrs content]."
   [[tag & content]]
+  (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
+    (throw (IllegalArgumentException. (str tag " is not a valid tag name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
                           :class (if class (.replace ^String class "." " "))}
