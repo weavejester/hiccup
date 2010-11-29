@@ -61,9 +61,47 @@
                 "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body>Hello World</body></html>")))))
 
+(deftest include-js-test
+  (is (= (include-js "foo.js")
+         (list [:script {:type "text/javascript", :src "foo.js"}])))
+  (is (= (include-js "foo.js" "bar.js")
+         (list [:script {:type "text/javascript", :src "foo.js"}]
+               [:script {:type "text/javascript", :src "bar.js"}]))))
+
+(deftest include-css-test
+  (is (= (include-css "foo.css")
+         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
+  (is (= (include-css "foo.css" "bar.css")
+         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
+               [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
+
+(deftest javascript-tag-test
+  (is (= (javascript-tag "alert('hello');")
+         [:script {:type "text/javascript"}
+          "//<![CDATA[\nalert('hello');\n//]]>"])))
+
+(deftest link-to-test
+  (is (= (link-to "/")
+         [:a {:href "/"} nil]))
+  (is (= (link-to "/" "foo")
+         [:a {:href "/"} (list "foo")]))
+  (is (= (link-to "/" "foo" "bar")
+         [:a {:href "/"} (list "foo" "bar")])))
+
 (deftest mail-to-test
-  (testing "mail-to helper"
-    (is (= (mail-to "foo@example.com")
-           [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
-    (is (= (mail-to "foo@example.com" "foo")
-           [:a {:href "mailto:foo@example.com"} "foo"]))))
+  (is (= (mail-to "foo@example.com")
+         [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
+  (is (= (mail-to "foo@example.com" "foo")
+         [:a {:href "mailto:foo@example.com"} "foo"])))
+
+(deftest unordered-list-test
+  (is (= (unordered-list ["foo" "bar" "baz"])
+         [:ul (list [:li "foo"]
+                    [:li "bar"]
+                    [:li "baz"])])))
+
+(deftest ordered-list-test
+  (is (= (ordered-list ["foo" "bar" "baz"])
+         [:ol (list [:li "foo"]
+                    [:li "bar"]
+                    [:li "baz"])])))
