@@ -2,7 +2,7 @@
   "Functions for generating HTML forms and input fields."
   (:use
      clojure.contrib.java-utils
-     [hiccup.core :only (defelem)]))
+     [hiccup.core :only (defelem escape-html)]))
 
 (def *group* [])
 
@@ -92,7 +92,7 @@
   ([name] (text-area name nil))
   ([name value]
     [:textarea {:name (make-name name), :id (make-id name)}
-       value]))
+      (escape-html value)]))
 
 (defelem file-upload
   "Creates a file upload input."

@@ -79,6 +79,10 @@
   (is (= (html (text-area {:class "classy"} :foo "bar"))
          "<textarea class=\"classy\" id=\"foo\" name=\"foo\">bar</textarea>")))
 
+(deftest test-text-area-escapes
+  (is (= (html (text-area :foo "bar</textarea>"))
+         "<textarea id=\"foo\" name=\"foo\">bar&lt;/textarea&gt;</textarea>")))
+
 (deftest test-file-field
   (is (= (html (file-upload :foo))
          "<input id=\"foo\" name=\"foo\" type=\"file\" />")))
