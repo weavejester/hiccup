@@ -50,8 +50,8 @@
 
 (defvar- container-tags
   #{"a" "b" "body" "dd" "div" "dl" "dt" "em" "fieldset" "form" "h1" "h2" "h3"
-    "h4" "h5" "h6" "head" "html" "i" "label" "li" "ol" "pre" "script" "span"
-    "strong" "style" "textarea" "ul" "option"}
+    "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option" "pre" 
+    "script" "span" "strong" "style" "textarea" "ul"}
   "A list of tags that need an explicit ending tag when rendered.")
 
 (defn- normalize-element

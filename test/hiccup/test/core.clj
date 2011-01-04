@@ -31,7 +31,8 @@
     (is (= (html [:h1]) "<h1></h1>"))
     (is (= (html [:script]) "<script></script>"))
     (is (= (html [:text]) "<text />"))
-    (is (= (html [:a]) "<a></a>")))
+    (is (= (html [:a]) "<a></a>"))
+    (is (= (html [:iframe]) "<iframe></iframe>")))
   (testing "tags containing text"
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
