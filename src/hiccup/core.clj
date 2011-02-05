@@ -294,12 +294,14 @@
 (def *base-url* nil)
 
 (defmacro with-base-url
-  "Add a base-url that will be added to the output of the uri function."
+  "Add a base-url that will be added to the output of the resolve-uri function."
   [base-url & body]
   `(binding [*base-url* ~(str base-url "/")]
      ~@body))
 
 (defn resolve-uri
+  "If a base-url is set, returns a URL relative to the base. Otherwise, returns
+  the URL as-is."
   [uri]
   (if *base-url*
     (str (.resolve (URI. *base-url*) uri))
