@@ -1,8 +1,7 @@
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use
-     clojure.contrib.java-utils
-     [hiccup.core :only (defelem escape-html)]))
+  (:use clojure.contrib.java-utils
+        [hiccup.core :only (defelem escape-html resolve-uri)]))
 
 (def *group* [])
 
@@ -119,10 +118,11 @@
   e.g. (form-to [:put \"/post\"]
          ...)"
   [[method action] & body]
-  (let [method-str (.toUpperCase (name method))]
+  (let [method-str (.toUpperCase (name method))
+        action-uri (resolve-uri action)]
     (-> (if (contains? #{:get :post} method)
-          [:form {:method method-str, :action action}]
-          [:form {:method "POST", :action action}
+          [:form {:method method-str, :action action-uri}]
+          [:form {:method "POST", :action action-uri}
             (hidden-field "_method" method-str)])
         (concat body)
         (vec))))
