@@ -3,8 +3,8 @@
   Pre-compiles where possible for performance."
   (:use [clojure.contrib.def :only (defvar defvar-)]
         [clojure.contrib.java-utils :only (as-str)])
-  (:import [clojure.lang IPersistentVector
-                         ISeq]))
+  (:import [clojure.lang IPersistentVector ISeq]
+           java.net.URI))
 
 (defvar *html-mode* :xml
   "Determines the way tags and attributes are formatted. Defaults to :xml.")
@@ -290,3 +290,17 @@
   [name & fdecl]
   `(do (defn ~name ~@fdecl)
        (alter-var-root (var ~name) add-optional-attrs)))
+
+(def *base-url* nil)
+
+(defmacro with-base-url
+  "Add a base-url that will be added to the output of the uri function."
+  [base-url & body]
+  `(binding [*base-url* ~(str base-url "/")]
+     ~@body))
+
+(defn resolve-uri
+  [uri]
+  (if *base-url*
+    (str (.resolve (URI. *base-url*) uri))
+    uri))
