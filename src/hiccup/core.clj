@@ -302,4 +302,6 @@
 (defn resolve-uri
   "Prepends the base-url to the supplied URI."
   [uri]
-  (str *base-url* uri))
+  (if (.isAbsolute (URI. uri))
+    uri
+    (str *base-url* uri)))

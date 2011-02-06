@@ -185,11 +185,6 @@
     (is (= (resolve-uri "/foo/bar") "/foo/bar"))
     (is (= (resolve-uri "/foo#bar") "/foo#bar")))
   (testing "with base URL"
-    (is (= (with-base-url "/foo/" (resolve-uri "bar"))
-           "/foo/bar"))
-    (is (= (with-base-url "/foo" (resolve-uri "bar"))
-           "/foo/bar"))
-    (is (= (with-base-url "/foo/" (resolve-uri "/bar"))
-           "/bar"))
-    (is (= (with-base-url "/foo/" (resolve-uri "bar#baz"))
-           "/foo/bar#baz"))))
+    (with-base-url "/foo"
+      (is (= (resolve-uri "/bar") "/foo/bar"))
+      (is (= (resolve-uri "http://example.com") "http://example.com")))))
