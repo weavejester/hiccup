@@ -42,6 +42,13 @@ convenient:
                      [:li x])])
     "<ul><li>1</li><li>2</li><li>3</li></ul>"
 
+Install
+-------
+
+Add the following dependency to your `project.clj` file:
+
+    [hiccup "0.3.3"]
+
 Credits
 -------
 
