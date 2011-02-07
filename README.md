@@ -4,6 +4,13 @@ Hiccup
 Hiccup is a library for representing HTML in Clojure. It uses vectors
 to represent tags, and maps to represent a tag's attributes.
 
+Install
+-------
+
+Add the following dependency to your `project.clj` file:
+
+    [hiccup "0.3.4"]
+
 Syntax
 ------
 
@@ -41,13 +48,6 @@ convenient:
                    (for [x (range 1 4)]
                      [:li x])])
     "<ul><li>1</li><li>2</li><li>3</li></ul>"
-
-Install
--------
-
-Add the following dependency to your `project.clj` file:
-
-    [hiccup "0.3.3"]
 
 Credits
 -------

@@ -1,4 +1,4 @@
-(defproject hiccup "0.3.3"
+(defproject hiccup "0.3.4"
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
   :dependencies
