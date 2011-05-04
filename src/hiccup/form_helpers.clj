@@ -1,7 +1,6 @@
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use clojure.contrib.java-utils
-        [hiccup.core :only (defelem escape-html resolve-uri)]))
+  (:use [hiccup.core :only (defelem escape-html resolve-uri as-str)]))
 
 (def *group* [])
 

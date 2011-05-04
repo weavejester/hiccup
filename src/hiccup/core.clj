@@ -1,13 +1,24 @@
 (ns hiccup.core
   "Library for rendering a tree of vectors into a string of HTML.
   Pre-compiles where possible for performance."
-  (:use [clojure.contrib.def :only (defvar defvar-)]
-        [clojure.contrib.java-utils :only (as-str)])
   (:import [clojure.lang IPersistentVector ISeq]
            java.net.URI))
 
-(defvar *html-mode* :xml
-  "Determines the way tags and attributes are formatted. Defaults to :xml.")
+;; Pulled from old-contrib to avoid dependency
+(defn as-str
+  ([] "")
+  ([x] (if (instance? clojure.lang.Named x)
+         (name x)
+         (str x)))
+  ([x & ys]
+     ((fn [^StringBuilder sb more]
+        (if more
+          (recur (. sb  (append (as-str (first more)))) (next more))
+          (str sb)))
+      (new StringBuilder ^String (as-str x)) ys)))
+
+(def ^{:doc "Determines the way tags and attributes are formatted. Defaults to :xml."}
+  *html-mode* :xml)
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -44,15 +55,14 @@
   (apply str
     (sort (map render-attribute attrs))))
 
-(defvar- re-tag
-  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"
-  "Regular expression that parses a CSS-style id and class from a tag name.")
+(def ^{:doc "Regular expression that parses a CSS-style id and class from a tag name." :private true}
+  re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
-(defvar- container-tags
+(def ^{:doc "A list of tags that need an explicit ending tag when rendered." :private true}
+  container-tags
   #{"a" "b" "body" "dd" "div" "dl" "dt" "em" "fieldset" "form" "h1" "h2" "h3"
     "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option" "pre" 
-    "script" "span" "strong" "style" "textarea" "ul"}
-  "A list of tags that need an explicit ending tag when rendered.")
+    "script" "span" "strong" "style" "textarea" "ul"})
 
 (defn- normalize-element
   "Ensure a tag vector is of the form [tag-name attrs content]."
