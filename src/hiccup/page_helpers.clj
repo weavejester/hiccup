@@ -114,13 +114,28 @@
   ([src]     [:image {:src (resolve-uri src)}])
   ([src alt] [:image {:src (resolve-uri src), :alt alt}]))
 
+(def
+ #^{:doc "Name of the default encoding to use .
+  Default is UTF-8."
+    :tag "java.lang.String"}
+ *default-encoding* "UTF-8")
+
+(defmacro with-encoding
+  "Evaluates expr with encoding."
+  [encoding & body]
+  `(binding [*default-encoding* ~encoding]
+     ~@body))
+
+(defn encode [s]
+  "urlencode"
+  (URLEncoder/encode (as-str s) *default-encoding*))
+
 (defn encode-params
   "Turn a map of parameters into a urlencoded string."
   [params]
-  (letfn [(encode [s] (URLEncoder/encode (as-str s)))]
-    (str/join "&"
-      (for [[k v] params]
-        (str (encode k) "=" (encode v))))))
+  (str/join "&"
+    (for [[k v] params]
+      (str (encode k) "=" (encode v)))))
 
 (defn url
   "Creates a URL string from a variable list of arguments and an optional
