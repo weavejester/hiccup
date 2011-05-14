@@ -62,7 +62,7 @@
   container-tags
   #{"a" "b" "body" "dd" "div" "dl" "dt" "em" "fieldset" "form" "h1" "h2" "h3"
     "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option" "pre" 
-    "script" "span" "strong" "style" "textarea" "ul"})
+    "script" "span" "strong" "style" "table" "textarea" "ul"})
 
 (defn- normalize-element
   "Ensure a tag vector is of the form [tag-name attrs content]."
