@@ -17,8 +17,7 @@
           (str sb)))
       (new StringBuilder ^String (as-str x)) ys)))
 
-(def ^{:doc "Determines the way tags and attributes are formatted. Defaults to :xml."}
-  *html-mode* :xml)
+(def ^:dynamic *html-mode* :xml)
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -301,7 +300,7 @@
   `(do (defn ~name ~@fdecl)
        (alter-var-root (var ~name) add-optional-attrs)))
 
-(def *base-url* nil)
+(def ^:dynamic *base-url* nil)
 
 (defmacro with-base-url
   "Add a base-url that will be added to the output of the resolve-uri function."
