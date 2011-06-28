@@ -2,7 +2,7 @@
   "Functions for generating HTML forms and input fields."
   (:use [hiccup.core :only (defelem escape-html resolve-uri as-str)]))
 
-(def *group* [])
+(def ^:dynamic *group* [])
 
 (defmacro with-group
   "Group together a set of related form fields for use with the Ring
