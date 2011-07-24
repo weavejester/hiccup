@@ -1,6 +1,5 @@
 (ns hiccup.compiler
-  (:refer-clojure :exclude (compile))
-  (:require [clojure.walk :as walk]))
+  (:refer-clojure :exclude (compile)))
 
 (defn quoted? [x]
   (and (list? x)
@@ -20,12 +19,27 @@
       (keyword? x)
       (vector? x)))
 
+(defn assoc-unless-nil [m k v]
+  (if (nil? v) m (assoc m k v)))
+
 (declare render)
+
+(let [tag-regex #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"]
+  (defn parse-tag-sugar [tag]
+    (rest (re-matches tag-regex (name tag)))))
+
+(defn render-element [tag attrs content]
+  (let [[tag id class] (parse-tag-sugar tag)]
+    {:tag tag
+     :attrs (-> attrs
+                (assoc-unless-nil :id id)
+                (assoc-unless-nil :class class))
+     :content content}))
 
 (defn render-vector [[tag & [attrs & content :as tail]]]
   (if (map? attrs)
-    {:tag tag, :attrs attrs, :content (render content)}
-    {:tag tag, :attrs {}, :content (render tail)}))
+    (render-element tag attrs (render content))
+    (render-element tag {} (render tail))))
 
 (defn render [node]
   (cond
@@ -34,6 +48,21 @@
    :else          node))
 
 (declare compile)
+
+(defn assoc-attr-sugar [attrs id class]
+  (if (map? attrs)
+    (-> attrs
+        (assoc-unless-nil :id id)
+        (assoc-unless-nil :class class))
+    `(-> ~attrs
+         ~@(if id [`(assoc :id ~id)])
+         ~@(if class [`(assoc :class ~class)]))))
+
+(defn compile-element [tag attrs content]
+  (let [[tag id class] (parse-tag-sugar tag)]
+    {:tag tag
+     :attrs (assoc-attr-sugar attrs id class)
+     :content content}))
 
 (defn compile-attrs [attrs]
   (cond
@@ -55,10 +84,10 @@
 
 (defn compile-vector [[tag & [attrs & content :as tail]]]
   (if (map? attrs)
-    {:tag tag, :attrs attrs, :content `(render (list ~@content))}
-    {:tag tag
-     :attrs (compile-attrs attrs)
-     :content (compile-content tail)}))
+    (compile-element tag attrs `(render (list ~@content)))
+    (compile-element tag
+                    (compile-attrs attrs)
+                    (compile-content tail))))
 
 (defn compile [node]
   (if (vector? node)
