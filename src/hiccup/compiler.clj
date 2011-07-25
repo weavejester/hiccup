@@ -13,11 +13,26 @@
       (and (vector? x) (every? literal? x))
       (and (map? x) (every? literal? x))))
 
+(defmulti return-type
+  #(if (seq? %)
+     (if (first %)
+       (symbol (name %)))))
+
+(defmethod return-type 'for [_] :seq)
+(defmethod return-type 'map [_] :seq)
+(defmethod return-type 'filter [_] :seq)
+(defmethod return-type 'list [_] :seq)
+(defmethod return-type 'str [_] :string)
+(defmethod return-type :default [_] :unknown)
+
 (defn not-map? [x]
   (or (number? x)
       (string? x)
       (keyword? x)
-      (vector? x)))
+      (vector? x)
+      (and (seq? x)
+           (not= (return-type x) :map)
+           (not= (return-type x) :unknown))))
 
 (defn assoc-unless-nil [m k v]
   (if (nil? v) m (assoc m k v)))
