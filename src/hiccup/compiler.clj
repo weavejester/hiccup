@@ -1,4 +1,6 @@
 (ns hiccup.compiler
+  "Compiles HTML represented as nested vectors into the nested map format used
+  in clojure.xml, Enlive and other libraries."
   (:refer-clojure :exclude (compile)))
 
 (defn quoted? [x]
