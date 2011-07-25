@@ -13,10 +13,11 @@
       (and (vector? x) (every? literal? x))
       (and (map? x) (every? literal? x))))
 
-(defmulti return-type
-  #(if (seq? %)
-     (if (first %)
-       (symbol (name %)))))
+(defn form-head [form]
+  (if (and (seq? form) (symbol? (first form)))
+    (-> form first name symbol)))
+
+(defmulti return-type form-head)
 
 (defmethod return-type 'for [_] :seq)
 (defmethod return-type 'map [_] :seq)
@@ -105,6 +106,7 @@
                     (compile-content tail))))
 
 (defn compile [node]
-  (if (vector? node)
-    (compile-vector node)
-    node))
+  (cond
+   (vector? node)  (compile-vector node)
+   (literal? node) node
+   :else           `(render ~node)))
