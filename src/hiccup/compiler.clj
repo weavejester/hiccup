@@ -38,6 +38,9 @@
 (defn assoc-unless-nil [m k v]
   (if (nil? v) m (assoc m k v)))
 
+(defn content-seq [& coll]
+  (mapcat #(if (seq? %) % (list %)) coll))
+
 (declare render)
 
 (let [tag-regex #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?"]
@@ -60,7 +63,7 @@
 (defn render [node]
   (cond
    (vector? node) (render-vector node)
-   (seq? node)    (map render node)
+   (seq? node)    (apply content-seq (map render node))
    :else          node))
 
 (declare compile)
@@ -90,8 +93,8 @@
 
 (defn compile-content [[attrs & content :as tail]]
   (cond
-   (map? attrs)     `(list ~@(map compile content))
-   (not-map? attrs) `(list ~@(map compile tail))
+   (map? attrs)     `(content-seq ~@(map compile content))
+   (not-map? attrs) `(content-seq ~@(map compile tail))
    :else
    `(let [content# (list ~@tail)]
       (if (map? (first content#))
@@ -99,14 +102,28 @@
         (render content#)))))
 
 (defn compile-vector [[tag & [attrs & content :as tail]]]
-  (if (map? attrs)
-    (compile-element tag attrs `(render (list ~@content)))
-    (compile-element tag
-                    (compile-attrs attrs)
-                    (compile-content tail))))
+  (compile-element
+   tag
+   (compile-attrs attrs)
+   (compile-content tail)))
+
+(defmulti compile-form form-head)
+
+(defmethod compile-form 'for
+  [[_ bindings body]]
+  `(for ~bindings ~(compile body)))
+
+(defmethod compile-form 'if
+  [[_ condition & body]]
+  `(if ~condition
+     ~@(for [result body] (compile result))))
+
+(defmethod compile-form :default [node]
+  `(render node))
 
 (defn compile [node]
   (cond
    (vector? node)  (compile-vector node)
    (literal? node) node
+   (seq? node)     (compile-form node)
    :else           `(render ~node)))
