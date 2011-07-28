@@ -1,15 +1,16 @@
 (ns hiccup.output
-  "Renders nested maps representing a HTML DOM into a string.")
+  "Renders nested maps representing a HTML DOM into a string."
+  (:use hiccup.util))
 
 (defn render [node]
-  (print (str "<" (:tag node)))
+  (print (as-str "<" (:tag node)))
   (when-not (empty? (:attrs node))
     (print " ")
     (doseq [[k v] (:attrs node)]
-      (print (str (name k) "=\"" v "\""))))
+      (print (as-str k "=\"" (escape-html v) "\""))))
   (print ">")
   (doseq [content (:content node)]
     (if (map? content)
       (render content)
-      (print content)))
-  (print (str "</" (:tag node) ">")))
+      (print (escape-html content))))
+  (print (as-str "</" (:tag node) ">")))
