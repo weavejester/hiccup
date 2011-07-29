@@ -1,6 +1,6 @@
 (ns hiccup.middleware
   "Ring middleware functions for Hiccup."
-  (:use hiccup.core))
+  (:use [hiccup.util :only (with-base-url)]))
 
 (defn wrap-base-url
   "Ring middleware that wraps the handler in the with-base-url function. The
