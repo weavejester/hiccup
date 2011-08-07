@@ -12,9 +12,9 @@
 
 (deftest tag-names
   (testing "basic tags"
-    (is (= (html [:div] "<div></div>")))
-    (is (= (html ["div"] "<div></div>")))
-    (is (= (html ['div] "<div></div>"))))
+    (is (= (html [:div]) "<div></div>"))
+    (is (= (html ["div"]) "<div></div>"))
+    (is (= (html ['div]) "<div></div>")))
   (testing "tag syntax sugar"
     (is (= (html [:div#foo]) "<div id=\"foo\"></div>"))
     (is (= (html [:div.foo]) "<div class=\"foo\"></div>"))
