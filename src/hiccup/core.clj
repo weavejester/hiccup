@@ -2,7 +2,8 @@
   "Library for rendering a tree of vectors into a string of HTML.
   Pre-compiles where possible for performance."
   (:import [clojure.lang IPersistentVector ISeq]
-           java.net.URI))
+           java.net.URI)
+  (:use [clojure.string :only [split]]))
 
 ;; Pulled from old-contrib to avoid dependency
 (defn as-str
@@ -43,7 +44,7 @@
          (escape-html value))
        "\""))
 
-(defn- render-attribute [[name value]]
+(defn render-attribute [[name value]]
   (cond
     (true? value)
       (if (xml-mode?)
@@ -74,11 +75,23 @@
     (throw (IllegalArgumentException. (str tag " is not a valid tag name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
-                          :class (if class (.replace ^String class "." " "))}
+                          :class (if class (set (split class #"\.")))}
         map-attrs        (first content)]
     (if (map? map-attrs)
       [tag (merge tag-attrs map-attrs) (next content)]
       [tag tag-attrs content])))
+
+(defn add-class
+  "Add a CSS class to an element"
+  [elem class]
+  (let [[tag attrs body] (normalize-element elem)]
+    [tag (assoc attrs :class (conj (set (get attrs :class #{})) (as-str class))) body]))
+
+(defn remove-class
+  "Remove a CSS class from an element"
+  [elem class]
+   (let [[tag attrs body] (normalize-element elem)]
+    [tag (assoc attrs :class (disj (set (get attrs :class #{})) (as-str class))) body]))
 
 (defmulti render-html
   "Turn a Clojure data type into a string of HTML."
