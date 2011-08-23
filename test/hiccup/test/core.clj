@@ -68,7 +68,10 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "collections as attribute values"
+    (is (= (html [:p {:class #{"class1" "class2"}} "some text"])
+           "<p class=\"class1 class2\">some text</p>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"

@@ -37,7 +37,11 @@
   (if (xml-mode?) " />" ">"))
 
 (defn- xml-attribute [name value]
-  (str " " (as-str name) "=\"" (escape-html value) "\""))
+  (str " " (as-str name) "=\""
+       (if (coll? value)
+         (apply str (doall (interpose " " (map escape-html value)))) ; eagerness required for string concatenation
+         (escape-html value))
+       "\""))
 
 (defn- render-attribute [[name value]]
   (cond
