@@ -125,3 +125,20 @@
             (hidden-field "_method" method-str)])
         (concat body)
         (vec))))
+
+(defelem labeled-radio-button
+  "Create a radio button with a text label"
+  ([group value labelstr] (labeled-radio-button group value labelstr false))
+  ([group value labelstr checked?]
+     [:div.labeled-radio-button
+      (radio-button group checked? value)
+      (label (make-id (str (as-str group) "-" (as-str value))) labelstr)]))
+
+(defelem radio-group
+  "Creates a group of radio buttons, only one of which may be selected."
+  ([group coll] (radio-group group coll nil))
+  ([group coll selected]
+     [:div.radio-group
+      (for [[name label] coll]
+        (labeled-radio-button group name label (= name selected)))]))
+
