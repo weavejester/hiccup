@@ -11,6 +11,10 @@
   ([] (jquery-ui-link "1.8.1"))
   ([version] [:script {:src (str "http://ajax.googleapis.com/ajax/libs/jqueryui/" version "/jquery-ui.min.js")}]))
 
-;             "selectToUISlider.jQuery.js"
-;             "local.js"
+(defn make-sortable
+  "Make the immediate children of a tag sortable within the tag
+Requires jQuery UI and hiccup.jqueryui.support.js"
+  [tag]
+  (add-class tag :hiccup-jquery-sortable))
+
 
