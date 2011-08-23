@@ -150,3 +150,11 @@
   ([name selected label-yes label-no]
      (radio-group {:class "yes-no-radio radio-group"} name {true label-yes false label-no} selected))) 
 
+(defelem labeled-checkbox
+  "Create a checkbox with a text label"
+  ([name labelstr] (labeled-checkbox name labelstr false))
+  ([name labelstr checked?]
+     [:div.labeled-checkbox
+      (check-box name checked?)
+      (label name labelstr)]))
+

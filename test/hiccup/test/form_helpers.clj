@@ -176,3 +176,8 @@
 
 (deftest test-yes-no
   (is (= (count (nth (yes-no :like-spinach) 2)) 2)))
+
+(deftest test-labeled-checkbox
+  (is (= (html (labeled-checkbox :name "Label")))
+      "<div class=\"labeled-checkbox\"><input id=\"name\" name=\"name\" type=\"checkbox\" value=\"true\" /><label for=\"name\">Label</label></div>"))
+
