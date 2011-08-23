@@ -140,8 +140,8 @@
   ([group coll] (radio-group group coll nil))
   ([group coll selected]
      [:div.radio-group
-      (for [[name label] coll]
-        (labeled-radio-button group name label (= name selected)))]))
+      (doall (for [[name label] coll]
+        (labeled-radio-button group name label (= name selected))))]))
 
 (defelem yes-no
   "Creates two radio buttons: \"Yes\" and \"No\". Indicate selected with true or false. You can override the default labels."
