@@ -173,3 +173,6 @@
          "<div class=\"radio-group\"><div class=\"labeled-radio-button\"><input id=\"grp-first\" name=\"grp\" type=\"radio\" value=\"first\" /><label for=\"grp-first\">One</label></div><div class=\"labeled-radio-button\"><input id=\"grp-second\" name=\"grp\" type=\"radio\" value=\"second\" /><label for=\"grp-second\">Two</label></div></div>"))
   (is (= (html (radio-group "grp" {:first "One" :second "Two"} :second))
          "<div class=\"radio-group\"><div class=\"labeled-radio-button\"><input id=\"grp-first\" name=\"grp\" type=\"radio\" value=\"first\" /><label for=\"grp-first\">One</label></div><div class=\"labeled-radio-button\"><input checked=\"checked\" id=\"grp-second\" name=\"grp\" type=\"radio\" value=\"second\" /><label for=\"grp-second\">Two</label></div></div>")))
+
+(deftest test-yes-no
+  (is (= (count (nth (yes-no :like-spinach) 2)) 2)))

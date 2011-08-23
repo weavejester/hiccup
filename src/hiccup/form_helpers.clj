@@ -68,6 +68,7 @@
              :value value
              :checked checked?}]))
 
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
@@ -141,4 +142,11 @@
      [:div.radio-group
       (for [[name label] coll]
         (labeled-radio-button group name label (= name selected)))]))
+
+(defelem yes-no
+  "Creates two radio buttons: \"Yes\" and \"No\". Indicate selected with true or false. You can override the default labels."
+  ([name] (yes-no name nil))
+  ([name selected] (yes-no name selected "Yes" "No"))
+  ([name selected label-yes label-no]
+     (radio-group {:class "yes-no-radio radio-group"} name {true label-yes false label-no} selected))) 
 
