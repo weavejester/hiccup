@@ -20,9 +20,23 @@
      (jquery-ui-link)
      (include-js "hiccup.jquery.support.js" "hiccup.jqueryui.support.js")]
     [:body
-     (section "Headers"
+     (section "Standard Elements"
       (for [x (range 6)]
         [(str "h" (inc x)) "Header " (inc x)]))
+
+     (section "Form Helpers"
+              [:div "Make a choice: "
+               (radio-group :test-radio-group
+                            {:one "First choice"
+                             :two "Second Choice"
+                             :three "Third Choice"})]
+              [:div "Do you like ice cream?"
+               (yes-no :test-yes-no "yes")]
+              [:div "Check the editors you have used:"
+               (with-group :editors
+                 (doall
+                  (for [[name lbl] {:emacs "Emacs" :vim "VIM" :eclipse "Eclipse"}]
+                    (labeled-checkbox name lbl))))])
      
      (section "jQuery"
               (make-sortable

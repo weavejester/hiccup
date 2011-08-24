@@ -1,6 +1,6 @@
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use [hiccup.core :only (defelem escape-html resolve-uri as-str)]))
+  (:use [hiccup.core :only (defelem escape-html resolve-uri as-str add-class)]))
 
 (def ^:dynamic *group* [])
 
@@ -148,7 +148,9 @@
   ([name] (yes-no name nil))
   ([name selected] (yes-no name selected "Yes" "No"))
   ([name selected label-yes label-no]
-     (radio-group {:class "yes-no-radio radio-group"} name {true label-yes false label-no} selected))) 
+     (add-class
+      (radio-group name {"yes" label-yes "no" label-no} selected)
+      :radio-group-yes-no))) 
 
 (defelem labeled-checkbox
   "Create a checkbox with a text label"
