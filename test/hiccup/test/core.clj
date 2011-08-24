@@ -68,7 +68,10 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "collections as attribute values"
+    (is (= (html [:p {:class #{"class1" "class2"}} "some text"])
+           "<p class=\"class1 class2\">some text</p>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
@@ -179,7 +182,7 @@
     (is (= "my documentation" (:doc (meta #'three-forms-extra))))
     (is (= :attr (:my (meta #'three-forms-extra))))))
 
-(deftest resolve-uri-test
+(deftest resolve-uri-tes
   (testing "with no base URL"
     (is (= (resolve-uri "foo") "foo"))
     (is (= (resolve-uri "/foo/bar") "/foo/bar"))
@@ -188,3 +191,16 @@
     (with-base-url "/foo"
       (is (= (resolve-uri "/bar") "/foo/bar"))
       (is (= (resolve-uri "http://example.com") "http://example.com")))))
+
+(comment (deftest test-normalize-element
+   (testing "expanding classes"
+     (is (= (normalize-element [:p.c1 "foo"]) ["p" {:id nil :class #{"c1"}} ["foo"]]))
+     (is (= (normalize-element [:p.c1.c2 "foo"]) ["p" {:id nil :class #{"c1" "c2"}} ["foo"]])))))
+
+(deftest test-add-remove-classes
+  (testing "Adding a class"
+    (is (= (add-class [:p "foo"] :bar) ["p" {:id nil :class #{"bar"}} ["foo"]]))
+    (is (= (add-class [:p.bar "foo"] :another) ["p" {:id nil :class #{"bar" "another"}} ["foo"]])))
+  (testing "Removing a class"
+    (is (= (remove-class [:p.bar "foo"] :bar) ["p" {:id nil :class #{}} ["foo"]]))
+    (is (= (remove-class [:p.bar.baz "foo"] :bar) ["p" {:id nil :class #{"baz"}} ["foo"]]))))
