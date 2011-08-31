@@ -133,7 +133,7 @@
   ([group value labelstr checked?]
      [:div.labeled-radio-button
       (radio-button group checked? value)
-      (label (make-id (str (as-str group) "-" (as-str value))) labelstr)]))
+      (label (str (as-str group) "-" (as-str value)) labelstr)]))
 
 (defelem radio-group
   "Creates a group of radio buttons, only one of which may be selected."
