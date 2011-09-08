@@ -111,8 +111,8 @@
 
 (defelem image
   "Create an image tag"
-  ([src]     [:image {:src (resolve-uri src)}])
-  ([src alt] [:image {:src (resolve-uri src), :alt alt}]))
+  ([src]     [:img {:src (resolve-uri src)}])
+  ([src alt] [:img {:src (resolve-uri src), :alt alt}]))
 
 (defn encode-params
   "Turn a map of parameters into a urlencoded string."
