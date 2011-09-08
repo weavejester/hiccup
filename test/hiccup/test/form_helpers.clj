@@ -37,6 +37,14 @@
   (is (= (html (password-field {:class "classy"} :foo "bar"))
          "<input class=\"classy\" id=\"foo\" name=\"foo\" type=\"password\" value=\"bar\" />")))
 
+(deftest test-email-field
+  (is (= (html (email-field :foo "bar"))
+         "<input id=\"foo\" name=\"foo\" type=\"email\" value=\"bar\" />")))
+
+(deftest test-email-field-with-extra-atts
+  (is (= (html (email-field {:class "classy"} :foo "bar"))
+         "<input class=\"classy\" id=\"foo\" name=\"foo\" type=\"email\" value=\"bar\" />")))
+
 (deftest test-radio-button
   (is (= (html (radio-button :foo true 1))
          (str "<input checked=\"checked\" id=\"foo-1\" name=\"foo\""

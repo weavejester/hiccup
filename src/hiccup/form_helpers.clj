@@ -46,6 +46,11 @@
   ([name] (password-field name nil))
   ([name value] (input-field "password" name value)))
 
+(defelem email-field
+  "Creates a new email input field."
+  ([name] (email-field name nil))
+  ([name value] (input-field "email" name value)))
+
 (defelem check-box
   "Creates a check box."
   ([name] (check-box name nil))
