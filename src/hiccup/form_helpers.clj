@@ -1,6 +1,6 @@
 (ns hiccup.form-helpers
   "Functions for generating HTML forms and input fields."
-  (:use [hiccup.core :only (defelem escape-html resolve-uri as-str)]))
+  (:use [hiccup.core :only (defelem escape-html resolve-uri as-str add-class)]))
 
 (def ^:dynamic *group* [])
 
@@ -73,6 +73,7 @@
              :value value
              :checked checked?}]))
 
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
@@ -130,3 +131,37 @@
             (hidden-field "_method" method-str)])
         (concat body)
         (vec))))
+
+(defelem labeled-radio-button
+  "Create a radio button with a text label"
+  ([group value labelstr] (labeled-radio-button group value labelstr false))
+  ([group value labelstr checked?]
+     [:div.labeled-radio-button
+      (radio-button group checked? value)
+      (label (str (as-str group) "-" (as-str value)) labelstr)]))
+
+(defelem radio-group
+  "Creates a group of radio buttons, only one of which may be selected."
+  ([group coll] (radio-group group coll nil))
+  ([group coll selected]
+     [:div.radio-group
+      (doall (for [[name label] coll]
+        (labeled-radio-button group name label (= name selected))))]))
+
+(defelem yes-no
+  "Creates two radio buttons: \"Yes\" and \"No\". Indicate selected with true or false. You can override the default labels."
+  ([name] (yes-no name nil))
+  ([name selected] (yes-no name selected "Yes" "No"))
+  ([name selected label-yes label-no]
+     (add-class
+      (radio-group name {"yes" label-yes "no" label-no} selected)
+      :radio-group-yes-no))) 
+
+(defelem labeled-checkbox
+  "Create a checkbox with a text label"
+  ([name labelstr] (labeled-checkbox name labelstr false))
+  ([name labelstr checked?]
+     [:div.labeled-checkbox
+      (check-box name checked?)
+      (label name labelstr)]))
+

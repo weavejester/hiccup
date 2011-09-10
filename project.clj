@@ -2,4 +2,6 @@
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.0"]]
-  :dev-dependencies [[org.clojure/clojure-contrib "1.2.0"]])
+  :dev-dependencies [[org.clojure/clojure-contrib "1.2.0"]
+                     [ring "0.3.11"]
+                     [ring-serve "0.1.1"]])

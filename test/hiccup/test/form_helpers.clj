@@ -169,3 +169,23 @@
   (testing "multiple with-groups"
     (is (= (with-group :foo (with-group :bar (html (text-field :baz))))
            "<input id=\"foo-bar-baz\" name=\"foo[bar][baz]\" type=\"text\" />"))))
+
+(deftest test-labeled-radio-buttion
+  (is (= (html (labeled-radio-button :group :value "Label"))
+         "<div class=\"labeled-radio-button\"><input id=\"group-value\" name=\"group\" type=\"radio\" value=\"value\" /><label for=\"group-value\">Label</label></div>"))
+  (is (= (html (labeled-radio-button :group :value "Label" true))
+         "<div class=\"labeled-radio-button\"><input checked=\"checked\" id=\"group-value\" name=\"group\" type=\"radio\" value=\"value\" /><label for=\"group-value\">Label</label></div>")))
+
+(deftest test-radio-group
+  (is (= (html (radio-group "grp" {:first "One" :second "Two"}))
+         "<div class=\"radio-group\"><div class=\"labeled-radio-button\"><input id=\"grp-first\" name=\"grp\" type=\"radio\" value=\"first\" /><label for=\"grp-first\">One</label></div><div class=\"labeled-radio-button\"><input id=\"grp-second\" name=\"grp\" type=\"radio\" value=\"second\" /><label for=\"grp-second\">Two</label></div></div>"))
+  (is (= (html (radio-group "grp" {:first "One" :second "Two"} :second))
+         "<div class=\"radio-group\"><div class=\"labeled-radio-button\"><input id=\"grp-first\" name=\"grp\" type=\"radio\" value=\"first\" /><label for=\"grp-first\">One</label></div><div class=\"labeled-radio-button\"><input checked=\"checked\" id=\"grp-second\" name=\"grp\" type=\"radio\" value=\"second\" /><label for=\"grp-second\">Two</label></div></div>")))
+
+(deftest test-yes-no
+  (is (= (count (first (nth (yes-no :like-spinach) 2))) 2)))
+
+(deftest test-labeled-checkbox
+  (is (= (html (labeled-checkbox :name "Label")))
+      "<div class=\"labeled-checkbox\"><input id=\"name\" name=\"name\" type=\"checkbox\" value=\"true\" /><label for=\"name\">Label</label></div>"))
+
