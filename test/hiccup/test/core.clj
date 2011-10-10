@@ -1,6 +1,5 @@
 (ns hiccup.test.core
   (:use clojure.test
-        clojure.contrib.mock.test-adapter
         hiccup.core))
 
 (deftest escaped-chars
@@ -99,9 +98,10 @@
                          [:span "bar"])])
            "<div><span>foo</span></div>")))
   (testing "values are evaluated only once"
-    (declare foo)
-    (expect [foo (times 1 (returns "foo"))]
-      (html [:div (foo)]))))
+    (let [called (atom 0)
+          foo (fn [] (swap! called inc))]
+      (html [:div (foo)])
+      (is (= 1 @called)))))
 
 (deftest render-modes
   (testing "closed tag"
