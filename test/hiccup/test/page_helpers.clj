@@ -7,7 +7,15 @@
     {"a" "b"}       "a=b"
     {:a "b"}        "a=b"
     {:a "b" :c "d"} "a=b&c=d"
-    {:a "&"}        "a=%26"))
+    {:a "&"}        "a=%26"
+    {:é "è"}        "%C3%A9=%C3%A8"))
+
+(deftest encode-params-with-encoding-test
+  (are [e s] (= (with-encoding e (encode-params {:iroha "いろは"})) s)
+    "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
+    "Shift_JIS"   "iroha=%82%A2%82%EB%82%CD"
+    "EUC-JP"      "iroha=%A4%A4%A4%ED%A4%CF"
+    "ISO-2022-JP" "iroha=%1B%24%42%24%24%24%6D%24%4F%1B%28%42"))
 
 (deftest url-test
   (are [u s] (= u s)
