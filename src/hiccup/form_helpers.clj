@@ -9,7 +9,7 @@
   nested-params middleware."
   [group & body]
   `(binding [*group* (conj *group* (as-str ~group))]
-     ~@body))
+     (list ~@body)))
 
 (defn- make-name
   "Create a field name from the supplied argument the current field group."
