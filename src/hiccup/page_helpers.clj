@@ -117,7 +117,8 @@
 (def
  #^{:doc "Name of the default encoding to use .
   Default is UTF-8."
-    :tag "java.lang.String"}
+    :tag "java.lang.String"
+    :dynamic true}
  *default-encoding* "UTF-8")
 
 (defmacro with-encoding
