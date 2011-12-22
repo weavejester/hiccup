@@ -1,6 +1,5 @@
 (ns hiccup.test.core
   (:use clojure.test
-        clojure.contrib.mock.test-adapter
         hiccup.core))
 
 (deftest escaped-chars
@@ -87,7 +86,7 @@
     (is (= (html [:div {:id (str "a" "b")} (str "foo")])
            "<div id=\"ab\">foo</div>")))
   (testing "type hints"
-    (let [string "x", number 1]
+    (let [string "x", number (Integer. 1)]
       (is (= (html [:span ^String string]) "<span>x</span>"))
       (is (= (html [:span ^Integer number]) "<span>1</span>"))))
   (testing "optimized forms"
@@ -99,9 +98,10 @@
                          [:span "bar"])])
            "<div><span>foo</span></div>")))
   (testing "values are evaluated only once"
-    (declare foo)
-    (expect [foo (times 1 (returns "foo"))]
-      (html [:div (foo)]))))
+    (let [count (atom 0)
+          foo (fn [] (swap! count inc) "foo")]
+      (html [:div (foo)])
+      (is (= 1 @count)))))
 
 (deftest render-modes
   (testing "closed tag"
