@@ -1,4 +1,4 @@
-(ns hiccup.form-helpers
+(ns hiccup.form
   "Functions for generating HTML forms and input fields."
   (:use [hiccup.core :only (defelem escape-html resolve-uri)]
         hiccup.util))
