@@ -18,7 +18,7 @@
   (reduce #(str %1 "[" %2 "]")
           (conj *group* (as-str name))))
 
-(defn make-id
+(defn- make-id
   "Create a field id from the supplied argument and current field group."
   [name]
   (reduce #(str %1 "-" %2)
