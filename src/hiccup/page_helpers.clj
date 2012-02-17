@@ -1,7 +1,8 @@
 (ns hiccup.page-helpers
   "Functions for generating various common elements."
   (:import java.net.URLEncoder)
-  (:use [hiccup.core :only (defelem html resolve-uri as-str)])
+  (:use [hiccup.core :only (defelem html resolve-uri)]
+        hiccup.util)
   (:require [clojure.string :as str]))
 
 (def doctype
