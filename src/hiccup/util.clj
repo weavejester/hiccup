@@ -20,7 +20,8 @@
   (to-str [k] (name k))
   java.net.URI
   (to-str [u]
-    (if (.isAbsolute u)
+    (if (or (.isAbsolute u)
+            (not (-> (.getPath u) (.startsWith "/"))))
       (str u)
       (str *base-url* u)))
   Object

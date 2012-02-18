@@ -14,7 +14,8 @@
   (is (= (as-str "foo") "foo"))
   (is (= (as-str :foo) "foo"))
   (is (= (as-str 100) "100"))
-  (is (= (as-str "a" :b 3) "ab3")))
+  (is (= (as-str "a" :b 3) "ab3"))
+  (is (= (as-str (URI. "/foo")) "/foo")))
 
 (deftest test-to-uri
   (testing "with no base URL"
@@ -24,7 +25,9 @@
   (testing "with base URL"
     (with-base-url "/foo"
       (is (= (to-str (to-uri "/bar")) "/foo/bar"))
-      (is (= (to-str (to-uri "http://example.com")) "http://example.com")))))
+      (is (= (to-str (to-uri "http://example.com")) "http://example.com"))
+      (is (= (to-str (to-uri "bar")) "bar"))
+      (is (= (to-str (to-uri "../bar")) "../bar")))))
 
 (deftest test-url-encode
   (testing "strings"
@@ -47,10 +50,11 @@
       "ISO-2022-JP" "iroha=%1B%24%42%24%24%24%6D%24%4F%1B%28%42")))
 
 (deftest test-url
-  (are [u s] (= u s)
-    (url "foo")          (URI. "foo")
-    (url "foo/" 1)       (URI. "foo/1")
-    (url "/foo/" "bar")  (URI. "/foo/bar")
-    (url {:a "b"})       (URI. "?a=b")
-    (url "foo" {:a "&"}) (URI. "foo?a=%26")
-    (url "/foo/" 1 "/bar" {:page 2}) (URI. "/foo/1/bar?page=2")))
+  (testing "URL parts and parameters"
+    (are [u s] (= u s)
+      (url "foo")          (URI. "foo")
+      (url "foo/" 1)       (URI. "foo/1")
+      (url "/foo/" "bar")  (URI. "/foo/bar")
+      (url {:a "b"})       (URI. "?a=b")
+      (url "foo" {:a "&"}) (URI. "foo?a=%26")
+      (url "/foo/" 1 "/bar" {:page 2}) (URI. "/foo/1/bar?page=2"))))
