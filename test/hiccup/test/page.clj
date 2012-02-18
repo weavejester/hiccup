@@ -1,6 +1,6 @@
-(ns hiccup.test.page-helpers
+(ns hiccup.test.page
   (:use clojure.test
-        hiccup.page-helpers)
+        hiccup.page)
   (:import java.net.URI))
 
 (deftest html4-test

@@ -1,9 +1,7 @@
-(ns hiccup.page-helpers
-  "Functions for generating various common elements."
-  (:import java.net.URLEncoder)
-  (:use [hiccup.core :only (defelem html)]
-        hiccup.util)
-  (:require [clojure.string :as str]))
+(ns hiccup.page
+  "Functions for setting up HTML pages."
+  (:use hiccup.core 
+        hiccup.util))
 
 (def doctype
   {:html4
