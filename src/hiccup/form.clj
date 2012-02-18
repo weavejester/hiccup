@@ -1,6 +1,6 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use [hiccup.core :only (defelem)]
+  (:use hiccup.def
         hiccup.util))
 
 (def ^:dynamic *group* [])

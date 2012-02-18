@@ -1,6 +1,6 @@
 (ns hiccup.element
   "Functions for creating HTML elements."
-  (:use hiccup.core
+  (:use hiccup.def
         hiccup.util))
 
 (defn javascript-tag
