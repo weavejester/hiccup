@@ -16,3 +16,12 @@
   "Converts its arguments into a string using to-str."
   [& xs]
   (apply str (map to-str xs)))
+
+(defn escape-html
+  "Change special characters into HTML character entities."
+  [text]
+  (.. ^String (as-str text)
+    (replace "&"  "&amp;")
+    (replace "<"  "&lt;")
+    (replace ">"  "&gt;")
+    (replace "\"" "&quot;")))

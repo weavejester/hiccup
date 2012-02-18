@@ -3,13 +3,6 @@
         clojure.contrib.mock.test-adapter
         hiccup.core))
 
-(deftest escaped-chars
-  (is (= (escape-html "\"") "&quot;"))
-  (is (= (escape-html "<") "&lt;"))
-  (is (= (escape-html ">") "&gt;"))
-  (is (= (escape-html "&") "&amp;"))
-  (is (= (escape-html "foo") "foo")))
-
 (deftest tag-names
   (testing "basic tags"
     (is (= (html [:div]) "<div></div>"))

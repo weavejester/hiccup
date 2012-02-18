@@ -1,7 +1,7 @@
 (ns hiccup.test.form
-  (:use clojure.test)
-  (:use hiccup.core)
-  (:use hiccup.form))
+  (:use clojure.test
+        hiccup.core
+        hiccup.form))
 
 (deftest test-hidden-field
   (is (= (html (hidden-field :foo "bar"))
