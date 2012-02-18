@@ -1,6 +1,6 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use [hiccup.core :only (defelem resolve-uri)]
+  (:use [hiccup.core :only (defelem)]
         hiccup.util))
 
 (def ^:dynamic *group* [])
@@ -124,7 +124,7 @@
          ...)"
   [[method action] & body]
   (let [method-str (.toUpperCase (name method))
-        action-uri (resolve-uri action)]
+        action-uri (to-uri action)]
     (-> (if (contains? #{:get :post} method)
           [:form {:method method-str, :action action-uri}]
           [:form {:method "POST", :action action-uri}

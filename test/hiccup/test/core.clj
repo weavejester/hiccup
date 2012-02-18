@@ -171,13 +171,3 @@
     (is (thrown? AssertionError (three-forms-extra 0 0)))
     (is (= "my documentation" (:doc (meta #'three-forms-extra))))
     (is (= :attr (:my (meta #'three-forms-extra))))))
-
-(deftest resolve-uri-test
-  (testing "with no base URL"
-    (is (= (resolve-uri "foo") "foo"))
-    (is (= (resolve-uri "/foo/bar") "/foo/bar"))
-    (is (= (resolve-uri "/foo#bar") "/foo#bar")))
-  (testing "with base URL"
-    (with-base-url "/foo"
-      (is (= (resolve-uri "/bar") "/foo/bar"))
-      (is (= (resolve-uri "http://example.com") "http://example.com")))))

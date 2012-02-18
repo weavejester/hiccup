@@ -1,6 +1,7 @@
 (ns hiccup.test.page-helpers
   (:use clojure.test
-        hiccup.page-helpers))
+        hiccup.page-helpers)
+  (:import java.net.URI))
 
 (deftest encode-params-test
   (are [m s] (= (encode-params m) s)
@@ -71,17 +72,17 @@
 
 (deftest include-js-test
   (is (= (include-js "foo.js")
-         (list [:script {:type "text/javascript", :src "foo.js"}])))
+         (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
   (is (= (include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript", :src "foo.js"}]
-               [:script {:type "text/javascript", :src "bar.js"}]))))
+         (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
+               [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
-         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}])))
+         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}])))
   (is (= (include-css "foo.css" "bar.css")
-         (list [:link {:type "text/css", :href "foo.css", :rel "stylesheet"}]
-               [:link {:type "text/css", :href "bar.css", :rel "stylesheet"}]))))
+         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
+               [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
 
 (deftest javascript-tag-test
   (is (= (javascript-tag "alert('hello');")
@@ -90,11 +91,11 @@
 
 (deftest link-to-test
   (is (= (link-to "/")
-         [:a {:href "/"} nil]))
+         [:a {:href (URI. "/")} nil]))
   (is (= (link-to "/" "foo")
-         [:a {:href "/"} (list "foo")]))
+         [:a {:href (URI. "/")} (list "foo")]))
   (is (= (link-to "/" "foo" "bar")
-         [:a {:href "/"} (list "foo" "bar")])))
+         [:a {:href (URI. "/")} (list "foo" "bar")])))
 
 (deftest mail-to-test
   (is (= (mail-to "foo@example.com")

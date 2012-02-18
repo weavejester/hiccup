@@ -1,7 +1,7 @@
 (ns hiccup.page-helpers
   "Functions for generating various common elements."
   (:import java.net.URLEncoder)
-  (:use [hiccup.core :only (defelem html resolve-uri)]
+  (:use [hiccup.core :only (defelem html)]
         hiccup.util)
   (:require [clojure.string :as str]))
 
@@ -74,13 +74,13 @@
   "Include a list of external javascript files."
   [& scripts]
   (for [script scripts]
-    [:script {:type "text/javascript", :src (resolve-uri script)}]))
+    [:script {:type "text/javascript", :src (to-uri script)}]))
 
 (defn include-css
   "Include a list of external stylesheet files."
   [& styles]
   (for [style styles]
-    [:link {:type "text/css", :href (resolve-uri style), :rel "stylesheet"}]))
+    [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
 
 (defn javascript-tag
   "Wrap the supplied javascript up in script tags and a CDATA section."
@@ -91,7 +91,7 @@
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
   [url & content]
-  [:a {:href (resolve-uri url)} content])
+  [:a {:href (to-uri url)} content])
 
 (defelem mail-to
   "Wraps some content in a HTML hyperlink with the supplied e-mail
@@ -112,8 +112,8 @@
 
 (defelem image
   "Create an image tag"
-  ([src]     [:img {:src (resolve-uri src)}])
-  ([src alt] [:img {:src (resolve-uri src), :alt alt}]))
+  ([src]     [:img {:src (to-uri src)}])
+  ([src alt] [:img {:src (to-uri src), :alt alt}]))
 
 (def
  #^{:doc "Name of the default encoding to use .
@@ -148,7 +148,7 @@
   (let [params (last args)
         args   (butlast args)]
     (str
-      (resolve-uri
+      (to-uri
         (str (apply str args)
              (if (map? params)
                (str "?" (encode-params params))

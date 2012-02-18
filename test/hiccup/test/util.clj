@@ -14,3 +14,13 @@
   (is (= (as-str :foo) "foo"))
   (is (= (as-str 100) "100"))
   (is (= (as-str "a" :b 3) "ab3")))
+
+(deftest test-to-uri
+  (testing "with no base URL"
+    (is (= (to-str (to-uri "foo")) "foo"))
+    (is (= (to-str (to-uri "/foo/bar")) "/foo/bar"))
+    (is (= (to-str (to-uri "/foo#bar")) "/foo#bar")))
+  (testing "with base URL"
+    (with-base-url "/foo"
+      (is (= (to-str (to-uri "/bar")) "/foo/bar"))
+      (is (= (to-str (to-uri "http://example.com")) "http://example.com")))))
