@@ -1,6 +1,8 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
-  (:import java.net.URI))
+  (:require [clojure.string :as str])
+  (:import java.net.URI
+           java.net.URLEncoder))
 
 (def ^:dynamic *base-url* nil)
 
@@ -48,3 +50,39 @@
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
+
+(def ^:dynamic *encoding* "UTF-8")
+
+(defmacro with-encoding
+  "Sets a default encoding for URL encoding strings. Defaults to UTF-8."
+  [encoding & body]
+  `(binding [*encoding* ~encoding]
+     ~@body))
+
+(defprotocol URLEncode
+  (url-encode [x] "Turn a value into a URL-encoded string."))
+
+(extend-protocol URLEncode
+  String
+  (url-encode [s] (URLEncoder/encode s *encoding*))
+  java.util.Map
+  (url-encode [m]
+    (str/join "&"
+      (for [[k v] m]
+        (str (url-encode k) "=" (url-encode v)))))
+  Object
+  (url-encode [x] (url-encode (to-str x))))
+
+(defn url
+  "Creates a URL string from a variable list of arguments and an optional
+  parameter map as the last argument. For example:
+    (url \"/group/\" 4 \"/products\" {:page 9})
+    => \"/group/4/products?page=9\""
+  [& args]
+  (let [params (last args), args (butlast args)]
+    (to-uri
+     (str (apply str args)
+          (if (map? params)
+            (str "?" (url-encode params))
+            params)))))
+
