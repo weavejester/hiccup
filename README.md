@@ -48,10 +48,3 @@ convenient:
                    (for [x (range 1 4)]
                      [:li x])])
     "<ul><li>1</li><li>2</li><li>3</li></ul>"
-
-Credits
--------
-
-* [James Reeves](http://github.com/weavejester)
-* [David Santiago](http://github.com/davidsantiago)
-* [Sebastián Bernardo Galkin](http://github.com/paraseba)
