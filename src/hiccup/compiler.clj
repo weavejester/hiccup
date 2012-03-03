@@ -1,4 +1,4 @@
-(ns hiccup.compile
+(ns hiccup.compiler
   "Internal functions for compilation."
   (:use hiccup.util)
   (:import [clojure.lang IPersistentVector ISeq]))
