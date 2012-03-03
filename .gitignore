@@ -5,3 +5,4 @@ pom.xml
 autodoc
 .lein-failures
 .lein-deps-sum
+doc
