@@ -11,6 +11,11 @@ Add the following dependency to your `project.clj` file:
 
     [hiccup "1.0.0-beta1"]
 
+Documentation
+-------------
+
+* [API Docs](http://weavejester.github.com/hiccup)
+    
 Syntax
 ------
 
