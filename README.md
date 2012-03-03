@@ -9,7 +9,7 @@ Install
 
 Add the following dependency to your `project.clj` file:
 
-    [hiccup "0.3.8"]
+    [hiccup "1.0.0-beta1"]
 
 Syntax
 ------
