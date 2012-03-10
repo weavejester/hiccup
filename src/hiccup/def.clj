@@ -24,10 +24,15 @@
           (apply vector tag (first args) body)))
       (apply func args))))
 
+(defn ^:private add-attrs-meta [m]
+  (update-in m [:arglists] #(for [arglist %]
+                              (vec (cons 'attrs arglist)))))
+
 (defmacro defelem
   "Defines a function that will return a tag vector. If the first argument
   passed to the resulting function is a map, it merges it with the attribute
   map of the returned tag value."
   [name & fdecl]
   `(do (defn ~name ~@fdecl)
+       (alter-meta! (var ~name) #'add-attrs-meta)
        (alter-var-root (var ~name) wrap-attrs)))
