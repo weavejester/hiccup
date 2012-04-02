@@ -14,7 +14,7 @@
            (map wrap-html fbody)))))
 
 (defn wrap-attrs
-  "Add an optional attribute argument to a function that returns a vector tag."
+  "Add an optional attribute argument to a function that returns a element vector."
   [func]
   (fn [& args]
     (if (map? (first args))
@@ -25,9 +25,9 @@
       (apply func args))))
 
 (defmacro defelem
-  "Defines a function that will return a tag vector. If the first argument
+  "Defines a function that will return a element vector. If the first argument
   passed to the resulting function is a map, it merges it with the attribute
-  map of the returned tag value."
+  map of the returned element value."
   [name & fdecl]
   `(do (defn ~name ~@fdecl)
        (alter-var-root (var ~name) wrap-attrs)))

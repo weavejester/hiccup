@@ -22,17 +22,17 @@
    (or content e-mail)])
 
 (defelem unordered-list
-  "Wrap a collection in an unordered list"
+  "Wrap a collection in an unordered list."
   [coll]
   [:ul (for [x coll] [:li x])])
 
 (defelem ordered-list
-  "Wrap a collection in an ordered list"
+  "Wrap a collection in an ordered list."
   [coll]
   [:ol (for [x coll] [:li x])])
 
 (defelem image
-  "Create an image tag"
+  "Create an image element."
   ([src]     [:img {:src (to-uri src)}])
   ([src alt] [:img {:src (to-uri src), :alt alt}]))
 

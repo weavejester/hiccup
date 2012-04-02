@@ -2,7 +2,7 @@ Hiccup
 ======
 
 Hiccup is a library for representing HTML in Clojure. It uses vectors
-to represent tags, and maps to represent a tag's attributes.
+to represent elements, and maps to represent an element's attributes.
 
 Install
 -------
@@ -29,13 +29,13 @@ user=> (html [:span {:class "foo"} "bar"])
 "<span class=\"foo\">bar</span>"
 ```
 
-The first element of the vector is used as the tag name. The second
+The first element of the vector is used as the element name. The second
 attribute can optionally be a map, in which case it is used to supply
-the tag's attributes. Every other element is considered part of the
+the element's attributes. Every other element is considered part of the
 tag's body.
 
-Hiccup is intelligent enough to render different HTML tags in different
-ways, in order to accommodate browser quirks:
+Hiccup is intelligent enough to render different HTML elements in
+different ways, in order to accommodate browser quirks:
 
 ```clojure
 user=> (html [:script])
@@ -52,9 +52,9 @@ user=> (html [:div#foo.bar.baz "bang"])
 "<div id=\"foo\" class=\"bar baz\">bang</div>"
 ```
 
-If the body of the tag is a seq, its contents will be expanded out into
-the tag body. This makes working with forms like `map` and `for` more
-convenient:
+If the body of the element is a seq, its contents will be expanded out
+into the element body. This makes working with forms like `map` and
+`for` more convenient:
 
 ```clojure
 user=> (html [:ul

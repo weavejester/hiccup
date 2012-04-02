@@ -29,20 +29,22 @@
   (apply str
     (sort (map render-attribute attrs))))
 
-(def ^{:doc "Regular expression that parses a CSS-style id and class from a tag name." :private true}
+(def ^{:doc "Regular expression that parses a CSS-style id and class from an element name."
+       :private true}
   re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
-(def ^{:doc "A list of tags that need an explicit ending tag when rendered." :private true}
+(def ^{:doc "A list of elements that need an explicit ending tag when rendered."
+       :private true}
   container-tags
   #{"a" "b" "body" "canvas" "dd" "div" "dl" "dt" "em" "fieldset" "form" "h1" "h2" "h3"
     "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option" "pre" 
     "script" "span" "strong" "style" "table" "textarea" "ul"})
 
 (defn- normalize-element
-  "Ensure a tag vector is of the form [tag-name attrs content]."
+  "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
-    (throw (IllegalArgumentException. (str tag " is not a valid tag name."))))
+    (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
         tag-attrs        {:id id
                           :class (if class (.replace ^String class "." " "))}
@@ -57,7 +59,7 @@
   type)
 
 (defn- render-element
-  "Render an tag vector as a HTML element."
+  "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if (or content (container-tags tag))

@@ -17,7 +17,7 @@
    "<!DOCTYPE html>\n"})
 
 (defn xhtml-tag
-  "Create an XHTML tag for the specified language."
+  "Create an XHTML element for the specified language."
   [lang & contents]
   [:html {:xmlns "http://www.w3.org/1999/xhtml"
           "xml:lang" lang
