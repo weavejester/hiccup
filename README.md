@@ -14,6 +14,7 @@ Add the following dependency to your `project.clj` file:
 Documentation
 -------------
 
+* [Wiki](https://github.com/weavejester/hiccup/wiki)
 * [API Docs](http://weavejester.github.com/hiccup)
     
 Syntax
