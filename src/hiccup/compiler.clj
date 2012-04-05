@@ -40,7 +40,7 @@
     "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option" "pre" 
     "script" "span" "strong" "style" "table" "textarea" "ul"})
 
-(defn- normalize-element
+(defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
