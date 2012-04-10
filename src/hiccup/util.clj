@@ -19,6 +19,8 @@
 (extend-protocol ToString
   clojure.lang.Keyword
   (to-str [k] (name k))
+  clojure.lang.Ratio
+  (to-str [r] (str (float r)))
   java.net.URI
   (to-str [u]
     (if (or (.isAbsolute u)
