@@ -9,7 +9,7 @@ Install
 
 Add the following dependency to your `project.clj` file:
 
-    [hiccup "1.0.0-RC3"]
+    [hiccup "1.0.0"]
 
 Documentation
 -------------
