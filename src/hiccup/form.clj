@@ -74,6 +74,23 @@
              :value value
              :checked checked?}]))
 
+(defelem radio-buttons
+  "Creates a list of radio buttons from a collection.
+  Text will go after radio buttons.
+  If you want text to go before radio buttons, just do:
+  (map reverse (radio-buttons [args]))"
+  ([group coll] (radio-buttons group coll nil))
+  ([group coll selected]
+    (for [x coll]
+      (if (sequential? x)
+        (let [[text val] x]
+          (list
+            (radio-button (make-name group) (= val selected) val)
+            [:p text]))
+        (list
+          (radio-button (make-name group) (= x selected) x)
+          [:p x])))))
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
