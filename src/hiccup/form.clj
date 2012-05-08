@@ -78,7 +78,7 @@
   "Creates a list of radio buttons from a collection.
   Text will go after radio buttons.
   If you want text to go before radio buttons, just do:
-  (map reverse (radio-buttons [args]))"
+  (map reverse (radio-group [args]))"
   ([group coll] (radio-buttons group coll nil))
   ([group coll selected]
     (for [x coll]
