@@ -71,6 +71,16 @@
     (is (= (html (drop-down :foo options selected))
            (str "<select id=\"foo\" name=\"foo\">" select-options "</select>")))))
 
+(deftest test-radio-group
+  (let [options ["r1" "r2"]
+        selected "r1"
+        select-options (html (radio-group options selected))]
+    (is (= (html (radio-group :foo options selected))
+           (html (radio-button :foo true "r1")
+                  (label :foo-r1 "r1")
+                  (radio-button :foo false "r2")
+                  (label :foo-r2 "r2"))))))
+
 (deftest test-drop-down-with-extra-atts
   (let [options ["op1" "op2"]
         selected "op1"
