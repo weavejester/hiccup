@@ -32,6 +32,11 @@
            :id    (make-id name)
            :value value}])
 
+(defelem label
+  "Creates a label for an input field with the supplied name."
+  [name text]
+  [:label {:for (make-id name)} text])
+
 (defelem hidden-field
   "Creates a hidden input field."
   ([name] (hidden-field name nil))
@@ -74,6 +79,25 @@
              :value value
              :checked checked?}]))
 
+(defn radio-group
+  "Creates a list of radio buttons from a collection.
+  Text will go after radio buttons.
+  If you want text to go before radio buttons, just do:
+  (map reverse (radio-group [args]))"
+  ([group coll] (radio-group group coll nil))
+  ([group coll selected]
+    (for [x coll]
+      (if (sequential? x)
+        (let [[text val] x
+              id (make-id (str (as-str group) "-" (as-str val)))]
+          (list
+            (radio-button group (= val selected) val)
+            (label id text)))
+        (let [id (make-id (str (as-str group) "-" (as-str x)))]
+          (list
+            (radio-button group (= x selected) x)
+            (label id x)))))))
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
@@ -102,11 +126,6 @@
   "Creates a file upload input."
   [name]
   (input-field "file" name nil))
-
-(defelem label
-  "Creates a label for an input field with the supplied name."
-  [name text]
-  [:label {:for (make-id name)} text])
 
 (defelem submit-button
   "Creates a submit button."
