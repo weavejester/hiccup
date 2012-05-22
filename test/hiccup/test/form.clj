@@ -58,11 +58,13 @@
 (deftest test-select-options
   (are [x y] (= (html x) y)
     (select-options ["foo" "bar" "baz"])
-      "<option>foo</option><option>bar</option><option>baz</option>"
+      "<option value=\"foo\">foo</option><option value=\"bar\">bar</option><option value=\"baz\">baz</option>"
     (select-options ["foo" "bar"] "bar")
-      "<option>foo</option><option selected=\"selected\">bar</option>"
+      "<option value=\"foo\">foo</option><option selected=\"selected\" value=\"bar\">bar</option>"
     (select-options [["Foo" 1] ["Bar" 2]])
-      "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"))
+      "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>")
+    (select-options [["Foo" 1] ["Bar" 2] 2])
+      "<option value=\"1\">Foo</option><option value=\"2\" selected=\"selected\">Bar</option>" )
 
 (deftest test-drop-down
   (let [options ["op1" "op2"]
