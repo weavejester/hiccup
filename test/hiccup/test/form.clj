@@ -45,6 +45,115 @@
   (is (= (html (email-field {:class "classy"} :foo "bar"))
          "<input class=\"classy\" id=\"foo\" name=\"foo\" type=\"email\" value=\"bar\" />")))
 
+(deftest test-date-field
+  (is (= (html (date-field :foo "2001-05-11"))
+         "<input id=\"foo\" name=\"foo\" type=\"date\" value=\"2001-05-11\" />")))
+
+(deftest test-date-field-with-extra-atts
+  (is (= (html (date-field {:class "classy" :min "1991-03-12" :max "2012-12-21"} :foo "2001-05-11"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"2012-12-21\" min=\"1991-03-12\" "
+              "name=\"foo\" type=\"date\" value=\"2001-05-11\" />"))))
+
+(deftest test-datetime-field
+  (is (= (html (datetime-field :foo "1990-12-31T23:59:60Z"))
+         "<input id=\"foo\" name=\"foo\" type=\"datetime\" value=\"1990-12-31T23:59:60Z\" />")))
+
+(deftest test-datetime-field-with-extra-atts
+  (is (= (html (datetime-field {:class "classy" :min "1990-12-31T23:59:60Z" :max "1996-12-19T16:39:57-08:00"}
+                               :foo "1991-12-31T23:59:60Z"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"1996-12-19T16:39:57-08:00\" "
+              "min=\"1990-12-31T23:59:60Z\" name=\"foo\" type=\"datetime\" "
+              "value=\"1991-12-31T23:59:60Z\" />"))))
+
+(deftest test-datetime-local-field
+  (is (= (html (datetime-local-field :foo "1985-04-12T23:20:50.52"))
+         "<input id=\"foo\" name=\"foo\" type=\"datetime-local\" value=\"1985-04-12T23:20:50.52\" />")))
+
+(deftest test-datetime-local-field-with-extra-atts
+  (is (= (html (datetime-local-field {:class "classy" :min "1985-04-12T23:20:50.52" :max "1996-12-19T16:39:57"}
+                                     :foo "1990-04-12T23:20:50.52"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"1996-12-19T16:39:57\" min=\"1985-04-12T23:20:50.52\" "
+              "name=\"foo\" type=\"datetime-local\" value=\"1990-04-12T23:20:50.52\" />"))))
+
+(deftest test-month-field
+  (is (= (html (month-field :foo "1996-12"))
+         "<input id=\"foo\" name=\"foo\" type=\"month\" value=\"1996-12\" />")))
+
+(deftest test-month-field-with-extra-atts
+  (is (= (html (month-field {:class "classy" :min "1991-03" :max "2012-05"} :foo "1996-12"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"2012-05\" min=\"1991-03\" "
+              "name=\"foo\" type=\"month\" value=\"1996-12\" />"))))
+
+(deftest test-week-field
+  (is (= (html (week-field :foo "1996-W16"))
+         "<input id=\"foo\" name=\"foo\" type=\"week\" value=\"1996-W16\" />")))
+
+(deftest test-week-field-with-extra-atts
+  (is (= (html (week-field {:class "classy" :min "1991-W05" :max "2012-W22"} :foo "1996-W16"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"2012-W22\" min=\"1991-W05\" "
+              "name=\"foo\" type=\"week\" value=\"1996-W16\" />"))))
+
+(deftest test-time-field
+  (is (= (html (time-field :foo "17:39:57"))
+         "<input id=\"foo\" name=\"foo\" type=\"time\" value=\"17:39:57\" />")))
+
+(deftest test-time-field-with-extra-atts
+  (is (= (html (time-field {:class "classy" :min "12:39:57" :max "23:20:50.52"} :foo "17:39:57"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"23:20:50.52\" min=\"12:39:57\" "
+              "name=\"foo\" type=\"time\" value=\"17:39:57\" />"))))
+
+(deftest test-color-field
+  (is (= (html (color-field :foo "#ff0000"))
+         "<input id=\"foo\" name=\"foo\" type=\"color\" value=\"#ff0000\" />")))
+
+(deftest test-color-field-with-extra-atts
+  (is (= (html (color-field {:class "classy"} :foo "#ff0000"))
+         "<input class=\"classy\" id=\"foo\" name=\"foo\" type=\"color\" value=\"#ff0000\" />")))
+
+(deftest test-number-field
+  (is (= (html (number-field :foo "5"))
+         "<input id=\"foo\" name=\"foo\" type=\"number\" value=\"5\" />")))
+
+(deftest test-number-field-with-extra-atts
+  (is (= (html (number-field {:class "classy" :min "1" :max "10"} :foo "5"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"10\" min=\"1\" "
+              "name=\"foo\" type=\"number\" value=\"5\" />"))))
+
+(deftest test-range-field
+  (is (= (html (range-field :foo "5"))
+         "<input id=\"foo\" name=\"foo\" type=\"range\" value=\"5\" />")))
+
+(deftest test-range-field-with-extra-atts
+  (is (= (html (range-field {:class "classy" :min "1" :max "10"} :foo "5"))
+         (str "<input class=\"classy\" id=\"foo\" max=\"10\" min=\"1\" "
+              "name=\"foo\" type=\"range\" value=\"5\" />"))))
+
+(deftest test-url-field
+  (is (= (html (url-field :foo "http://clojure.org"))
+         "<input id=\"foo\" name=\"foo\" type=\"url\" value=\"http://clojure.org\" />")))
+
+(deftest test-url-field-with-extra-atts
+  (is (= (html (url-field {:class "classy"} :foo "http://clojure.org"))
+         (str "<input class=\"classy\" id=\"foo\" name=\"foo\" "
+              "type=\"url\" value=\"http://clojure.org\" />"))))
+
+(deftest test-search-field
+  (is (= (html (search-field :foo "bar"))
+         "<input id=\"foo\" name=\"foo\" type=\"search\" value=\"bar\" />")))
+
+(deftest test-search-field-with-extra-atts
+  (is (= (html (search-field {:class "classy" :placeholder "baz"} :foo "bar"))
+         (str "<input class=\"classy\" id=\"foo\" name=\"foo\" placeholder=\"baz\" "
+              "type=\"search\" value=\"bar\" />"))))
+
+(deftest test-tel-field
+  (is (= (html (tel-field :foo "bar"))
+         "<input id=\"foo\" name=\"foo\" type=\"tel\" value=\"bar\" />")))
+
+(deftest test-tel-field-with-extra-atts
+  (is (= (html (tel-field {:class "classy"} :foo "bar"))
+         "<input class=\"classy\" id=\"foo\" name=\"foo\" type=\"tel\" value=\"bar\" />")))
+
 (deftest test-radio-button
   (is (= (html (radio-button :foo true 1))
          (str "<input checked=\"checked\" id=\"foo-1\" name=\"foo\""
