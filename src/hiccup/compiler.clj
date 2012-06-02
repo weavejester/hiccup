@@ -12,7 +12,9 @@
   (if (xml-mode?) " />" ">"))
 
 (defn- xml-attribute [name value]
-  (str " " (as-str name) "=\"" (escape-html value) "\""))
+  (if (and (= name :data) (map? value))
+    (str " " (clojure.string/join " " (map #(str (as-str (str (as-str name) "-"  (as-str (first %)))) "=\"" (escape-html (second %)) "\"") value)))
+    (str " " (as-str name) "=\"" (escape-html value) "\"")))
 
 (defn- render-attribute [[name value]]
   (cond
