@@ -62,7 +62,14 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "data attributes"
+    (is (= (html [:span {:data {:text "string"}} "foo"])
+            "<span data-text=\"string\">foo</span>"))
+    (is (= (html [:span {:data {:text "string" :url "some-url"}} "foo"])
+            "<span data-text=\"string\" data-url=\"some-url\">foo</span>"))
+    (is (= (html [:span {:data "string"} "foo"])
+            "<span data=\"string\">foo</span>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
