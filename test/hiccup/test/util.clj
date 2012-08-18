@@ -27,8 +27,10 @@
     (with-base-url "/foo"
       (is (= (to-str (to-uri "/bar")) "/foo/bar"))
       (is (= (to-str (to-uri "http://example.com")) "http://example.com"))
+      (is (= (to-str (to-uri "https://example.com/bar")) "https://example.com/bar"))
       (is (= (to-str (to-uri "bar")) "bar"))
-      (is (= (to-str (to-uri "../bar")) "../bar")))))
+      (is (= (to-str (to-uri "../bar")) "../bar"))
+      (is (= (to-str (to-uri "//example.com/bar")) "//example.com/bar")))))
 
 (deftest test-url-encode
   (testing "strings"

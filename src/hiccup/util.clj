@@ -23,7 +23,7 @@
   (to-str [r] (str (float r)))
   java.net.URI
   (to-str [u]
-    (if (or (.isAbsolute u)
+    (if (or (.getHost u)
             (not (-> (.getPath u) (.startsWith "/"))))
       (str u)
       (str *base-url* u)))
