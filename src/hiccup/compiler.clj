@@ -51,7 +51,9 @@
                           :class (if class (.replace ^String class "." " "))}
         map-attrs        (first content)]
     (if (map? map-attrs)
-      [tag (merge tag-attrs map-attrs) (next content)]
+      [tag
+       (merge-with #(if %1 (str %1 " " %2) %2) tag-attrs map-attrs)
+       (next content)]
       [tag tag-attrs content])))
 
 (defmulti render-html

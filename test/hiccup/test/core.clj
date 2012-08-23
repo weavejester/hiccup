@@ -62,7 +62,10 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "concatenate attributes in the map and tag"
+    (is (= (html [:div.foo {:class bar} "baz"])
+           "<div class=\"foo bar\">baz</div>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
