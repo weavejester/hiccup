@@ -33,3 +33,14 @@
          [:ol (list [:li "foo"]
                     [:li {:class "active"} "bar"]
                     [:li "baz"])])))
+
+(deftest list-in-list-test
+  (is (= (ordered-list ["foo"
+                        (list "bar" (ordered-list ["loo" "lar" "laz"]))
+                        "baz"])
+         [:ol (list [:li "foo"]
+                    [:li "bar"
+                     [:ol (list [:li "loo"]
+                                          [:li "lar"]
+                                          [:li "laz"])]]
+                    [:li "baz"])])))
