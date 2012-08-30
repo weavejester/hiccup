@@ -23,9 +23,9 @@
          [:a {:href "mailto:foo@example.com"} "foo"])))
 
 (deftest unordered-list-test
-  (is (= (unordered-list ["foo" "bar" "baz"])
+  (is (= (unordered-list ["foo" '({:class "active"} "bar") "baz"])
          [:ul (list [:li "foo"]
-                    [:li "bar"]
+                    [:li {:class "active"} "bar"]
                     [:li "baz"])])))
 
 (deftest ordered-list-test
@@ -33,4 +33,3 @@
          [:ol (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
-

@@ -24,7 +24,10 @@
 (defelem unordered-list
   "Wrap a collection in an unordered list."
   [coll]
-  [:ul (for [x coll] [:li x])])
+  [:ul (for [x coll]
+         (if (list? x)
+           (apply vector (cons :li x))
+           [:li x]))])
 
 (defelem ordered-list
   "Wrap a collection in an ordered list."
@@ -35,4 +38,3 @@
   "Create an image element."
   ([src]     [:img {:src (to-uri src)}])
   ([src alt] [:img {:src (to-uri src), :alt alt}]))
-
