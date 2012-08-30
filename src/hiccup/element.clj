@@ -32,7 +32,10 @@
 (defelem ordered-list
   "Wrap a collection in an ordered list."
   [coll]
-  [:ol (for [x coll] [:li x])])
+  [:ol (for [x coll]
+         (if (list? x)
+           (apply vector (cons :li x))
+           [:li x]))])
 
 (defelem image
   "Create an image element."

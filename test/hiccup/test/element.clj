@@ -29,7 +29,7 @@
                     [:li "baz"])])))
 
 (deftest ordered-list-test
-  (is (= (ordered-list ["foo" "bar" "baz"])
+  (is (= (ordered-list ["foo" '({:class "active"} "bar") "baz"])
          [:ol (list [:li "foo"]
-                    [:li "bar"]
+                    [:li {:class "active"} "bar"]
                     [:li "baz"])])))
