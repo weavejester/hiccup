@@ -68,14 +68,32 @@
            (doctype :html5)
            [:html {:lang (options# :lang)} ~@contents])))))
 
-(defn include-js
-  "Include a list of external javascript files."
-  [& scripts]
+(defn include-script
+  "Include a list of external script files"
+  [type & scripts]
   (for [script scripts]
-    [:script {:type "text/javascript", :src (to-uri script)}]))
+    [:script {:type type, :src (to-uri script)}]))
 
-(defn include-css
-  "Include a list of external stylesheet files."
-  [& styles]
-  (for [style styles]
-    [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
+(def
+  #^{:doc "Include a list of external javascript files"
+     :arglists '([& scripts])}
+  include-js
+  (partial include-script "text/javascript"))
+
+(defn include-link
+  "Include a list of externally linked files"
+  [type rel & hrefs]
+  (for [href hrefs]
+    [:link {:type type, :href (to-uri href), :rel rel}]))
+
+(def
+  #^{:doc "Include a list of external css stylesheet files"
+     :arglists '([& styles])}
+  include-css
+  (partial include-link "text/css" "stylesheet"))
+
+(def
+  #^{:doc "Include a list of external less (http://lesscss.org/) stylesheet files"
+     :arglists '([& styles])}
+  include-less
+  (partial include-link "text/css" "stylesheet/less"))
