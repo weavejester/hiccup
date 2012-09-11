@@ -46,12 +46,26 @@
                 "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body>Hello World</body></html>")))))
 
+(deftest include-script-test
+  (is (= (include-script "text/script" "foo.script")
+         (list [:script {:type "text/script", :src (URI. "foo.script")}])))
+  (is (= (include-script "text/script" "foo.script" "bar.script")
+         (list [:script {:type "text/script", :src (URI. "foo.script")}]
+               [:script {:type "text/script", :src (URI. "bar.script")}]))))
+
 (deftest include-js-test
   (is (= (include-js "foo.js")
          (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
   (is (= (include-js "foo.js" "bar.js")
          (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
                [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
+
+(deftest include-link-test
+  (is (= (include-link "text/plain" "contents" "foo.txt")
+         (list [:link {:type "text/plain", :href (URI. "foo.txt"), :rel "contents"}])))
+  (is (= (include-link "text/plain" "contents" "foo.txt" "bar.txt")
+         (list [:link {:type "text/plain", :href (URI. "foo.txt"), :rel "contents"}]
+               [:link {:type "text/plain", :href (URI. "bar.txt"), :rel "contents"}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
