@@ -22,7 +22,7 @@
     (is (= (html [:div]) "<div></div>"))
     (is (= (html [:h1]) "<h1></h1>"))
     (is (= (html [:script]) "<script></script>"))
-    (is (= (html [:text]) "<text />"))
+    (is (= (html [:br]) "<br />"))
     (is (= (html [:a]) "<a></a>"))
     (is (= (html [:iframe]) "<iframe></iframe>"))
     (is (= (html [:title]) "<title></title>"))
@@ -62,7 +62,14 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "input tags rendered as input elements"
+    (is (= (html [:password#foo.bar {:name "baz"}])
+           "<input class=\"bar\" id=\"foo\" name=\"baz\" type=\"password\" />"))
+    (is (= (html [:button {:name "foo" :value "bar"}])
+           "<input name=\"foo\" type=\"button\" value=\"bar\" />"))
+    (is (= (html [:button {:name "foo" :type "button"} [:div "bar"]])
+           "<button name=\"foo\" type=\"button\"><div>bar</div></button>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
