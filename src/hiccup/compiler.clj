@@ -41,6 +41,13 @@
     "i" "iframe" "label" "li" "nav" "ol" "option" "pre" "section" "script" "span"
     "strong" "style" "table" "textarea" "title" "ul"})
 
+(def ^{:doc "Tags that should be converted to input elements."
+       :private true}
+  input-tags
+  #{"button" "checkbox" "color" "date" "datetime" "datetime-local" "email" "file"
+    "hidden" "image" "month" "number" "password" "radio" "range" "reset" "search"
+    "submit" "tel" "text" "time" "url" "week"})
+
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
@@ -63,11 +70,13 @@
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
-    (if (or content (container-tags tag))
-      (str "<" tag (render-attr-map attrs) ">"
-           (render-html content)
-           "</" tag ">")
-      (str "<" tag (render-attr-map attrs) (end-tag)))))
+    (if (and (input-tags tag) (nil? content))
+      (recur ["input" (assoc attrs :type tag)])
+      (if (or content (container-tags tag))
+        (str "<" tag (render-attr-map attrs) ">"
+             (render-html content)
+             "</" tag ">")
+        (str "<" tag (render-attr-map attrs) (end-tag))))))
 
 (defmethod render-html IPersistentVector
   [element]
