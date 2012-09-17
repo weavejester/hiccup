@@ -26,7 +26,10 @@
     (if (or (.getHost u)
             (not (-> (.getPath u) (.startsWith "/"))))
       (str u)
-      (str *base-url* u)))
+      (let [base (str *base-url*)]
+        (if (.endsWith base "/")
+          (str (subs base 0 (dec (count base))) u)
+          (str base u)))))
   Object
   (to-str [x] (str x))
   nil
