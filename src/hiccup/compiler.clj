@@ -47,11 +47,14 @@
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (as-str tag))
-        tag-attrs        {:id id
-                          :class (if class (.replace ^String class "." " "))}
+        class (if class
+                (-> class (.replace "." " ") (str " " (:class (first content))) .trim)
+                (:class (first content)))
+        tag-attrs        {:id (or (:id (first content)) id)
+                          :class class}
         map-attrs        (first content)]
     (if (map? map-attrs)
-      [tag (merge tag-attrs map-attrs) (next content)]
+      [tag (merge map-attrs tag-attrs) (next content)]
       [tag tag-attrs content])))
 
 (defmulti render-html
