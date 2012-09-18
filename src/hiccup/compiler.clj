@@ -46,16 +46,14 @@
   [[tag & content]]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
-  (let [[_ tag id class] (re-matches re-tag (as-str tag))
-        class (if class
-                (-> class (.replace "." " ") (str " " (:class (first content))) .trim)
-                (:class (first content)))
-        tag-attrs        {:id (or (:id (first content)) id)
-                          :class class}
-        map-attrs        (first content)]
-    (if (map? map-attrs)
-      [tag (merge map-attrs tag-attrs) (next content)]
-      [tag tag-attrs content])))
+  (let [[_ tag id class] (re-matches re-tag (name tag))
+        [attrs content] (if (map? (first content))
+                          [(first content) (next content)]
+                          [{} content])
+        id (or (attrs :id) id)
+        class (when (or class (attrs :class))
+                (-> (str class " " (attrs :class)) (.replace "." " ") .trim))]
+    [tag (assoc attrs :id id :class class) content]))
 
 (defmulti render-html
   "Turn a Clojure data type into a string of HTML."
