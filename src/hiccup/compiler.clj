@@ -209,8 +209,8 @@
                        :attrs (#'compile-attr-map (merge ~tag-attrs ~attrs-sym))))
          ~(if attrs
             `(hash-map :tag ~tag
-                      :attrs ~(compile-attr-map tag-attrs)
-                      :content [~@(compile-seq (cons attrs-sym content))])
+                       :attrs ~(compile-attr-map tag-attrs)
+                       :content [~@(compile-seq (cons attrs-sym content))])
             (hash-map :tag tag :attrs {} :content [(compile-seq content)]))))))
 
 (defmulti render-html
