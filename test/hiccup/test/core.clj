@@ -2,6 +2,48 @@
   (:use clojure.test
         hiccup.core))
 
+(deftest parsing
+  (testing "basic parsing"
+    (is (= (parse [:div]) {:content [{:tag "div", :attrs {}, :content nil}]}))
+    (is (= (parse ["div"] {:content [{:tag "div", :attrs {}, :content nil}]})))
+    (is (= (parse ['div]) {:content [{:tag "div", :attrs {}, :content nil}]})))
+  (testing "parsing tag syntax sugar"
+    (is (= (parse [:div#foo])
+           {:content [{:tag "div", :attrs {:id "foo"}, :content nil}]}))
+    (is (= (parse [:div.foo])
+           {:content [{:tag "div", :attrs {:class "foo"}, :content nil}]}))
+    (is (= (parse [:div#foo.bar.baz])
+           {:content [{:tag "div" :attrs {:id "foo" :class "bar baz"} :content nil}]}))))
+
+(deftest pre-parsing
+  (testing "parse overrides html"
+    (is (= (parse (html [:div])) (parse [:div])))
+    (is (= (parse (html (parse [:div]))) (parse (parse [:div]))))
+    (is (= (parse (html [:div#foo.bar "fizz"]) (html [:span "buzz"] (parse "baz")))
+           (parse [:div#foo.bar "fizz"] [:span "buzz"] "baz")))
+    (is (= (parse (html [:div "foo"]) (html "bar") (parse [:div "baz"]))
+           {:content [{:content ["foo"], :attrs {}, :tag "div"}
+                      "bar"
+                      {:content ["baz"], :attrs {}, :tag "div"}]}))))
+
+(deftest parsed-forms
+  (testing "composability of parse and html"
+    (is (= (parse [:div]) {:content [{:tag "div", :attrs {}, :content nil}]}))
+    (is (= (parse [:div]) (parse (html [:div]))))
+    (is (= (html (parse [:div])) "<div></div>"))
+    (is (= (html (parse (parse [:div]))) "<div></div>"))
+    (is (= (html (html (parse [:div]))) "<div></div>"))
+    (is (= (html (parse (html (parse [:div])))) "<div></div>")))
+  (testing "compile forms within map content"
+    (is (= (parse {:content [{:tag "div"
+                              :attrs {:class "foo"}
+                              :content [[:div "bar"] "baz"]} "qux"]})
+           {:content [{:tag "div", :attrs {}, :content ["bar"]} "baz" "qux"]}))
+    (is (= (html {:content [{:tag "div"
+                             :attrs {:class "foo"}
+                             :content [[:div "bar"] "baz"]} "qux"]})
+           "<div>bar</div>bazqux"))))
+
 (deftest tag-names
   (testing "basic tags"
     (is (= (html [:div]) "<div></div>"))
@@ -88,7 +130,9 @@
            "<div id=\"ab\">foo</div>")))
   (testing "type hints"
     (let [string "x"]
-      (is (= (html [:span ^String string]) "<span>x</span>"))))
+      (is (= (html [:span ^String string]) "<span>x</span>")))
+    (let [num 0]
+      (is (= (html [:span ^Number num]) "<span>0</span>"))))
   (testing "optimized forms"
     (is (= (html [:ul (for [n (range 3)]
                         [:li n])])

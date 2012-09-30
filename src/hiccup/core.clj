@@ -4,6 +4,10 @@
   (:use hiccup.compiler
         hiccup.util))
 
+(defmacro parse
+  [& content]
+  (apply compile-forms content))
+
 (defmacro html
   "Render Clojure data structures to a string of HTML."
   [options & content]
