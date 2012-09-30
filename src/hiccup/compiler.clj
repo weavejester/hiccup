@@ -246,7 +246,7 @@
   [content]
   (doall (for [expr content]
            (cond
-             (map? expr) (apply #'compile-forms (:content expr))
+             (map? expr) (apply compile-forms (:content expr))
              (vector? expr) (compile-element expr)
              (literal? expr) expr
              (hint? expr String) expr
