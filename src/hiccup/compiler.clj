@@ -244,16 +244,15 @@
 (defn- compile-seq
   "Compile a sequence of data structures into a Clojure map representation."
   [content]
-  (if (map? content)
-    content
-    (doall (for [expr content]
-             (cond
-               (vector? expr) (compile-element expr)
-               (literal? expr) expr
-               (hint? expr String) expr
-               (hint? expr Number) expr
-               (seq? expr) (compile-form expr)
-               :else `(#'build-form ~expr))))))
+  (doall (for [expr content]
+           (cond
+             (map? expr) (apply #'compile-forms (:content expr))
+             (vector? expr) (compile-element expr)
+             (literal? expr) expr
+             (hint? expr String) expr
+             (hint? expr Number) expr
+             (seq? expr) (compile-form expr)
+             :else `(#'build-form ~expr)))))
 
 (defn collapse-content
   "Collapse nested content maps into one where possible."

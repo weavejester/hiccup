@@ -33,7 +33,16 @@
     (is (= (html (parse [:div])) "<div></div>"))
     (is (= (html (parse (parse [:div]))) "<div></div>"))
     (is (= (html (html (parse [:div]))) "<div></div>"))
-    (is (= (html (parse (html (parse [:div])))) "<div></div>"))))
+    (is (= (html (parse (html (parse [:div])))) "<div></div>")))
+  (testing "compile forms within map content"
+    (is (= (parse {:content [{:tag "div"
+                              :attrs {:class "foo"}
+                              :content [[:div "bar"] "baz"]} "qux"]})
+           {:content [{:tag "div", :attrs {}, :content ["bar"]} "baz" "qux"]}))
+    (is (= (html {:content [{:tag "div"
+                             :attrs {:class "foo"}
+                             :content [[:div "bar"] "baz"]} "qux"]})
+           "<div>bar</div>bazqux"))))
 
 (deftest tag-names
   (testing "basic tags"
