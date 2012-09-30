@@ -1,7 +1,8 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
-  (:use hiccup.util)
-  (:import [clojure.lang IPersistentVector ISeq]))
+  (:use hiccup.util
+        [clojure.walk :only [postwalk]])
+  (:import [clojure.lang IPersistentVector IPersistentMap ISeq]))
 
 (def ^:dynamic *html-mode* :xml)
 
@@ -41,6 +42,32 @@
     "i" "iframe" "label" "li" "nav" "ol" "option" "pre" "section" "script" "span"
     "strong" "style" "table" "textarea" "title" "ul"})
 
+(defn- void?
+  "True if x is semantically void."
+  [x]
+  (or (nil? x) (and (or (string? x) (coll? x)) (empty? x))))
+
+(defn- unevaluated?
+  "True if the expression has not been evaluated."
+  [expr]
+  (or (symbol? expr)
+      (and (seq? expr)
+           (not= (first expr) `quote))))
+
+(defn- form-name
+  "Get the name of the supplied form."
+  [form]
+  (if (and (seq? form) (symbol? (first form)))
+    (name (first form))))
+
+(defn- compile-attr-map
+  "Returns an unevaluated attributes map with empty keys removed."
+  [attrs]
+  (let [attrs (apply concat (remove (comp void? val) attrs))]
+    (if (some unevaluated? attrs)
+      `(hash-map ~@attrs)
+      (apply hash-map attrs))))
+
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
@@ -55,70 +82,50 @@
                 (-> (str class " " (attrs :class)) (.replace "." " ") .trim))]
     [tag (assoc attrs :id id :class class) content]))
 
-(defmulti render-html
-  "Turn a Clojure data type into a string of HTML."
+(defmulti build-form
+  "Return a map representation of a Clojure data type."
   {:private true}
   type)
 
-(defn- render-element
-  "Render an element vector as a HTML element."
+(defn- element-map
+  "Convert an element vector to an element map."
   [element]
   (let [[tag attrs content] (normalize-element element)]
-    (if (or content (container-tags tag))
-      (str "<" tag (render-attr-map attrs) ">"
-           (render-html content)
-           "</" tag ">")
-      (str "<" tag (render-attr-map attrs) (end-tag)))))
+    {:tag tag :attrs (compile-attr-map attrs) :content (build-form content)}))
 
-(defmethod render-html IPersistentVector
+(defmethod build-form IPersistentMap
   [element]
-  (render-element element))
+  element)
 
-(defmethod render-html ISeq [coll]
-  (apply str (map render-html coll)))
+(defmethod build-form IPersistentVector
+  [element]
+  (element-map element))
 
-(defmethod render-html :default [x]
-  (as-str x))
+(defmethod build-form ISeq
+  [coll]
+  (apply vector (map build-form coll)))
 
-(defn- unevaluated?
-  "True if the expression has not been evaluated."
-  [expr]
-  (or (symbol? expr)
-      (and (seq? expr)
-           (not= (first expr) `quote))))
-
-(defn compile-attr-map
-  "Returns an unevaluated form that will render the supplied map as HTML
-  attributes."
-  [attrs]
-  (if (some unevaluated? (mapcat identity attrs))
-    `(#'render-attr-map ~attrs)
-    (render-attr-map attrs)))
-
-(defn- form-name
-  "Get the name of the supplied form."
-  [form]
-  (if (and (seq? form) (symbol? (first form)))
-    (name (first form))))
-
-(declare compile-html)
+(defmethod build-form :default [x]
+  (when x (as-str x)))
 
 (defmulti compile-form
-  "Pre-compile certain standard forms, where possible."
+  "Pre-compile certain standard forms where possible."
   {:private true}
   form-name)
 
+(declare compile-forms)
+
 (defmethod compile-form "for"
   [[_ bindings body]]
-  `(apply str (for ~bindings ~(compile-html body))))
+  `(apply vector (for ~bindings ~(compile-forms body))))
 
 (defmethod compile-form "if"
   [[_ condition & body]]
-  `(if ~condition ~@(for [x body] (compile-html x))))
+  `(if ~condition ~@(for [x body] (compile-forms x))))
 
 (defmethod compile-form :default
   [expr]
-  `(#'render-html ~expr))
+  `(#'build-form ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -164,23 +171,25 @@
 (declare compile-seq)
 
 (defmulti compile-element
-  "Returns an unevaluated form that will render the supplied vector as a HTML
-  element."
+  "Returns a clojure map representation of the supplied vector."
   {:private true}
   element-compile-strategy)
 
 (defmethod compile-element ::all-literal
   [element]
-  (render-element (eval element)))
+  (if (seq? (first element))
+    (element-map (cons (eval (first element)) (rest element)))
+    (element-map element)))
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
-    (if (or content (container-tags tag))
-      `(str ~(str "<" tag) ~(compile-attr-map attrs) ">"
-            ~@(compile-seq content)
-            ~(str "</" tag ">"))
-      `(str "<" ~tag ~(compile-attr-map attrs) ~(end-tag)))))
+    (if content
+      `(hash-map :tag ~tag
+                 :attrs ~(compile-attr-map attrs)
+                 :content [~@(compile-seq content)])
+      `(hash-map :tag ~tag
+                 :attrs ~(compile-attr-map attrs)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -192,55 +201,81 @@
         attrs-sym         (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
-         ~(if (or content (container-tags tag))
-            `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
-                  ~@(compile-seq content)
-                  ~(str "</" tag ">"))
-            `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym))
-                  ~(end-tag)))
-         ~(if (or attrs (container-tags tag))
-            `(str ~(str "<" tag (render-attr-map tag-attrs) ">")
-                  ~@(compile-seq (cons attrs-sym content))
-                  ~(str "</" tag ">"))
-            (str "<" tag (render-attr-map tag-attrs) (end-tag)))))))
+         ~(if content
+            `(hash-map :tag ~tag
+                       :attrs (#'compile-attr-map (merge ~tag-attrs ~attrs-sym))
+                       :content [~@(compile-seq content)])
+            `(hash-map :tag ~tag
+                       :attrs (#'compile-attr-map (merge ~tag-attrs ~attrs-sym))))
+         ~(if attrs
+            `(hash-map :tag ~tag
+                      :attrs ~(compile-attr-map tag-attrs)
+                      :content [~@(compile-seq (cons attrs-sym content))])
+            (hash-map :tag tag :attrs {} :content [(compile-seq content)]))))))
 
-(defmethod compile-element :default
+(defmulti render-html
+  "Turn a Clojure data type into a string of HTML."
+  type)
+
+(defn render-element
+  "Returns an unevaluated form that will render the supplied map as an
+   HTML element."
   [element]
-  `(#'render-element
-     [~(first element)
-      ~@(for [x (rest element)]
-          (if (vector? x)
-            (compile-element x)
-            x))]))
+  (let [{:keys [tag attrs content]} element]
+    (if (and (nil? tag) (nil? attrs))
+      (render-html content)
+      (if (or content (container-tags tag))
+        (str "<" tag (render-attr-map attrs) ">"
+             (render-html content)
+             "</" tag ">")
+        (str "<" tag (render-attr-map attrs) (end-tag))))))
+
+(defmethod render-html IPersistentVector
+  [element]
+  (apply str (map render-html element)))
+
+(defmethod render-html IPersistentMap
+  [element]
+  (render-element element))
+
+(defmethod render-html :default [x]
+  (as-str x))
 
 (defn- compile-seq
-  "Compile a sequence of data-structures into HTML."
+  "Compile a sequence of data structures into a Clojure map representation."
   [content]
-  (doall (for [expr content]
-           (cond
-            (vector? expr) (compile-element expr)
-            (literal? expr) expr
-            (hint? expr String) expr
-            (hint? expr Number) expr
-            (seq? expr) (compile-form expr)
-            :else `(#'render-html ~expr)))))
+  (if (map? content)
+    content
+    (doall (for [expr content]
+             (cond
+               (vector? expr) (compile-element expr)
+               (literal? expr) expr
+               (hint? expr String) expr
+               (hint? expr Number) expr
+               (seq? expr) (compile-form expr)
+               :else `(#'build-form ~expr))))))
 
-(defn- collapse-strs
-  "Collapse nested str expressions into one, where possible."
+(defn collapse-content
+  "Collapse nested content maps into one where possible."
   [expr]
-  (if (seq? expr)
-    (cons
-     (first expr)
-     (mapcat
-      #(if (and (seq? %) (symbol? (first %)) (= (first %) (first expr) `str))
-         (rest (collapse-strs %))
-         (list (collapse-strs %)))
-      (rest expr)))
-    expr))
+  (->> expr
+       (postwalk #(if (and (map? %) (= (keys %) [:content])) (:content %) %))
+       (tree-seq vector? seq)
+       rest
+       (filter (complement vector?))
+       vec))
+
+(defn- pre-parse
+  "Exchange intermediate calls to html for calls to parse."
+  [expr]
+  (postwalk #(if (= 'html %) 'parse %) expr))
+
+(defn compile-forms
+  "Pre-compile data structures into a Clojure map representation."
+  [& content]
+  {:content `(collapse-content [~@(compile-seq (pre-parse content))])})
 
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  (collapse-strs `(str ~@(compile-seq content))))
+  `(render-html ~(apply compile-forms content)))
