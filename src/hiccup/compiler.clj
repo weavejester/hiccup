@@ -115,6 +115,10 @@
   [[_ condition & body]]
   `(if ~condition ~@(for [x body] (compile-html x))))
 
+(defmethod compile-form "list"
+  [[_ & body]]
+  `(apply str ~@(for [x body] (compile-html x))))
+
 (defmethod compile-form :default
   [expr]
   `(#'render-html ~expr))
@@ -220,6 +224,7 @@
   (doall (for [expr content]
            (cond
             (vector? expr) (compile-element expr)
+            (string? expr) (if (html-safe? expr) expr (escape-html expr))
             (literal? expr) expr
             (hint? expr String) expr
             (hint? expr Number) expr

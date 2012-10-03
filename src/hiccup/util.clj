@@ -5,6 +5,7 @@
            java.net.URLEncoder))
 
 (def ^:dynamic *base-url* nil)
+(def ^:dynamic *html-safe* #{})
 
 (defmacro with-base-url
   "Sets a base URL that will be prepended onto relative URIs. Note that for this
@@ -49,14 +50,20 @@
   String
   (to-uri [s] (URI. s)))
 
+(defn html-safe [s]
+  (conj *html-safe* s)
+  s)
+
+(def html-safe? *html-safe*)
+
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. ^String (as-str text)
-    (replace "&"  "&amp;")
-    (replace "<"  "&lt;")
-    (replace ">"  "&gt;")
-    (replace "\"" "&quot;")))
+  (html-safe (.. ^String (as-str text)
+                 (replace "&"  "&amp;")
+                 (replace "<"  "&lt;")
+                 (replace ">"  "&gt;")
+                 (replace "\"" "&quot;"))))
 
 (def ^:dynamic *encoding* "UTF-8")
 
