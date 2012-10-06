@@ -1,5 +1,5 @@
-(ns hiccup.output
-  "Renders nested maps representing a HTML DOM into a string."
+(ns hiccup.output.minified
+  "Renders a HTML DOM into minified HTML."
   (:use hiccup.util))
 
 (def ^{:doc "A list of tags that need an explicit ending tag when rendered."
