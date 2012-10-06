@@ -14,9 +14,8 @@
      (with-out-str
        (print (str "<" (as-str (:tag node))))
        (when-not (empty? (:attrs node))
-         (print " ")
          (doseq [[k v] (:attrs node)]
-           (print (str (as-str k) "=\"" (escape-html v) "\""))))
+           (print (str " " (as-str k) "=\"" (escape-html v) "\""))))
        (print ">")
        (doseq [content (:content node)]
          (if (map? content)
