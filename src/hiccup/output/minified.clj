@@ -5,9 +5,10 @@
 (def ^{:doc "A list of tags that need an explicit ending tag when rendered."
        :private true}
   container-tags
-  #{"a" "b" "body" "canvas" "dd" "div" "dl" "dt" "em" "fieldset" "form" "h1" "h2"
-    "h3" "h4" "h5" "h6" "head" "html" "i" "iframe" "label" "li" "ol" "option"
-    "pre" "script" "span" "strong" "style" "table" "textarea" "ul"})
+  #{"a" "article" "aside" "b" "body" "canvas" "dd" "div" "dl" "dt" "em" "fieldset"
+    "footer" "form" "h1" "h2" "h3" "h4" "h5" "h6" "head" "header" "hgroup" "html"
+    "i" "iframe" "label" "li" "nav" "ol" "option" "pre" "section" "script" "span"
+    "strong" "style" "table" "textarea" "title" "ul"})
 
 (defn to-string
   ([n & nodes]
