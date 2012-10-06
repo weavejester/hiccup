@@ -1,6 +1,6 @@
 (ns hiccup.output.minified
   "Renders a HTML DOM into minified HTML."
-  (:use hiccup.util))
+  (:use [hiccup.util :only (as-str escape-html)]))
 
 (def ^{:doc "A list of tags that need an explicit ending tag when rendered."
        :private true}
@@ -10,17 +10,16 @@
     "pre" "script" "span" "strong" "style" "table" "textarea" "ul"})
 
 (defn to-string
+  ([n & nodes]
+     (apply str (map to-string (cons n nodes))))
   ([node]
      (with-out-str
        (print (str "<" (as-str (:tag node))))
-       (when-not (empty? (:attrs node))
-         (doseq [[k v] (:attrs node)]
-           (print (str " " (as-str k) "=\"" (escape-html v) "\""))))
+       (doseq [[k v] (:attrs node)]
+         (print (str " " (as-str k) "=\"" (escape-html v) "\"")))
        (print ">")
        (doseq [content (:content node)]
          (if (map? content)
            (to-string content)
            (print (escape-html content))))
-       (print (str "</" (as-str (:tag node)) ">"))))
-  ([n & nodes]
-     (apply str (map to-string (cons n nodes)))))
+       (print (str "</" (as-str (:tag node)) ">")))))
