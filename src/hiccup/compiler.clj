@@ -121,7 +121,7 @@
      ~@(for [result body] (compile result))))
 
 (defmethod compile-form :default [node]
-  `(render node))
+  `(render ~node))
 
 (defn compile [node]
   (cond
