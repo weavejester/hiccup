@@ -1,7 +1,8 @@
 (ns hiccup.compiler
   "Compiles HTML represented as nested vectors into the nested map format used
   in clojure.xml, Enlive and other libraries."
-  (:refer-clojure :exclude (compile)))
+  (:refer-clojure :exclude (compile))
+  (:require [clojure.string :as str]))
 
 (defn quoted? [x]
   (and (list? x)
@@ -54,7 +55,7 @@
     {:tag tag
      :attrs (-> attrs
                 (assoc-unless-nil :id id)
-                (assoc-unless-nil :class class))
+                (assoc-unless-nil :class (str/replace class "." " ")))
      :content content}))
 
 (defn render-vector [[tag & [attrs & content :as tail]]]
@@ -77,7 +78,7 @@
         (assoc-unless-nil :class class))
     `(-> ~attrs
          ~@(if id [`(assoc :id ~id)])
-         ~@(if class [`(assoc :class ~class)]))))
+         ~@(if class [`(assoc :class ~(str/replace class "." " "))]))))
 
 (defn compile-element [tag attrs content]
   (let [[tag id class] (parse-tag-sugar tag)]
