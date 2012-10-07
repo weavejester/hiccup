@@ -80,22 +80,27 @@
   (for [style styles]
     [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
 
-(defn only-css-files [files]
-  (filter (fn [file] (not (nil? (re-seq #".+.css" (.getName file))))) files))
+(defn only-file-type [files file-matcher]
+  (filter (fn [file] (not (nil? (re-seq file-matcher (.getName file))))) files))
 
+(defn only-css-files [files]
+  (only-file-type files #".+.css"))
+
+(defn only-js-files [files]
+  (only-file-type files #".+.js"))
+
+(defn include-dir [dir filter-fn include-fn]
+  (let [files (file-seq (clojure.java.io/file dir))
+        filtered-files (filter-fn files)]
+    (map include-fn (map #(.getPath %) filtered-files))))
+  
 (defn include-all-css
   ([] (include-all-css "css"))
   ([dir]
-     (let [files (file-seq (clojure.java.io/file dir))
-           css-files (only-css-files files)]
-       (map include-css (map #(.getPath %) css-files)))))
-
-(defn only-js-files [files]
-  (filter (fn [file] (not (nil? (re-seq #".+.js" (.getName file))))) files))
+     (include-dir dir only-css-files include-css)))
 
 (defn include-all-js
   ([] (include-all-js "js"))
   ([dir]
-     (let [files (file-seq (clojure.java.io/file dir))
-           js-files (only-js-files files)]
-       (map include-js (map #(.getPath %) js-files)))))
+     (include-dir dir only-js-files include-js)))
+

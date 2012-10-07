@@ -62,34 +62,32 @@
          (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
                [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
 
+(defn set-up-directory-structure [root extension]
+  (fs/mkdir root)
+  (fs/touch (str root File/separator (str "foo" extension)))
+  (fs/touch (str root File/separator (str "bar" extension)))
+  (fs/mkdir (str root File/separator "baz"))
+  (fs/touch (str root File/separator "baz" File/separator (str "bat" extension))))
+
+(defn tear-down-directory-structure [root extension]
+  (fs/delete (str root File/separator "baz" File/separator (str "bat" extension)))
+  (fs/delete (str root File/separator "baz"))
+  (fs/delete (str root File/separator (str "bar" extension)))
+  (fs/delete (str root File/separator (str "foo" extension)))
+  (fs/delete root))
+
 (deftest include-all-css-test
-  (fs/mkdir "css")
-  (fs/touch (str "css" File/separator "foo.css"))
-  (fs/touch (str "css" File/separator "bar.css"))
-  (fs/mkdir (str "css" File/separator "baz"))
-  (fs/touch (str "css" File/separator "baz" File/separator "bat.css"))
+  (set-up-directory-structure "css" ".css")
   (is (= (into #{} (include-all-css))
          #{(list [:link {:type "text/css", :href (URI. "css/foo.css"), :rel "stylesheet"}])
            (list [:link {:type "text/css", :href (URI. "css/bar.css"), :rel "stylesheet"}])
            (list [:link {:type "text/css", :href (URI. "css/baz/bat.css"), :rel "stylesheet"}])}))
-  (fs/delete (str "css" File/separator "baz" File/separator "bat.css"))
-  (fs/delete (str "css" File/separator "baz"))
-  (fs/delete (str "css" File/separator "bar.css"))
-  (fs/delete (str "css" File/separator "foo.css"))
-  (fs/delete "css"))
+  (tear-down-directory-structure "css" ".css"))
 
 (deftest include-all-js-test
-  (fs/mkdir "js")
-  (fs/touch (str "js" File/separator "foo.js"))
-  (fs/touch (str "js" File/separator "bar.js"))
-  (fs/mkdir (str "js" File/separator "baz"))
-  (fs/touch (str "js" File/separator "baz" File/separator "bat.js"))
+  (set-up-directory-structure "js" ".js")
   (is (= (into #{} (include-all-js))         
          #{(list [:script {:type "text/javascript", :src (URI. "js/foo.js")}])
            (list [:script {:type "text/javascript", :src (URI. "js/bar.js")}])
            (list [:script {:type "text/javascript", :src (URI. "js/baz/bat.js")}])}))
-  (fs/delete (str "js" File/separator "baz" File/separator "bat.js"))
-  (fs/delete (str "js" File/separator "baz"))
-  (fs/delete (str "js" File/separator "bar.js"))
-  (fs/delete (str "js" File/separator "foo.js"))
-  (fs/delete "js"))
+  (tear-down-directory-structure "js" ".js"))
