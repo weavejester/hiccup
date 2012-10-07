@@ -79,3 +79,14 @@
   [& styles]
   (for [style styles]
     [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
+
+(defn only-css-files [files]
+  (filter (fn [file] (not (nil? (re-seq #".+.css" (.getName file))))) files))
+
+(defn include-all-css
+  ([] (include-all-css "css"))
+  ([dir]
+     (let [files (file-seq (clojure.java.io/file dir))
+           css-files (only-css-files files)]
+       (map include-css (map #(.getPath %) css-files)))))
+    

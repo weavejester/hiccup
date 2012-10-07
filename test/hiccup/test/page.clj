@@ -1,4 +1,5 @@
 (ns hiccup.test.page
+  (:require [fs.core :as fs])
   (:use clojure.test
         hiccup.page)
   (:import java.net.URI))
@@ -59,3 +60,22 @@
   (is (= (include-css "foo.css" "bar.css")
          (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
                [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
+
+
+
+(deftest include-all-css-test
+  (fs/mkdir "css")
+  (fs/touch "css/foo.css")
+  (fs/touch "css/bar.css")
+  (fs/mkdir "css/baz")
+  (fs/touch "css/baz/bat.css")
+  (is (= (include-all-css)
+         (list
+          (list [:link {:type "text/css", :href (URI. "css/foo.css"), :rel "stylesheet"}])
+          (list [:link {:type "text/css", :href (URI. "css/bar.css"), :rel "stylesheet"}])
+          (list [:link {:type "text/css", :href (URI. "css/baz/bat.css"), :rel "stylesheet"}]))))
+  (fs/delete "css/baz/bat.css")
+  (fs/delete "css/baz")
+  (fs/delete "css/bar.css")
+  (fs/delete "css/foo.css")
+  (fs/delete "css"))
