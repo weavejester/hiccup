@@ -3,7 +3,12 @@
   (:use [clojure.core.match :only (match)]
         [clojure.walk :only (postwalk)]))
 
-(defn html
+(defn xml
+  "Parse a tree of vectors into a clojure.xml-compatible data structure.
+  The vectors must be in the format:
+    [tag attr-map & content]
+  Or:
+    [tag & content]"
   ([])
   ([node & nodes]
      (mapcat html (cons node nodes)))
@@ -18,7 +23,14 @@
        [other]
        (list (str other)))))
 
-(defn css-sugar [nodes]
+(defn css-sugar
+  "Walk a clojure.xml tree and parse any tags with CSS-style IDs or classes in
+  their names.
+
+  For example:
+    {:tag \"foo#bar.baz\" :attrs {}}
+    => {:tag \"foo\" :attrs {:id \"bar\" :class \"baz\"}}"
+  [nodes]
   (postwalk
    (fn [node]
      (if-let [tag (:tag node)]
@@ -38,3 +50,9 @@
                   :else (str class " " tag-classes))))))
        node))
    nodes))
+
+(defn html
+  "Parse a tree of vectors into a clojure.xml-compatible data structure.
+  Equivalent to the composition of the xml and css-sugar functions."
+  [nodes]
+  (css-sugar (xml nodes)))
