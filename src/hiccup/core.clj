@@ -21,7 +21,7 @@
        [(content :guard seq?)]
        (apply html content)
        [other]
-       (list (str other)))))
+       (list other))))
 
 (defn css-sugar
   "Walk a clojure.xml tree and parse any tags with CSS-style IDs or classes in
