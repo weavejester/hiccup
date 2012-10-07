@@ -2,7 +2,8 @@
   (:require [fs.core :as fs])
   (:use clojure.test
         hiccup.page)
-  (:import java.net.URI))
+  (:import java.net.URI
+           java.io.File))
 
 (deftest html4-test
   (is (= (html4 [:body [:p "Hello" [:br] "World"]])
@@ -61,14 +62,12 @@
          (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
                [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
 
-
-
 (deftest include-all-css-test
   (fs/mkdir "css")
-  (fs/touch "css/foo.css")
-  (fs/touch "css/bar.css")
-  (fs/mkdir "css/baz")
-  (fs/touch "css/baz/bat.css")
+  (fs/touch (str "css" File/separator "foo.css"))
+  (fs/touch (str "css" File/separator "bar.css"))
+  (fs/mkdir (str "css" File/separator "baz"))
+  (fs/touch (str "css" File/separator "baz" File/separator "bat.css"))
   (is (= (include-all-css)
          (list
           (list [:link {:type "text/css", :href (URI. "css/foo.css"), :rel "stylesheet"}])
