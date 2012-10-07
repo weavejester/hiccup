@@ -89,4 +89,13 @@
      (let [files (file-seq (clojure.java.io/file dir))
            css-files (only-css-files files)]
        (map include-css (map #(.getPath %) css-files)))))
-    
+
+(defn only-js-files [files]
+  (filter (fn [file] (not (nil? (re-seq #".+.js" (.getName file))))) files))
+
+(defn include-all-js
+  ([] (include-all-js "js"))
+  ([dir]
+     (let [files (file-seq (clojure.java.io/file dir))
+           js-files (only-js-files files)]
+       (map include-js (map #(.getPath %) js-files)))))
