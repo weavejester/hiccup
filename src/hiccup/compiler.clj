@@ -40,6 +40,11 @@
     "footer" "form" "h1" "h2" "h3" "h4" "h5" "h6" "head" "header" "hgroup" "html"
     "i" "iframe" "label" "li" "nav" "ol" "option" "pre" "section" "script" "span"
     "strong" "style" "table" "textarea" "title" "ul"})
+ 
+(defn- merge-attributes [{:keys [id class]} map-attrs]
+  (->> map-attrs
+       (merge (if id {:id id}))
+       (merge-with #(if %1 (str %1 " " %2) %2) (if class {:class class}))))
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
@@ -51,7 +56,7 @@
                           :class (if class (.replace ^String class "." " "))}
         map-attrs        (first content)]
     (if (map? map-attrs)
-      [tag (merge tag-attrs map-attrs) (next content)]
+      [tag (merge-attributes tag-attrs map-attrs) (next content)]
       [tag tag-attrs content])))
 
 (defmulti render-html
