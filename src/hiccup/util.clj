@@ -69,14 +69,24 @@
 (defprotocol URLEncode
   (url-encode [x] "Turn a value into a URL-encoded string."))
 
+(defn- url-encode-map
+  "Recursively encodes a map."
+  ([m] (url-encode-map nil m))
+  ([prefix m]
+     (str/join "&"
+       (for [[k v] m]
+         (let [k (if prefix
+                   (str prefix "%5B" (url-encode k) "%5D")
+                   (url-encode k))]
+           (if (map? v)
+             (url-encode-map k v)
+             (str k "=" (url-encode v))))))))
+
 (extend-protocol URLEncode
   String
   (url-encode [s] (URLEncoder/encode s *encoding*))
   java.util.Map
-  (url-encode [m]
-    (str/join "&"
-      (for [[k v] m]
-        (str (url-encode k) "=" (url-encode v)))))
+  (url-encode [m] (url-encode-map m))
   Object
   (url-encode [x] (url-encode (to-str x))))
 
@@ -92,4 +102,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-

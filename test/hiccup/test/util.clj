@@ -60,7 +60,10 @@
       {:a "b"}        "a=b"
       {:a "b" :c "d"} "a=b&c=d"
       {:a "&"}        "a=%26"
-      {:é "è"}        "%C3%A9=%C3%A8"))
+      {:é "è"}        "%C3%A9=%C3%A8"
+      {:a "b" :c {:d "e" :f "g"}} "a=b&c%5Bd%5D=e&c%5Bf%5D=g"
+      {:a "b" :c {:é "è" :f "g"}} "a=b&c%5B%C3%A9%5D=%C3%A8&c%5Bf%5D=g"
+      {:a {:b {:c {:d "e"}}}} "a%5Bb%5D%5Bc%5D%5Bd%5D=e"))
   (testing "different encodings"
     (are [e s] (= (with-encoding e (url-encode {:iroha "いろは"})) s)
       "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
