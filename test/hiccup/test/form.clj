@@ -62,7 +62,18 @@
     (select-options ["foo" "bar"] "bar")
       "<option>foo</option><option selected=\"selected\">bar</option>"
     (select-options [["Foo" 1] ["Bar" 2]])
-      "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"))
+      "<option value=\"1\">Foo</option><option value=\"2\">Bar</option>"
+    (select-options [["Foo" [1 2]] ["Bar" [3 4]]])
+      (str "<optgroup label=\"Foo\"><option>1</option><option>2</option></optgroup>"
+           "<optgroup label=\"Bar\"><option>3</option><option>4</option></optgroup>")
+    (select-options [["Foo" [["bar" 1] ["baz" 2]]]])
+      (str "<optgroup label=\"Foo\"><option value=\"1\">bar</option>"
+           "<option value=\"2\">baz</option></optgroup>")
+    (select-options [["Foo" [1 2]]] 2)
+      (str "<optgroup label=\"Foo\"><option>1</option>"
+           "<option selected=\"selected\">2</option></optgroup>")))
+
+
 
 (deftest test-drop-down
   (let [options ["op1" "op2"]

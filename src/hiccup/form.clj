@@ -81,7 +81,9 @@
     (for [x coll]
       (if (sequential? x)
         (let [[text val] x]
-          [:option {:value val :selected (= val selected)} text])
+          (if (sequential? val)
+            [:optgroup {:label text} (select-options val selected)]
+            [:option {:value val :selected (= val selected)} text]))
         [:option {:selected (= x selected)} x]))))
 
 (defelem drop-down
