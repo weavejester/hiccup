@@ -1,7 +1,8 @@
 (ns hiccup.page
   "Functions for setting up HTML pages."
   (:use hiccup.core 
-        hiccup.util))
+        hiccup.util
+        hiccup.def))
 
 (def doctype
   {:html4
@@ -16,7 +17,7 @@
    :html5
    "<!DOCTYPE html>\n"})
 
-(defn xhtml-tag
+(defelem xhtml-tag
   "Create an XHTML element for the specified language."
   [lang & contents]
   [:html {:xmlns "http://www.w3.org/1999/xhtml"
@@ -58,15 +59,15 @@
   (if-not (map? options)
     `(html5 {} ~options ~@contents)
     (if (options :xml?)
-      `(let [options# ~options]
+      `(let [options# (dissoc ~options :xml?)]
          (html {:mode :xml}
            (xml-declaration (options# :encoding "UTF-8"))
            (doctype :html5)
-           (xhtml-tag (options# :lang) ~@contents)))
-      `(let [options# ~options]
+           (xhtml-tag options# (options# :lang) ~@contents)))
+      `(let [options# (dissoc ~options :xml?)]
          (html {:mode :html}
            (doctype :html5)
-           [:html {:lang (options# :lang)} ~@contents])))))
+           [:html options# ~@contents])))))
 
 (defn include-js
   "Include a list of external javascript files."
