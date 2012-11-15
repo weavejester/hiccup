@@ -16,7 +16,8 @@
   (is (= (as-str 100) "100"))
   (is (= (as-str 4/3) (str (float 4/3))))
   (is (= (as-str "a" :b 3) "ab3"))
-  (is (= (as-str (URI. "/foo")) "/foo")))
+  (is (= (as-str (URI. "/foo")) "/foo"))
+  (is (= (as-str (URI. "localhost:3000/foo")) "localhost:3000/foo")))
 
 (deftest test-to-uri
   (testing "with no base URL"

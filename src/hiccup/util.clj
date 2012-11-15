@@ -24,6 +24,7 @@
   java.net.URI
   (to-str [u]
     (if (or (.getHost u)
+            (nil? (.getPath u))
             (not (-> (.getPath u) (.startsWith "/"))))
       (str u)
       (let [base (str *base-url*)]
