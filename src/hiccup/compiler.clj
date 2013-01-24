@@ -54,10 +54,9 @@
       [tag (merge tag-attrs map-attrs) (next content)]
       [tag tag-attrs content])))
 
-(defmulti render-html
-  "Turn a Clojure data type into a string of HTML."
-  {:private true}
-  type)
+(defprotocol HtmlRenderer
+  (render-html [this]
+    "Turn a Clojure data type into a string of HTML."))
 
 (defn- render-element
   "Render an element vector as a HTML element."
@@ -69,15 +68,19 @@
            "</" tag ">")
       (str "<" tag (render-attr-map attrs) (end-tag)))))
 
-(defmethod render-html IPersistentVector
-  [element]
-  (render-element element))
-
-(defmethod render-html ISeq [coll]
-  (apply str (map render-html coll)))
-
-(defmethod render-html :default [x]
-  (as-str x))
+(extend-protocol HtmlRenderer
+  IPersistentVector
+  (render-html [this]
+    (render-element this))
+  ISeq
+  (render-html [this]
+    (apply str (map render-html this)))
+  Object
+  (render-html [this]
+    (str this))
+  nil
+  (render-html [this]
+    ""))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
