@@ -2,7 +2,7 @@
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.1"]]
-  :plugins [[codox "0.6.3"]]
+  :plugins [[codox "0.6.4"]]
   :codox {:exclude [hiccup.compiler]
           :src-dir-uri "http://github.com/weavejester/hiccup/blob/1.0.2"
           :src-linenum-anchor-prefix "L"}
