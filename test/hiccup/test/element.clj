@@ -23,14 +23,24 @@
          [:a {:href "mailto:foo@example.com"} "foo"])))
 
 (deftest unordered-list-test
-  (is (= (unordered-list ["foo" "bar" "baz"])
+  (is (= (unordered-list ["foo" '({:class "active"} "bar") "baz"])
          [:ul (list [:li "foo"]
-                    [:li "bar"]
+                    [:li {:class "active"} "bar"]
                     [:li "baz"])])))
 
 (deftest ordered-list-test
-  (is (= (ordered-list ["foo" "bar" "baz"])
+  (is (= (ordered-list ["foo" '({:class "active"} "bar") "baz"])
          [:ol (list [:li "foo"]
-                    [:li "bar"]
+                    [:li {:class "active"} "bar"]
                     [:li "baz"])])))
 
+(deftest list-in-list-test
+  (is (= (ordered-list ["foo"
+                        (list "bar" (ordered-list ["loo" "lar" "laz"]))
+                        "baz"])
+         [:ol (list [:li "foo"]
+                    [:li "bar"
+                     [:ol (list [:li "loo"]
+                                          [:li "lar"]
+                                          [:li "laz"])]]
+                    [:li "baz"])])))
