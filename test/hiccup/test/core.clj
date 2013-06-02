@@ -62,7 +62,14 @@
            "<input type=\"checkbox\" />")))
   (testing "nil attributes"
     (is (= (html [:span {:class nil} "foo"])
-           "<span>foo</span>"))))
+           "<span>foo</span>")))
+  (testing "style attributes"
+    (is (= (html [:span {:style "position: absolute;"}])
+           "<span style=\"position: absolute;\"></span>"))
+    (is (= (html [:span {:style {:position :absolute}}])
+           "<span style=\"position: absolute;\"></span>"))    
+    (is (= (html [:div {:style {:height "50px" :width "100px"}}])
+           "<div style=\"height: 50px; width: 100px;\"></div>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
