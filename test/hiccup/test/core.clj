@@ -36,6 +36,8 @@
   (testing "seqs are expanded"
     (is (= (html [:body (list "foo" "bar")]) "<body>foobar</body>"))
     (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>")))
+  (testing "keywords are turned into strings"
+    (is (= (html [:div :foo]) "<div>foo</div>")))
   (testing "vecs don't expand - error if vec doesn't have tag name"
     (is (thrown? IllegalArgumentException
                  (html (vector [:p "a"] [:p "b"])))))

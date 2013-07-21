@@ -1,7 +1,7 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
   (:use hiccup.util)
-  (:import [clojure.lang IPersistentVector ISeq]))
+  (:import [clojure.lang IPersistentVector ISeq Named]))
 
 (def ^:dynamic *html-mode* :xml)
 
@@ -75,6 +75,9 @@
   ISeq
   (render-html [this]
     (apply str (map render-html this)))
+  Named
+  (render-html [this]
+    (name this))
   Object
   (render-html [this]
     (str this))
