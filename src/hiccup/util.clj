@@ -82,7 +82,7 @@
   (url-encode [x] (url-encode (to-str x))))
 
 (defn url
-  "Creates a URL string from a variable list of arguments and an optional
+  "Creates a URI instance from a variable list of arguments and an optional
   parameter map as the last argument. For example:
     (url \"/group/\" 4 \"/products\" {:page 9})
     => \"/group/4/products?page=9\""
