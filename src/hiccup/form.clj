@@ -108,7 +108,7 @@
 (defelem label
   "Creates a label for an input field with the supplied name."
   [name text]
-  [:label {:for (make-id name)} text])
+  [:label {:id (make-id name)} text])
 
 (defelem submit-button
   "Creates a submit button."
