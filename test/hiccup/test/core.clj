@@ -28,7 +28,8 @@
     (is (= (html [:title]) "<title></title>"))
     (is (= (html [:section]) "<section></section>"))
     (is (= (html [:select]) "<select></select>"))
-    (is (= (html [:object]) "<object></object>")))
+    (is (= (html [:object]) "<object></object>"))
+    (is (= (html [:video]) "<video></video>")))
   (testing "tags containing text"
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
