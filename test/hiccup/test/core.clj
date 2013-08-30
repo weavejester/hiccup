@@ -27,7 +27,8 @@
     (is (= (html [:iframe]) "<iframe></iframe>"))
     (is (= (html [:title]) "<title></title>"))
     (is (= (html [:section]) "<section></section>"))
-    (is (= (html [:select]) "<select></select>")))
+    (is (= (html [:select]) "<select></select>"))
+    (is (= (html [:object]) "<object></object>")))
   (testing "tags containing text"
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
