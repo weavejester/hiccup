@@ -80,3 +80,8 @@
   [& styles]
   (for [style styles]
     [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
+
+(defn include-favicon
+  "Include an image to be used as the site's favicon."
+  [icon]
+    [:link {:type "image/x-icon" :id "page_favicon" :href (to-uri icon) :rel "icon"}])
