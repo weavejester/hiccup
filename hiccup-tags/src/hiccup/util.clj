@@ -59,6 +59,9 @@
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")))
 
+(def ^{:doc "Alias for hiccup.util/escape-html"}
+  h escape-html)
+
 (def ^:dynamic *encoding* "UTF-8")
 
 (defmacro with-encoding
@@ -93,4 +96,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-
