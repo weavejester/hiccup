@@ -13,12 +13,17 @@ Add the following dependency to your `project.clj` file:
 
     [hiccup "1.0.4"]
 
+Alternatively you can include just the data structure generation
+functions by adding the following:
+
+    [hiccup/hiccup-common "1.0.4"]
+
 Documentation
 -------------
 
 * [Wiki](https://github.com/weavejester/hiccup/wiki)
 * [API Docs](http://weavejester.github.com/hiccup)
-    
+
 Syntax
 ------
 
