@@ -42,7 +42,7 @@
   (apply str (map to-str xs)))
 
 (defprotocol ToURI
-  (^URI to-uri [x] "Convert a value into a URI."))
+  (^java.net.URI to-uri [x] "Convert a value into a URI."))
 
 (extend-protocol ToURI
   java.net.URI
