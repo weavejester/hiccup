@@ -3,7 +3,7 @@
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.1"]]
   :aliases {"test-all"
-            ["with-profile" "clj:clj,1.3:clj,1.4:clj,1.5:cljs" "test"]}
+            ["with-profile" "dev:clj,1.3:clj,1.4:clj,1.5:cljs" "test"]}
   :profiles
   {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
    :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
@@ -25,7 +25,13 @@
                           :rules :clj}
                          {:source-paths ["test"]
                           :output-path "target/test-classes"
-                          :rules :clj}]}
+                          :rules :clj}
+                         {:source-paths ["src"]
+                          :output-path "target/classes"
+                          :rules :cljs}
+                         {:source-paths ["test"]
+                          :output-path "target/test-classes"
+                          :rules :cljs}]}
          :source-paths ["target/classes"]
          :test-paths ["test" "target/test-classes"]
          :repl-options {:nrepl-middleware [cljx.repl-middleware/wrap-cljx]}}
@@ -49,4 +55,6 @@
                                            :pretty-print true}}]
                       :test-commands {"phantom"
                                       ["phantomjs"
-                                       :runner "target/test/hiccup-common.js"]}}}})
+                                       :runner "target/test/hiccup-common.js"]}}
+          :source-paths ["target/classes"]
+          :test-paths ["test" "target/test-classes"]}})
