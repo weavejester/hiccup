@@ -1,7 +1,16 @@
 (ns hiccup.test.form
-  (:use clojure.test
-        hiccup.form)
-  (:import java.net.URI))
+  #+clj (:use clojure.test
+              hiccup.form
+              hiccup.util)
+  #+cljs (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
+                          [hiccup.form :refer [with-group]])
+  #+cljs (:require [cemerick.cljs.test]
+                   [hiccup.form :refer [check-box drop-down email-field file-upload
+                                        form-field form-to hidden-field label
+                                        password-field radio-button reset-button
+                                        select-options submit-button text-area
+                                        text-field]]
+                   [hiccup.util :refer [to-uri]]))
 
 (deftest test-hidden-field
   (is (= (hidden-field :foo "bar")
@@ -131,17 +140,17 @@
 
 (deftest test-form-to
   (is (= (form-to [:post "/path"] "foobar")
-         [:form {:action (URI. "/path") :method "POST"} "foobar"])))
+         [:form {:action (to-uri "/path") :method "POST"} "foobar"])))
 
 (deftest test-form-to-with-hidden-method
   (is (= (form-to [:put "/path"] "foo" "bar")
-         [:form {:action (URI. "/path") :method "POST"}
+         [:form {:action (to-uri "/path") :method "POST"}
           [:input {:id "_method" :name "_method" :type "hidden" :value "PUT"}]
           "foo" "bar"])))
 
 (deftest test-form-to-with-extr-atts
   (is (= (form-to {:class "classy"} [:post "/path"] "foo" "bar")
-         [:form {:action (URI. "/path") :method "POST" :class "classy"} "foo" "bar"])))
+         [:form {:action (to-uri "/path") :method "POST" :class "classy"} "foo" "bar"])))
 
 (deftest test-with-group
   (testing "hidden-field"

@@ -1,7 +1,12 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use hiccup.def
-        hiccup.util))
+  #+clj (:use hiccup.def
+              hiccup.util)
+  #+clj (:require [clojure.string :as str])
+  #+cljs (:require-macros [hiccup.def-macros :refer [defelem]])
+  #+cljs (:require [hiccup.def]
+                   [hiccup.util :refer [as-str escape-html to-uri]]
+                   [clojure.string :as str]))
 
 (def ^:dynamic *group* [])
 
@@ -125,7 +130,7 @@
   e.g. (form-to [:put \"/post\"]
          ...)"
   [[method action] & body]
-  (let [method-str (.toUpperCase (name method))
+  (let [method-str (str/upper-case (name method))
         action-uri (to-uri action)]
     (-> (if (contains? #{:get :post} method)
           [:form {:method method-str, :action action-uri}]

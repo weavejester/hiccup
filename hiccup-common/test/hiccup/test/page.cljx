@@ -1,7 +1,12 @@
 (ns hiccup.test.page
-  (:use clojure.test
-        hiccup.page)
-  (:import java.net.URI))
+  #+clj (:use clojure.test
+              hiccup.page
+              hiccup.util)
+  #+cljs (:require-macros [cemerick.cljs.test :refer [deftest is testing]])
+  #+cljs (:require [cemerick.cljs.test]
+                   [hiccup.page :refer [html4 html5 include-css include-js xhtml
+                                        xhtml-tag xml-declaration]]
+                   [hiccup.util :refer [to-uri]]))
 
 (deftest xhtml-tag-test
   (is (= (xhtml-tag "en-US" [:body "foo"])
@@ -84,14 +89,14 @@
 
 (deftest include-js-test
   (is (= (include-js "foo.js")
-         (list [:script {:type "text/javascript" :src (URI. "foo.js")}])))
+         (list [:script {:type "text/javascript" :src (to-uri "foo.js")}])))
   (is (= (include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript" :src (URI. "foo.js")}]
-               [:script {:type "text/javascript" :src (URI. "bar.js")}]))))
+         (list [:script {:type "text/javascript" :src (to-uri "foo.js")}]
+               [:script {:type "text/javascript" :src (to-uri "bar.js")}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
-         (list [:link {:type "text/css" :href (URI. "foo.css") :rel "stylesheet"}])))
+         (list [:link {:type "text/css" :href (to-uri "foo.css") :rel "stylesheet"}])))
   (is (= (include-css "foo.css" "bar.css")
-         (list [:link {:type "text/css" :href (URI. "foo.css") :rel "stylesheet"}]
-               [:link {:type "text/css" :href (URI. "bar.css") :rel "stylesheet"}]))))
+         (list [:link {:type "text/css" :href (to-uri "foo.css") :rel "stylesheet"}]
+               [:link {:type "text/css" :href (to-uri "bar.css") :rel "stylesheet"}]))))
