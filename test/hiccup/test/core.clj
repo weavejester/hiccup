@@ -34,7 +34,7 @@
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
     (is (= (html [:body "foo" "bar"]) "<body>foobar</body>"))
-    (is (= (html [:body [:p] [:br]]) "<body><p /><br /></body>")))
+    (is (= (html [:body [:p] [:br]]) "<body><p></p><br /></body>")))
   (testing "seqs are expanded"
     (is (= (html [:body (list "foo" "bar")]) "<body>foobar</body>"))
     (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>")))
@@ -44,7 +44,7 @@
     (is (thrown? IllegalArgumentException
                  (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
-    (is (= (html [:div [:p]]) "<div><p /></div>"))
+    (is (= (html [:div [:p]]) "<div><p></p></div>"))
     (is (= (html [:div [:b]]) "<div><b></b></div>"))
     (is (= (html [:p [:span [:a "foo"]]])
            "<p><span><a>foo</a></span></p>"))))
