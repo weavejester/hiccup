@@ -3,8 +3,6 @@
   (:use hiccup.util)
   (:import [clojure.lang IPersistentVector ISeq Named]))
 
-(def ^:dynamic *html-mode* :xhtml)
-
 (defn- xml-mode? []
   (#{:xml :xhtml} *html-mode*))
 
