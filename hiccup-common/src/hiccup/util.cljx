@@ -42,8 +42,7 @@
 #+cljs
 (extend-protocol ToString
   cljs.core.Keyword
-  (to-str [x]
-    (name x))
+  (to-str [x] (name x))
   goog.Uri
   (to-str [x]
     (if (or (. x (hasDomain))
@@ -54,15 +53,12 @@
         (if (re-matches #".*/$" base)
           (str (subs base 0 (dec (count base))) x)
           (str base x)))))
-  nil
-  (to-str [_]
-    "")
   number
-  (to-str [x]
-    (str x))
+  (to-str [x] (str x))
   default
-  (to-str [x]
-    (str x)))
+  (to-str [x] (str x))
+  nil
+  (to-str [_] ""))
 
 (defn as-str
   "Converts its arguments into a string using to-str."
