@@ -22,7 +22,7 @@
     (is (= (html [:div]) "<div></div>"))
     (is (= (html [:h1]) "<h1></h1>"))
     (is (= (html [:script]) "<script></script>"))
-    (is (= (html [:text]) "<text />"))
+    (is (= (html [:text]) "<text></text>"))
     (is (= (html [:a]) "<a></a>"))
     (is (= (html [:iframe]) "<iframe></iframe>"))
     (is (= (html [:title]) "<title></title>"))
@@ -30,11 +30,16 @@
     (is (= (html [:select]) "<select></select>"))
     (is (= (html [:object]) "<object></object>"))
     (is (= (html [:video]) "<video></video>")))
+  (testing "void tags"
+    (is (= (html [:br]) "<br />"))
+    (is (= (html [:link]) "<link />"))
+    (is (= (html [:colgroup {:span 2}] "<colgroup span=\"2\" />")))
+    (is (= (html [:colgroup [:col]] "<colgroup><col /></colgroup>"))))
   (testing "tags containing text"
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
     (is (= (html [:body "foo" "bar"]) "<body>foobar</body>"))
-    (is (= (html [:body [:p] [:br]]) "<body><p /><br /></body>")))
+    (is (= (html [:body [:p] [:br]]) "<body><p></p><br /></body>")))
   (testing "seqs are expanded"
     (is (= (html [:body (list "foo" "bar")]) "<body>foobar</body>"))
     (is (= (html (list [:p "a"] [:p "b"])) "<p>a</p><p>b</p>")))
@@ -44,20 +49,20 @@
     (is (thrown? IllegalArgumentException
                  (html (vector [:p "a"] [:p "b"])))))
   (testing "tags can contain tags"
-    (is (= (html [:div [:p]]) "<div><p /></div>"))
+    (is (= (html [:div [:p]]) "<div><p></p></div>"))
     (is (= (html [:div [:b]]) "<div><b></b></div>"))
     (is (= (html [:p [:span [:a "foo"]]])
            "<p><span><a>foo</a></span></p>"))))
 
 (deftest tag-attributes
   (testing "tag with blank attribute map"
-    (is (= (html [:xml {}]) "<xml />")))
+    (is (= (html [:xml {}]) "<xml></xml>")))
   (testing "tag with populated attribute map"
-    (is (= (html [:xml {:a "1", :b "2"}]) "<xml a=\"1\" b=\"2\" />"))
+    (is (= (html [:xml {:a "1", :b "2"}]) "<xml a=\"1\" b=\"2\"></xml>"))
     (is (= (html [:img {"id" "foo"}]) "<img id=\"foo\" />"))
     (is (= (html [:img {'id "foo"}]) "<img id=\"foo\" />"))
     (is (= (html [:xml {:a "1", 'b "2", "c" "3"}])
-           "<xml a=\"1\" b=\"2\" c=\"3\" />")))
+           "<xml a=\"1\" b=\"2\" c=\"3\"></xml>")))
   (testing "attribute values are escaped"
     (is (= (html [:div {:id "\""}]) "<div id=\"&quot;\"></div>")))
   (testing "boolean attributes"
@@ -82,8 +87,8 @@
     (is (= (html [:span ({:foo "bar"} :foo)]) "<span>bar</span>")))
   (testing "attributes can contain vars"
     (let [x "foo"]
-      (is (= (html [:xml {:x x}]) "<xml x=\"foo\" />"))
-      (is (= (html [:xml {x "x"}]) "<xml foo=\"x\" />"))
+      (is (= (html [:xml {:x x}]) "<xml x=\"foo\"></xml>"))
+      (is (= (html [:xml {x "x"}]) "<xml foo=\"x\"></xml>"))
       (is (= (html [:xml {:x x} "bar"]) "<xml x=\"foo\">bar</xml>"))))
   (testing "attributes are evaluated"
     (is (= (html [:img {:src (str "/foo" "/bar")}])
@@ -109,10 +114,11 @@
 
 (deftest render-modes
   (testing "closed tag"
-    (is (= (html [:br]) "<br />"))
-    (is (= (html {:mode :xml} [:br]) "<br />"))
-    (is (= (html {:mode :sgml} [:br]) "<br>"))
-    (is (= (html {:mode :html} [:br]) "<br>")))
+    (is (= (html [:p] [:br]) "<p></p><br />"))
+    (is (= (html {:mode :xhtml} [:p] [:br]) "<p></p><br />"))
+    (is (= (html {:mode :html} [:p] [:br]) "<p></p><br>"))
+    (is (= (html {:mode :xml} [:p] [:br]) "<p /><br />"))
+    (is (= (html {:mode :sgml} [:p] [:br]) "<p><br>")))
   (testing "boolean attributes"
     (is (= (html {:mode :xml} [:input {:type "checkbox" :checked true}])
            "<input checked=\"checked\" type=\"checkbox\" />"))

@@ -6,6 +6,8 @@
   #+cljs (:import goog.Uri
                   goog.string))
 
+(def ^:dynamic *html-mode* :xhtml)
+
 (def ^:dynamic *base-url* nil)
 
 (defmacro with-base-url
@@ -90,7 +92,8 @@
     (replace "&"  "&amp;")
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
-    (replace "\"" "&quot;"))
+    (replace "\"" "&quot;")
+    (replace "'" (if (= *html-mode* :sgml) "&#39;" "&apos;")))
   #+cljs
   (string/htmlEscape (as-str text)))
 

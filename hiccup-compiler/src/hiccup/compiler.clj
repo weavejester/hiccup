@@ -3,10 +3,11 @@
   (:use hiccup.util)
   (:import [clojure.lang IPersistentVector ISeq Named]))
 
-(def ^:dynamic *html-mode* :xml)
-
 (defn- xml-mode? []
-  (= *html-mode* :xml))
+  (#{:xml :xhtml} *html-mode*))
+
+(defn- html-mode? []
+  (#{:html :xhtml} *html-mode*))
 
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
@@ -33,14 +34,19 @@
        :private true}
   re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
-(def ^{:doc "A list of elements that need an explicit ending tag when rendered."
+(def ^{:doc "A list of elements that must be rendered without a closing tag."
        :private true}
-  container-tags
-  #{"a" "article" "aside" "b" "body" "canvas" "dd" "div" "dl" "dt" "em" "fieldset"
-    "footer" "form" "h1" "h2" "h3" "h4" "h5" "h6" "head" "header" "hgroup" "html"
-    "i" "iframe" "label" "li" "nav" "object" "ol" "option" "pre" "section" "select"
-    "script" "span" "strong" "style" "table" "textarea" "title" "ul" "video"})
- 
+  void-tags
+  #{"area" "base" "br" "col" "command" "embed" "hr" "img" "input" "keygen" "link"
+    "meta" "param" "source" "track" "wbr"})
+
+(defn- container-tag?
+  "Returns true if the tag has content or is not a void tag. In non-HTML modes,
+  all contentless tags are assumed to be void tags."
+  [tag content]
+  (or content
+      (and (html-mode?) (not (void-tags tag)))))
+
 (defn- merge-attributes [{:keys [id class]} map-attrs]
   (->> map-attrs
        (merge (if id {:id id}))
@@ -67,7 +73,7 @@
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
-    (if (or content (container-tags tag))
+    (if (container-tag? tag content)
       (str "<" tag (render-attr-map attrs) ">"
            (render-html content)
            "</" tag ">")
@@ -186,7 +192,7 @@
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element [tag attrs])]
-    (if (or content (container-tags tag))
+    (if (container-tag? tag content)
       `(str ~(str "<" tag) ~(compile-attr-map attrs) ">"
             ~@(compile-seq content)
             ~(str "</" tag ">"))
@@ -202,7 +208,7 @@
         attrs-sym         (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
-         ~(if (or content (container-tags tag))
+         ~(if (container-tag? tag content)
             `(str ~(str "<" tag)
                   (#'render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
                   ~@(compile-seq content)
@@ -210,7 +216,7 @@
             `(str ~(str "<" tag)
                   (#'render-attr-map (merge ~tag-attrs ~attrs-sym))
                   ~(end-tag)))
-         ~(if (or attrs (container-tags tag))
+         ~(if (container-tag? tag attrs)
             `(str ~(str "<" tag (render-attr-map tag-attrs) ">")
                   ~@(compile-seq (cons attrs-sym content))
                   ~(str "</" tag ">"))

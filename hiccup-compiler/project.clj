@@ -1,8 +1,8 @@
-(defproject hiccup/hiccup-compiler "1.0.4"
+(defproject hiccup/hiccup-compiler "1.0.5"
   :description "Hiccup data structure compilation functions"
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.1"]
-                 [hiccup/hiccup-common "1.0.4"]]
+                 [hiccup/hiccup-common "1.0.5"]]
   :aliases {"test-all"
             ["with-profile" "dev:1.3:1.4:1.5" "test"]}
   :profiles

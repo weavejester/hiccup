@@ -1,4 +1,4 @@
-(defproject hiccup/hiccup-common "1.0.4"
+(defproject hiccup/hiccup-common "1.0.5"
   :description "Hiccup tag generation functions"
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.1"]]

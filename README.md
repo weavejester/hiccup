@@ -11,7 +11,7 @@ Install
 
 Add the following dependency to your `project.clj` file:
 
-    [hiccup "1.0.4"]
+    [hiccup "1.0.5"]
 
 Alternatively you can include just the data structure generation
 functions by adding the following:

@@ -15,7 +15,9 @@
   (is (= (escape-html "<") "&lt;"))
   (is (= (escape-html ">") "&gt;"))
   (is (= (escape-html "&") "&amp;"))
-  (is (= (escape-html "foo") "foo")))
+  (is (= (escape-html "foo") "foo"))
+  #+clj (is (= (escape-html "'") "&apos;"))
+  #+clj (is (= (binding [*html-mode* :sgml] (escape-html "'")) "&#39;")))
 
 (deftest test-as-str
   (is (= (as-str "foo") "foo"))
