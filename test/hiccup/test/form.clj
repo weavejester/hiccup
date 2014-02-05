@@ -71,7 +71,10 @@
            "<option value=\"2\">baz</option></optgroup>")
     (select-options [["Foo" [1 2]]] 2)
       (str "<optgroup label=\"Foo\"><option>1</option>"
-           "<option selected=\"selected\">2</option></optgroup>")))
+           "<option selected=\"selected\">2</option></optgroup>")
+    (select-options ["foo" "bar" "baz"] ["foo" "bar"])
+      "<option selected=\"selected\">foo</option><option selected=\"selected\">bar</option><option>baz</option>"
+      ))
 
 
 
