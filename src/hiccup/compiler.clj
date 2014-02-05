@@ -1,6 +1,7 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
   (:use hiccup.util)
+  (:require [clojure.string :as str])
   (:import [clojure.lang IPersistentVector ISeq Named]))
 
 (defn- xml-mode? []
@@ -12,8 +13,19 @@
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
 
+;; Borrowed from dommy (git://github.com/Prismatic/dommy.git)
+(defn- style-str [x]
+  (if (string? x)
+    x
+    (->> x
+         (map (fn [[k v]] (str (name k) ": " (name v) ";")))
+         (str/join " "))))
+
 (defn- xml-attribute [name value]
-  (str " " (as-str name) "=\"" (escape-html value) "\""))
+  (let [value (if (identical? name :style)
+                (style-str value)
+                value)]
+    (str " " (as-str name) "=\"" (escape-html value) "\"")))
 
 (defn- render-attribute [[name value]]
   (cond
