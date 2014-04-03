@@ -2,8 +2,7 @@
   #+clj (:use clojure.test
               hiccup.element
               hiccup.util)
-  #+cljs (:require-macros [cemerick.cljs.test :refer [is deftest]])
-  #+cljs (:require [cemerick.cljs.test]
+  #+cljs (:require [cemerick.cljs.test :refer-macros [is deftest]]
                    [hiccup.element :refer [javascript-tag link-to mail-to
                                            unordered-list ordered-list]]
                    [hiccup.util :refer [to-uri]]))

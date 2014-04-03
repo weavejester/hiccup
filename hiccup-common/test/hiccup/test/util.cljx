@@ -1,12 +1,11 @@
 (ns hiccup.test.util
   #+clj (:use clojure.test
               hiccup.util)
-  #+cljs (:require-macros [cemerick.cljs.test :refer [are deftest is testing]]
-                          [hiccup.util :refer [with-base-url]])
-  #+cljs (:require [cemerick.cljs.test]
+  #+cljs (:require [cemerick.cljs.test :refer-macros [are deftest is testing]]
                    [hiccup.test]
-                   [hiccup.util :refer [as-str escape-html to-str to-uri
-                                        url url-encode]])
+                   [hiccup.util :refer [as-str escape-html to-str to-uri url
+                                        url-encode]])
+  #+cljs (:require-macros [hiccup.util :refer [with-base-url]])
   #+clj (:import java.net.URI)
   #+cljs (:import goog.Uri))
 
@@ -69,9 +68,11 @@
     (are [m e] (= (url-encode m) e)
       {"a" "b"}       "a=b"
       {:a "b"}        "a=b"
-      {:a "b" :c "d"} "a=b&c=d"
       {:a "&"}        "a=%26"
-      {:é "è"}        "%C3%A9=%C3%A8"))
+      {:é "è"}        "%C3%A9=%C3%A8")
+    (is (let [s (url-encode {:a "b" :c "d"})]
+          (or (= s "a=b&c=d")
+              (= s "c=d&a=b")))))
   #+clj
   (testing "different encodings"
     (are [e s] (= (with-encoding e (url-encode {:iroha "いろは"})) s)

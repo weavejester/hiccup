@@ -2,8 +2,7 @@
   #+clj (:use clojure.test
               hiccup.page
               hiccup.util)
-  #+cljs (:require-macros [cemerick.cljs.test :refer [deftest is testing]])
-  #+cljs (:require [cemerick.cljs.test]
+  #+cljs (:require [cemerick.cljs.test :refer-macros [deftest is testing]]
                    [hiccup.page :refer [html4 html5 include-css include-js xhtml
                                         xhtml-tag xml-declaration]]
                    [hiccup.util :refer [to-uri]]))

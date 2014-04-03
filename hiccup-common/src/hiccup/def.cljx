@@ -16,11 +16,19 @@
   (for [args arglists]
     (vec (cons 'attr-map? args))))
 
+(defn add-wrap-attrs! [current-ns fname]
+  #+clj (let [fvar (ns-resolve *ns* fname)]
+          (alter-meta! fvar update-in [:arglists] #'update-arglists)
+          (alter-var-root fvar wrap-attrs)))
+
 (defmacro defelem
   "Defines a function that will return a element vector. If the first argument
   passed to the resulting function is a map, it merges it with the attribute
   map of the returned element value."
   [name & fdecl]
-  `(do (defn ~name ~@fdecl)
-       (alter-meta! (var ~name) update-in [:arglists] #'update-arglists)
-       (alter-var-root (var ~name) wrap-attrs)))
+  (let [fn-name# (gensym (str name))]
+    `(if *clojure-version*
+       (do (defn ~name ~@fdecl)
+           (add-wrap-attrs! *ns* '~name))
+       (do (defn- ~fn-name# ~@fdecl)
+           (def ~name (wrap-attrs ~fn-name#))))))

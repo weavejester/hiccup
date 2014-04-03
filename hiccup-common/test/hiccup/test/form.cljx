@@ -2,15 +2,14 @@
   #+clj (:use clojure.test
               hiccup.form
               hiccup.util)
-  #+cljs (:require-macros [cemerick.cljs.test :refer [deftest is testing]]
-                          [hiccup.form :refer [with-group]])
-  #+cljs (:require [cemerick.cljs.test]
+  #+cljs (:require [cemerick.cljs.test :refer-macros [deftest is testing]]
                    [hiccup.form :refer [check-box drop-down email-field file-upload
                                         form-field form-to hidden-field label
                                         password-field radio-button reset-button
                                         select-options submit-button text-area
                                         text-field]]
-                   [hiccup.util :refer [to-uri]]))
+                   [hiccup.util :refer [to-uri]])
+  #+cljs (:require-macros [hiccup.form :refer [with-group]]))
 
 (deftest test-hidden-field
   (is (= (hidden-field :foo "bar")

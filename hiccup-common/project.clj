@@ -3,7 +3,7 @@
   :url "http://github.com/weavejester/hiccup"
   :dependencies [[org.clojure/clojure "1.2.1"]]
   :aliases {"test-all"
-            ["with-profile" "test:1.3:1.4:1.5:cljs" "test"]}
+            ["with-profile" "test:1.3:1.4:1.5:1.6:cljs" "test"]}
   :plugins [[com.keminglabs/cljx "0.3.2"]]
   :hooks [cljx.hooks]
   :cljx {:builds [{:source-paths ["src"]
@@ -25,10 +25,11 @@
   {:1.3 {:dependencies [[org.clojure/clojure "1.3.0"]]}
    :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
    :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-   :cljs {:dependencies [[org.clojure/clojure "1.5.1"]
-                         [org.clojure/clojurescript "0.0-2138"]]
-          :plugins [[com.cemerick/clojurescript.test "0.2.1"]
-                    [lein-cljsbuild "1.0.1"]]
+   :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
+   :cljs {:dependencies [[org.clojure/clojure "1.6.0"]
+                         [org.clojure/clojurescript "0.0-2202"]]
+          :plugins [[com.cemerick/clojurescript.test "0.3.0"]
+                    [lein-cljsbuild "1.0.3"]]
           :hooks [leiningen.cljsbuild]
           :cljsbuild {:builds [{:id "test"
                                 :source-paths ["test" "target/classes"

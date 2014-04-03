@@ -2,8 +2,7 @@
   "Functions for setting up HTML pages."
   #+clj (:use hiccup.util
               hiccup.def)
-  #+cljs (:require-macros [hiccup.def-macros :refer [defelem]])
-  #+cljs (:require [hiccup.def]
+  #+cljs (:require [hiccup.def :refer-macros [defelem]]
                    [hiccup.util :refer [to-uri]]))
 
 (def doctype

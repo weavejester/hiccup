@@ -3,8 +3,7 @@
   #+clj (:use hiccup.def
               hiccup.util)
   #+clj (:require [clojure.string :as str])
-  #+cljs (:require-macros [hiccup.def-macros :refer [defelem]])
-  #+cljs (:require [hiccup.def]
+  #+cljs (:require [hiccup.def :refer-macros [defelem]]
                    [hiccup.util :refer [as-str escape-html to-uri]]
                    [clojure.string :as str]))
 

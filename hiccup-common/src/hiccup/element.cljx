@@ -2,8 +2,7 @@
   "Functions for creating HTML elements."
   #+clj (:use hiccup.def
               hiccup.util)
-  #+cljs (:require-macros [hiccup.def-macros :refer [defelem]])
-  #+cljs (:require [hiccup.def]
+  #+cljs (:require [hiccup.def :refer-macros [defelem]]
                    [hiccup.util :refer [to-uri]]))
 
 (defn javascript-tag
