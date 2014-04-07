@@ -4,10 +4,9 @@
               hiccup.util)
   #+cljs (:require [cemerick.cljs.test :refer-macros [deftest is testing]]
                    [hiccup.form :refer [check-box drop-down email-field file-upload
-                                        form-field form-to hidden-field label
-                                        password-field radio-button reset-button
-                                        select-options submit-button text-area
-                                        text-field]]
+                                        form-to hidden-field label password-field
+                                        radio-button reset-button select-options
+                                        submit-button text-area text-field]]
                    [hiccup.util :refer [to-uri]])
   #+cljs (:require-macros [hiccup.form :refer [with-group]]))
 

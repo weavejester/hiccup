@@ -1,5 +1,6 @@
 (ns hiccup.def
-  "Macros for defining functions that generate HTML")
+  "Macros for defining functions that generate HTML"
+  (:use [clojure.walk :only [postwalk-replace]]))
 
 (defn wrap-attrs
   "Add an optional attribute argument to a function that returns a element vector."
@@ -30,5 +31,6 @@
     `(if *clojure-version*
        (do (defn ~name ~@fdecl)
            (add-wrap-attrs! *ns* '~name))
-       (do (defn- ~fn-name# ~@fdecl)
-           (def ~name (wrap-attrs ~fn-name#))))))
+       (do (defn- ~fn-name# ~@(postwalk-replace {name fn-name#} fdecl))
+           (defn ~name [& args#]
+             (apply (wrap-attrs ~fn-name#) args#))))))
