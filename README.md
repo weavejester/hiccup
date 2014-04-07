@@ -13,12 +13,21 @@ Add the following dependency to your `project.clj` file:
 
     [hiccup "1.0.5"]
 
+Alternatively you can include just the data structure generation
+functions or the Hiccup Clojure compiler by adding either of the
+following:
+
+    [hiccup/hiccup-common "1.0.5"]
+    [hiccup/hiccup-compiler "1.0.5"]
+
+Note that `hiccup/hiccup-common` cross-compiles to ClojureScript.
+
 Documentation
 -------------
 
 * [Wiki](https://github.com/weavejester/hiccup/wiki)
 * [API Docs](http://weavejester.github.com/hiccup)
-    
+
 Syntax
 ------
 

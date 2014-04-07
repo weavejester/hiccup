@@ -1,8 +1,10 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
   (:require [clojure.string :as str])
-  (:import java.net.URI
-           java.net.URLEncoder))
+  #+clj (:import java.net.URI
+                 java.net.URLEncoder)
+  #+cljs (:import goog.Uri
+                  goog.string))
 
 (def ^:dynamic *html-mode* :xhtml)
 
@@ -16,8 +18,9 @@
      ~@body))
 
 (defprotocol ToString
-  (^String to-str [x] "Convert a value into a string."))
+  (to-str [x] "Convert a value into a string."))
 
+#+clj
 (extend-protocol ToString
   clojure.lang.Keyword
   (to-str [k] (name k))
@@ -38,29 +41,64 @@
   nil
   (to-str [_] ""))
 
-(defn ^String as-str
+#+cljs
+(extend-protocol ToString
+  cljs.core.Keyword
+  (to-str [x] (name x))
+  goog.Uri
+  (to-str [x]
+    (if (or (. x (hasDomain))
+            (nil? (. x (getPath)))
+            (not (re-matches #"^/.*" (. x (getPath)))))
+      (str x)
+      (let [base (str *base-url*)]
+        (if (re-matches #".*/$" base)
+          (str (subs base 0 (dec (count base))) x)
+          (str base x)))))
+  number
+  (to-str [x] (str x))
+  default
+  (to-str [x] (str x))
+  nil
+  (to-str [_] ""))
+
+(defn as-str
   "Converts its arguments into a string using to-str."
   [& xs]
   (apply str (map to-str xs)))
 
 (defprotocol ToURI
-  (^java.net.URI to-uri [x] "Convert a value into a URI."))
+  (to-uri [x] "Convert a value into a URI."))
 
+#+clj
 (extend-protocol ToURI
   java.net.URI
   (to-uri [u] u)
   String
   (to-uri [s] (URI. s)))
 
+#+cljs
+(extend-protocol ToURI
+  Uri
+  (to-uri [x] x)
+  default
+  (to-uri [x] (Uri. (str x))))
+
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
+  #+clj
   (.. ^String (as-str text)
     (replace "&"  "&amp;")
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")
-    (replace "'" (if (= *html-mode* :sgml) "&#39;" "&apos;"))))
+    (replace "'" (if (= *html-mode* :sgml) "&#39;" "&apos;")))
+  #+cljs
+  (string/htmlEscape (as-str text)))
+
+(def ^{:doc "Alias for hiccup.util/escape-html"}
+  h escape-html)
 
 (def ^:dynamic *encoding* "UTF-8")
 
@@ -73,15 +111,34 @@
 (defprotocol URLEncode
   (url-encode [x] "Turn a value into a URL-encoded string."))
 
+#+clj
 (extend-protocol URLEncode
   String
   (url-encode [s] (URLEncoder/encode s *encoding*))
+
   java.util.Map
   (url-encode [m]
     (str/join "&"
       (for [[k v] m]
         (str (url-encode k) "=" (url-encode v)))))
+
   Object
+  (url-encode [x] (url-encode (to-str x))))
+
+#+cljs
+(extend-protocol URLEncode
+  string
+  (url-encode [s]
+    (-> (goog.string/urlEncode s)
+        (str/replace "%20" "+")))
+
+  PersistentArrayMap
+  (url-encode [m]
+    (str/join "&"
+      (for [[k v] m]
+        (str (url-encode k) "=" (url-encode v)))))
+
+  default
   (url-encode [x] (url-encode (to-str x))))
 
 (defn url
@@ -96,4 +153,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-

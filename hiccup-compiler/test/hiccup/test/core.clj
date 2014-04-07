@@ -127,3 +127,15 @@
   (testing "laziness and binding scope"
     (is (= (html {:mode :sgml} [:html [:link] (list [:link])])
            "<html><link><link></html>"))))
+
+(deftest test-defhtml
+  (testing "basic html function"
+    (defhtml basic-fn [x] [:span x])
+    (is (= (basic-fn "foo") "<span>foo</span>")))
+  (testing "html function with overloads"
+    (defhtml overloaded-fn
+      ([x] [:span x])
+      ([x y] [:span x [:div y]]))
+    (is (= (overloaded-fn "foo") "<span>foo</span>"))
+    (is (= (overloaded-fn "foo" "bar")
+           "<span>foo<div>bar</div></span>"))))

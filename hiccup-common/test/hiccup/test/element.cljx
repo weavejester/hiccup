@@ -1,7 +1,11 @@
 (ns hiccup.test.element
-  (:use clojure.test
-        hiccup.element)
-  (:import java.net.URI))
+  #+clj (:use clojure.test
+              hiccup.element
+              hiccup.util)
+  #+cljs (:require [cemerick.cljs.test :refer-macros [is deftest]]
+                   [hiccup.element :refer [javascript-tag link-to mail-to
+                                           unordered-list ordered-list]]
+                   [hiccup.util :refer [to-uri]]))
 
 (deftest javascript-tag-test
   (is (= (javascript-tag "alert('hello');")
@@ -10,11 +14,11 @@
 
 (deftest link-to-test
   (is (= (link-to "/")
-         [:a {:href (URI. "/")} nil]))
+         [:a {:href (to-uri "/")} nil]))
   (is (= (link-to "/" "foo")
-         [:a {:href (URI. "/")} (list "foo")]))
+         [:a {:href (to-uri "/")} '("foo")]))
   (is (= (link-to "/" "foo" "bar")
-         [:a {:href (URI. "/")} (list "foo" "bar")])))
+         [:a {:href (to-uri "/")} '("foo" "bar")])))
 
 (deftest mail-to-test
   (is (= (mail-to "foo@example.com")
@@ -33,4 +37,3 @@
          [:ol (list [:li "foo"]
                     [:li "bar"]
                     [:li "baz"])])))
-

@@ -1,8 +1,9 @@
 (ns hiccup.page
   "Functions for setting up HTML pages."
-  (:use hiccup.core 
-        hiccup.util
-        hiccup.def))
+  #+clj (:use hiccup.util
+              hiccup.def)
+  #+cljs (:require [hiccup.def :refer-macros [defelem]]
+                   [hiccup.util :refer [to-uri]]))
 
 (def doctype
   {:html4
@@ -23,51 +24,45 @@
   [:html {:xmlns "http://www.w3.org/1999/xhtml"
           "xml:lang" lang
           :lang lang}
-    contents])
+   contents])
 
 (defn xml-declaration
   "Create a standard XML declaration for the following encoding."
   [encoding]
   (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
-(defmacro html4
-  "Create a HTML 4 document with the supplied contents. The first argument
-  may be an optional attribute map."
-  [& contents]
-  `(html {:mode :sgml}
-     (doctype :html4)
-     [:html ~@contents]))
+(defn html4
+  "Returns a Hiccup representation of a HTML 4 document with the supplied
+  contents. The first argument may be an optional attribute map for the HTML
+  element."
+    [& contents]
+    (list (doctype :html4)
+          `[:html ~@contents]))
 
-(defmacro xhtml
-  "Create a XHTML 1.0 strict document with the supplied contents. The first
-  argument may be an optional attribute may. The following attributes are
-  treated specially:
+(defn xhtml
+  "Create a Hiccup representation of a XHTML 1.0 strict document with the
+  supplied contents. The first argument may be an optional attribute map for the
+  HTML element. The following attributes are treated specially:
     :lang     - The language of the document
     :encoding - The character encoding of the document, defaults to UTF-8."
-  [options & contents]
-  (if-not (map? options)
-    `(xhtml {} ~options ~@contents)
-    `(let [options# ~options]
-       (html {:mode :xml}
-         (xml-declaration (options# :encoding "UTF-8"))
-         (doctype :xhtml-strict)
-         (xhtml-tag (options# :lang) ~@contents)))))
+    [options & contents]
+    (if-not (map? options)
+      (apply xhtml {} options contents)
+      (list (xml-declaration (options :encoding "UTF-8"))
+            (doctype :xhtml-strict)
+            (apply xhtml-tag (options :lang) contents))))
 
-(defmacro html5
+(defn html5
   "Create a HTML5 document with the supplied contents."
   [options & contents]
   (if-not (map? options)
-    `(html5 {} ~options ~@contents)
+    (apply html5 {} options contents)
     (if (options :xml?)
-      `(let [options# (dissoc ~options :xml?)]
-         (html {:mode :xml}
-           (xml-declaration (options# :encoding "UTF-8"))
-           (doctype :html5)
-           (xhtml-tag options# (options# :lang) ~@contents)))
-      `(let [options# (dissoc ~options :xml?)]
-         (html {:mode :html}
-           (doctype :html5)
-           [:html options# ~@contents])))))
+      (list (xml-declaration (options :encoding "UTF-8"))
+            (doctype :html5)
+            (apply xhtml-tag (dissoc options :xml?) (options :lang) contents))
+      (list (doctype :html5)
+            (apply vector :html (dissoc options :xml?) contents)))))
 
 (defn include-js
   "Include a list of external javascript files."

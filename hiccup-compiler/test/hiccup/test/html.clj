@@ -1,9 +1,12 @@
-(ns hiccup.test.page
+(ns hiccup.test.html
   (:use clojure.test
-        hiccup.page)
-  (:import java.net.URI))
+        hiccup.html))
 
 (deftest html4-test
+  (is (= (html4 [:body [:p "Hello" [:br] "World"]])
+         (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
+              "\"http://www.w3.org/TR/html4/strict.dtd\">\n"
+              "<html><body><p>Hello<br>World</p></body></html>")))
   (is (= (html4 [:body [:p "Hello" [:br] "World"]])
          (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
               "\"http://www.w3.org/TR/html4/strict.dtd\">\n"
@@ -51,34 +54,20 @@
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body><p>Hello<br />World</p></body></html>")))
-    (is (= (html5 {:xml? true, :lang "en"} [:body "Hello World"])
+    (is (= (html5 {:xml? true :lang "en"} [:body "Hello World"])
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n"
                 "<html lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body>Hello World</body></html>")))
-    (is (= (html5 {:xml? true,
+    (is (= (html5 {:xml? true
                    "xml:og" "http://ogp.me/ns#"} [:body "Hello World"])
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n"
                 "<html xml:og=\"http://ogp.me/ns#\" xmlns=\"http://www.w3.org/1999/xhtml\">"
-                "<body>Hello World</body></html>")))    
-    (is (= (html5 {:xml? true, :lang "en"
+                "<body>Hello World</body></html>")))
+    (is (= (html5 {:xml? true :lang "en"
                    "xml:og" "http://ogp.me/ns#"} [:body "Hello World"])
            (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                 "<!DOCTYPE html>\n"
                 "<html lang=\"en\" xml:lang=\"en\" xml:og=\"http://ogp.me/ns#\" xmlns=\"http://www.w3.org/1999/xhtml\">"
                 "<body>Hello World</body></html>")))))
-
-(deftest include-js-test
-  (is (= (include-js "foo.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
-  (is (= (include-js "foo.js" "bar.js")
-         (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
-               [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
-
-(deftest include-css-test
-  (is (= (include-css "foo.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}])))
-  (is (= (include-css "foo.css" "bar.css")
-         (list [:link {:type "text/css", :href (URI. "foo.css"), :rel "stylesheet"}]
-               [:link {:type "text/css", :href (URI. "bar.css"), :rel "stylesheet"}]))))
