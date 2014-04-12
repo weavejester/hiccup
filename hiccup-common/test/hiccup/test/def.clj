@@ -2,17 +2,19 @@
   (:use clojure.test
         hiccup.def))
 
+(hiccup.core/set-compiler! vector)
+
 (deftest test-defhtml
   (testing "basic html function"
     (defhtml basic-fn [x] [:span x])
-    (is (= (basic-fn "foo") "<span>foo</span>")))
+    (is (= (basic-fn "foo") [[:span "foo"]])))
   (testing "html function with overloads"
     (defhtml overloaded-fn
       ([x] [:span x])
       ([x y] [:span x [:div y]]))
-    (is (= (overloaded-fn "foo") "<span>foo</span>"))
+    (is (= (overloaded-fn "foo") [[:span "foo"]]))
     (is (= (overloaded-fn "foo" "bar")
-           "<span>foo<div>bar</div></span>"))))
+           [[:span "foo" [:div "bar"]]]))))
 
 (deftest test-defelem
   (testing "one overload function"
