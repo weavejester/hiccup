@@ -4,10 +4,16 @@
   (:use hiccup.util))
 
 (def ^{:dynamic true
-       :doc "The current hiccup compiler. Defaults to hiccup.compiler/compile.html,
-            if defined."}
+       :doc "The current hiccup compiler."}
   *compiler*
-  (or (resolve 'hiccup.compiler/compile-html)
+  nil)
+
+(defn resolve-compiler
+  "Returns the current compiler function. Defaults to
+  hiccup.compiler/compile-html, if available."
+  []
+  (or *compiler*
+      (resolve 'hiccup.compiler/compile-html)
       (fn [& args] (throw (Exception. "hiccup.core/*compiler* not defined.")))))
 
 (defn set-compiler!
@@ -21,8 +27,8 @@
   (if-let [mode (and (map? options) (:mode options))]
     (binding [*html-mode* mode]
       `(binding [*html-mode* ~mode]
-         ~(apply *compiler* content)))
-    (apply *compiler* options content)))
+         ~(apply (resolve-compiler) content)))
+    (apply (resolve-compiler) options content)))
 
 (def ^{:doc "Alias for hiccup.util/escape-html"}
   h escape-html)
