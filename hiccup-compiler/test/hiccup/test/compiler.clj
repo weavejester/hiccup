@@ -1,5 +1,6 @@
-(ns hiccup.test.core
+(ns hiccup.test.compiler
   (:use clojure.test
+        hiccup.compiler
         hiccup.core))
 
 (deftest tag-names
