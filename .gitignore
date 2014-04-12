@@ -1,4 +1,6 @@
 /target
+/hiccup-common/target
+/hiccup-compiler/target
 /lib
 /doc
 /classes
