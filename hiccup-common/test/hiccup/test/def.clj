@@ -49,4 +49,8 @@
     (is (thrown? AssertionError (three-forms-extra 0)))
     (is (thrown? AssertionError (three-forms-extra 0 0)))
     (is (= "my documentation" (:doc (meta #'three-forms-extra))))
-    (is (= :attr (:my (meta #'three-forms-extra))))))
+    (is (= :attr (:my (meta #'three-forms-extra)))))
+  (testing "attributes on seq return values"
+    (defelem returns-seq [] '([:a] [:b]))
+    (is (= (returns-seq {:foo :bar})
+           '([:a {:foo :bar}] [:b {:foo :bar}])))))

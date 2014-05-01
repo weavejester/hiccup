@@ -1,15 +1,21 @@
 (ns hiccup.def
   "Macros for defining functions that generate HTML")
 
+(defn- add-attrs [[tag & body] attrs]
+  (if (map? (first body))
+    (apply vector tag (merge (first body) attrs) (rest body))
+    (apply vector tag attrs body)))
+
 (defn wrap-attrs
-  "Add an optional attribute argument to a function that returns a element vector."
+  "Add an optional attribute argument to a function that returns an element
+  vector or a seq of element vectors."
   [func]
   (fn [& args]
     (if (map? (first args))
-      (let [[tag & body] (apply func (rest args))]
-        (if (map? (first body))
-          (apply vector tag (merge (first body) (first args)) (rest body))
-          (apply vector tag (first args) body)))
+      (let [result (apply func (rest args))]
+        (if (seq? result)
+          (map #(add-attrs % (first args)) result)
+          (add-attrs result (first args))))
       (apply func args))))
 
 (defn- update-arglists [arglists]
@@ -17,9 +23,9 @@
     (vec (cons 'attr-map? args))))
 
 (defmacro defelem
-  "Defines a function that will return a element vector. If the first argument
-  passed to the resulting function is a map, it merges it with the attribute
-  map of the returned element value."
+  "Defines a function that will return an element vector or a seq of element
+  vectors. If the first argument passed to the resulting function is a map, it
+  is merged with the attribute map of the returned element vector(s)."
   [name & fdecl]
   `(do (defn ~name ~@fdecl)
        (alter-meta! (var ~name) update-in [:arglists] #'update-arglists)
