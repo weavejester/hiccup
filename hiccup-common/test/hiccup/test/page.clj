@@ -88,11 +88,23 @@
          (list [:script {:type "text/javascript" :src (to-uri "foo.js")}])))
   (is (= (include-js "foo.js" "bar.js")
          (list [:script {:type "text/javascript" :src (to-uri "foo.js")}]
-               [:script {:type "text/javascript" :src (to-uri "bar.js")}]))))
+               [:script {:type "text/javascript" :src (to-uri "bar.js")}])))
+  (is (= (include-js {:type "text/clojurescript"} "foo.cljs" "bar.cljs")
+         (list [:script {:type "text/clojurescript" :src (to-uri "foo.cljs")}]
+               [:script {:type "text/clojurescript" :src (to-uri "bar.cljs")}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
          (list [:link {:type "text/css" :href (to-uri "foo.css") :rel "stylesheet"}])))
   (is (= (include-css "foo.css" "bar.css")
          (list [:link {:type "text/css" :href (to-uri "foo.css") :rel "stylesheet"}]
-               [:link {:type "text/css" :href (to-uri "bar.css") :rel "stylesheet"}]))))
+               [:link {:type "text/css" :href (to-uri "bar.css") :rel "stylesheet"}])))
+  (is (= (include-css {:media "screen"} "foo.css" "bar.css")
+         (list [:link {:type "text/css" :media "screen" :href (to-uri "foo.css") :rel "stylesheet"}]
+               [:link {:type "text/css" :media "screen" :href (to-uri "bar.css") :rel "stylesheet"}]))))
+
+(deftest include-favicon-test
+  (is (= (include-favicon "favicon.ico")
+         [:link {:type "image/x-icon" :id "page_favicon" :href (to-uri "favicon.ico") :rel "icon"}]))
+  (is (= (include-favicon {:id "my-icon"} "favicon.ico")
+         [:link {:type "image/x-icon" :id "my-icon" :href (to-uri "favicon.ico") :rel "icon"}])))

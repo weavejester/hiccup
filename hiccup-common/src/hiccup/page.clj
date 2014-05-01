@@ -62,19 +62,19 @@
       (list (doctype :html5)
             (apply vector :html (dissoc options :xml?) contents)))))
 
-(defn include-js
+(defelem include-js
   "Include a list of external javascript files."
   [& scripts]
   (for [script scripts]
     [:script {:type "text/javascript", :src (to-uri script)}]))
 
-(defn include-css
+(defelem include-css
   "Include a list of external stylesheet files."
   [& styles]
   (for [style styles]
     [:link {:type "text/css", :href (to-uri style), :rel "stylesheet"}]))
 
-(defn include-favicon
+(defelem include-favicon
   "Include an image to be used as the site's favicon."
   [icon]
-    [:link {:type "image/x-icon" :id "page_favicon" :href (to-uri icon) :rel "icon"}])
+  [:link {:type "image/x-icon" :id "page_favicon" :href (to-uri icon) :rel "icon"}])
