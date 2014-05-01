@@ -1,15 +1,14 @@
 (ns hiccup.test.middleware
   (:use clojure.test
         hiccup.middleware
-        hiccup.core
-        hiccup.element))
+        hiccup.util))
 
 (defn test-handler [request]
   {:status  200
    :headers {"Content-Type" "text/html"}
-   :body    (html [:html [:body (link-to "/bar" "bar")]])})
+   :body    (to-str (to-uri "/bar"))})
 
 (deftest test-wrap-base-url
   (let [resp ((wrap-base-url test-handler "/foo") {})]
     (is (= (:body resp)
-           "<html><body><a href=\"/foo/bar\">bar</a></body></html>"))))
+           "/foo/bar"))))

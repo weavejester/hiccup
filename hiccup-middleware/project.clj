@@ -1,7 +1,8 @@
-(defproject hiccup/hiccup-common "2.0.0-SNAPSHOT"
-  :description "Library for generating hiccup data structures"
+(defproject hiccup/hiccup-middleware "2.0.0-SNAPSHOT"
+  :description "Library containing Ring middle for Hiccup."
   :url "http://github.com/weavejester/hiccup"
-  :dependencies [[org.clojure/clojure "1.2.1"]]
+  :dependencies [[org.clojure/clojure "1.2.1"]
+                 [hiccup/hiccup-common "2.0.0-SNAPSHOT"]]
   :plugins [[codox "0.6.6"]]
   :codox {:src-dir-uri "http://github.com/weavejester/hiccup/blob/2.0.0/"
           :src-linenum-anchor-prefix "L"}
