@@ -77,7 +77,17 @@
     (is (= (html [:div.foo {:class "bar"} "baz"])
            "<div class=\"foo bar\">baz</div>"))
     (is (= (html [:div#bar.foo {:id "baq"} "baz"])
-           "<div class=\"foo\" id=\"baq\">baz</div>"))))
+           "<div class=\"foo\" id=\"baq\">baz</div>")))
+
+  (testing "style attributes"
+    (is (= (html [:span {:style "position: absolute;"}])
+           "<span style=\"position: absolute;\"></span>"))
+    (is (= (html [:span {:style {:position :absolute}}])
+           "<span style=\"position: absolute;\"></span>"))    
+
+    (is (contains? #{"<div style=\"height: 50px; width: 100px;\"></div>"
+                     "<div style=\"width: 100px; height: 50px;\"></div>"}
+                   (html [:div {:style {:height "50px" :width "100px"}}])))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
