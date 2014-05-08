@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.2.1"]]
   :plugins [[codox "0.7.4"]]
   :codox {:exclude [hiccup.compiler]
+          :sources ["src"]
           :src-dir-uri "http://github.com/weavejester/hiccup/blob/1.0.5/"
           :src-linenum-anchor-prefix "L"}
   :profiles
