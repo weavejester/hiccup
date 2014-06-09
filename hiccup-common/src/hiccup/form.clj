@@ -32,6 +32,13 @@
            :id    (make-id name)
            :value value}])
 
+(defn- selected?
+  "Checks if val is selected"
+  [val selected]
+  (if (sequential? selected)
+    (some #(= val %) selected)
+    (= val selected)))
+
 (defelem hidden-field
   "Creates a hidden input field."
   ([name] (hidden-field name nil))
@@ -83,8 +90,8 @@
         (let [[text val] x]
           (if (sequential? val)
             [:optgroup {:label text} (select-options val selected)]
-            [:option {:value val :selected (= val selected)} text]))
-        [:option {:selected (= x selected)} x]))))
+            [:option {:value val :selected (selected? val selected)} text]))
+        [:option {:selected (selected? x selected)} x]))))
 
 (defelem drop-down
   "Creates a drop-down box using the <select> tag."

@@ -70,7 +70,9 @@
          '([:optgroup {:label "Foo"} ([:option {:value 1 :selected false} "bar"]
                                       [:option {:value 2 :selected false} "baz"])])))
   (is (= (select-options [["Foo" [1 2]]] 2)
-         '([:optgroup {:label "Foo"} ([:option {:selected false} 1] [:option {:selected true} 2])]))))
+         '([:optgroup {:label "Foo"} ([:option {:selected false} 1] [:option {:selected true} 2])])))
+  (is (= (select-options ["foo" "bar" "baz"] ["foo" "bar"])
+         '([:option {:selected true} "foo"] [:option {:selected true} "bar"] [:option {:selected nil} "baz"] ))))
 
 (deftest test-drop-down
   (let [options ["op1" "op2"]
