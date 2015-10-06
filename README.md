@@ -64,3 +64,19 @@ user=> (html [:ul
                  [:li x])])
 "<ul><li>1</li><li>2</li><li>3</li></ul>"
 ```
+
+These snippets use the `hiccup.core/html` macro, which converts
+fragments to strings. To produce an entire HTML document, use the
+macros from `hiccup.page`: `html5`, `xhtml`, and `html4`, as
+appropriate. These will, for example, add the appropriate doctypes
+and namespace declarations:
+
+```clojure
+;; hiccup.page/html5 renders a page:
+(hiccup.page/html5 [:span "foo"])
+=> "<!DOCTYPE html>\n<html><span>foo</span></html>"
+
+;; hiccup.core/html renders a snippet:
+(hiccup.core/html [:span "foo"])
+=> "<span>foo</span>"
+```
