@@ -97,8 +97,7 @@
   "Creates a text area element."
   ([name] (text-area name nil))
   ([name value]
-    [:textarea {:name (make-name name), :id (make-id name)}
-      (escape-html value)]))
+   [:textarea {:name (make-name name), :id (make-id name)} value]))
 
 (defelem file-upload
   "Creates a file upload input."

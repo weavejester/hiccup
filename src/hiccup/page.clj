@@ -1,6 +1,6 @@
 (ns hiccup.page
   "Functions for setting up HTML pages."
-  (:use hiccup.core 
+  (:use hiccup.core
         hiccup.util
         hiccup.def))
 
@@ -28,14 +28,15 @@
 (defn xml-declaration
   "Create a standard XML declaration for the following encoding."
   [encoding]
-  (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
+  (without-escape-html
+   (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n")))
 
 (defmacro html4
   "Create a HTML 4 document with the supplied contents. The first argument
   may be an optional attribute map."
   [& contents]
   `(html {:mode :sgml}
-     (doctype :html4)
+         (without-escape-html (doctype :html4))
      [:html ~@contents]))
 
 (defmacro xhtml
@@ -50,7 +51,7 @@
     `(let [options# ~options]
        (html {:mode :xml}
          (xml-declaration (options# :encoding "UTF-8"))
-         (doctype :xhtml-strict)
+         (without-escape-html (doctype :xhtml-strict))
          (xhtml-tag (options# :lang) ~@contents)))))
 
 (defmacro html5
@@ -62,11 +63,11 @@
       `(let [options# (dissoc ~options :xml?)]
          (html {:mode :xml}
            (xml-declaration (options# :encoding "UTF-8"))
-           (doctype :html5)
+           (without-escape-html (doctype :html5))
            (xhtml-tag options# (options# :lang) ~@contents)))
       `(let [options# (dissoc ~options :xml?)]
          (html {:mode :html}
-           (doctype :html5)
+               (without-escape-html (doctype :html5))
            [:html options# ~@contents])))))
 
 (defn include-js
