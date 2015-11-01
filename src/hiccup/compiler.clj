@@ -88,10 +88,10 @@
     (apply str (map render-html this)))
   Named
   (render-html [this]
-    (name this))
+    (maybe-escape-html (name this)))
   Object
   (render-html [this]
-    (str this))
+    (maybe-escape-html (str this)))
   nil
   (render-html [this]
     ""))
@@ -236,12 +236,12 @@
   [content]
   (doall (for [expr content]
            (cond
-            (vector? expr) (compile-element expr)
-            (literal? expr) expr
-            (hint? expr String) expr
-            (hint? expr Number) expr
-            (seq? expr) (compile-form expr)
-            :else `(#'render-html ~expr)))))
+             (vector? expr) (compile-element expr)
+             (literal? expr) `(maybe-escape-html ~expr)
+             (hint? expr String) `(maybe-escape-html ~expr)
+             (hint? expr Number) `(maybe-escape-html ~expr)
+             (seq? expr) (compile-form expr)
+             :else `(#'render-html ~expr)))))
 
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."
@@ -259,4 +259,10 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  (collapse-strs `(str ~@(compile-seq content))))
+  ;;Wrap the result in a String object in order to be able to
+  ;;differentiate compiled strings from other strings using identical?.
+  ;;This would not be possible with literal strings because the jvm
+  ;;maintains a pool of constant strings:
+  ;; ( (identical? "e" "e") may be true )
+  ;;This is useful in order to escape special characters in strings.
+  (collapse-strs `(String. (str ~@(compile-seq content)))))
