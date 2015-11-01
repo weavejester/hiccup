@@ -33,8 +33,8 @@
   (testing "void tags"
     (is (= (html [:br]) "<br />"))
     (is (= (html [:link]) "<link />"))
-    (is (= (html [:colgroup {:span 2}] "<colgroup span=\"2\" />")))
-    (is (= (html [:colgroup [:col]] "<colgroup><col /></colgroup>"))))
+    (is (= (html [:colgroup {:span 2}]) "<colgroup span=\"2\"></colgroup>"))
+    (is (= (html [:colgroup [:col]]) "<colgroup><col /></colgroup>")))
   (testing "tags containing text"
     (is (= (html [:text "Lorem Ipsum"]) "<text>Lorem Ipsum</text>")))
   (testing "contents are concatenated"
