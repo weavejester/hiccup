@@ -10,8 +10,6 @@
   (if-let [mode (and (map? options) (:mode options))]
     (binding [*html-mode* mode]
       `(binding [*html-mode* ~mode]
-         ~(apply compile-html content)))
-    (apply compile-html options content)))
+         (raw-string ~(apply compile-html content))))
+    `(raw-string ~(apply compile-html options content))))
 
-(def ^{:doc "Alias for hiccup.util/escape-html"}
-  h escape-html)

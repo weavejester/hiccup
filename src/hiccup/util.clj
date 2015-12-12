@@ -52,6 +52,24 @@
   String
   (to-uri [s] (URI. s)))
 
+(deftype RawString [^String s]
+  Object
+  (^String toString [this] s)
+  (^boolean equals [this other]
+    (and (instance? RawString other)
+         (= s  (.toString other)))))
+
+(defn raw-string
+  "Wraps a string to an object that will be pasted to HTML without escaping."
+  ([] (RawString. ""))
+  ([x] (RawString. x))
+  ([x & xs] (RawString. (apply str x xs))))
+
+(defn raw-string?
+  "Returns true if x is a RawString"
+  [x]
+  (instance? RawString x))
+
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]

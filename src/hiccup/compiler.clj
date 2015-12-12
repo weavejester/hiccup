@@ -1,7 +1,8 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
   (:use hiccup.util)
-  (:import [clojure.lang IPersistentVector ISeq Named]))
+  (:import [clojure.lang IPersistentVector ISeq Named]
+           [hiccup.util RawString]))
 
 (defn- xml-mode? []
   (#{:xml :xhtml} *html-mode*))
@@ -86,12 +87,15 @@
   ISeq
   (render-html [this]
     (apply str (map render-html this)))
-  Named
-  (render-html [this]
-    (name this))
-  Object
+  RawString
   (render-html [this]
     (str this))
+  Named
+  (render-html [this]
+    (escape-html (name this)))
+  Object
+  (render-html [this]
+    (escape-html (str this)))
   nil
   (render-html [this]
     ""))
@@ -237,8 +241,11 @@
   (doall (for [expr content]
            (cond
             (vector? expr) (compile-element expr)
-            (literal? expr) expr
-            (hint? expr String) expr
+            (string? expr) (escape-html expr)
+            (keyword? expr) (escape-html (name expr))
+            (raw-string? expr) expr
+            (literal? expr) (escape-html expr)
+            (hint? expr String) `(escape-html ~expr)
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
             :else `(#'render-html ~expr)))))
