@@ -1,6 +1,8 @@
 (ns hiccup.test.util
   (:use clojure.test
-        hiccup.util)
+        hiccup.util
+        [clojure.set :only [difference]])
+  (:require [clojure.string :as str])
   (:import java.net.URI))
 
 (deftest test-escaped-chars
@@ -51,6 +53,11 @@
       (is (= (to-str (to-uri "../bar")) "../bar"))
       (is (= (to-str (to-uri "//example.com/bar")) "//example.com/bar")))))
 
+(defn- equal-param-encondings?
+  "Checks URL parameter encodings for equality ignoring paramter order."
+  [& es]
+  (empty? (apply difference (map #(set (str/split % #"&")) es))))
+
 (deftest test-url-encode
   (testing "strings"
     (are [s e] (= (url-encode s) e)
@@ -63,7 +70,11 @@
       {:a "b"}        "a=b"
       {:a "b" :c "d"} "a=b&c=d"
       {:a "&"}        "a=%26"
-      {:é "è"}        "%C3%A9=%C3%A8"))
+      {:é "è"}        "%C3%A9=%C3%A8")
+    (are [m e] (equal-param-encondings? (url-encode m) e)
+      {:a "b" :c {:d "e" :f "g"}} "a=b&c%5Bd%5D=e&c%5Bf%5D=g"
+      {:a "b" :c {:é "è" :f "g"}} "a=b&c%5B%C3%A9%5D=%C3%A8&c%5Bf%5D=g"
+      {:a {:b {:c {:d "e"}}}} "a%5Bb%5D%5Bc%5D%5Bd%5D=e"))
   (testing "different encodings"
     (are [e s] (= (with-encoding e (url-encode {:iroha "いろは"})) s)
       "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
