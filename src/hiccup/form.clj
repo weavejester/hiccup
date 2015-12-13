@@ -52,6 +52,66 @@
   ([name] (email-field name nil))
   ([name value] (input-field "email" name value)))
 
+(defelem date-field
+  "Creates a new date input field"
+  ([name] [date-field name nil])
+  ([name value] (input-field "date" name value)))
+
+(defelem datetime-field
+  "Creates a new datetime input field"
+  ([name] [datetime-field name nil])
+  ([name value] (input-field "datetime" name value)))
+
+(defelem datetime-local-field
+  "Creates a new datetime-local input field"
+  ([name] [datetime-local-field name nil])
+  ([name value] (input-field "datetime-local" name value)))
+
+(defelem month-field
+  "Creates a new month input field"
+  ([name] [month-field name nil])
+  ([name value] (input-field "month" name value)))
+
+(defelem week-field
+  "Creates a new week input field"
+  ([name] [week-field name nil])
+  ([name value] (input-field "week" name value)))
+
+(defelem time-field
+  "Creates a new time input field"
+  ([name] [time-field name nil])
+  ([name value] (input-field "time" name value)))
+
+(defelem color-field
+  "Creates a new color-well input field"
+  ([name] [color-field name nil])
+  ([name value] (input-field "color" name value)))
+
+(defelem number-field
+  "Creates a new number input field"
+  ([name] [number-field name nil])
+  ([name value] (input-field "number" name value)))
+
+(defelem range-field
+  "Creates a new range input field"
+  ([name] [range-field name nil])
+  ([name value] (input-field "range" name value)))
+
+(defelem url-field
+  "Creates a new url input field"
+  ([name] [url-field name nil])
+  ([name value] (input-field "url" name value)))
+
+(defelem search-field
+  "Creates a new search input field"
+  ([name] [search-field name nil])
+  ([name value] (input-field "search" name value)))
+
+(defelem tel-field
+  "Creates a new tel input field"
+  ([name] [tel-field name nil])
+  ([name value] (input-field "tel" name value)))
+
 (defelem check-box
   "Creates a check box."
   ([name] (check-box name nil))
