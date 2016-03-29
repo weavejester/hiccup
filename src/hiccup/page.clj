@@ -6,16 +6,16 @@
 
 (def doctype
   {:html4
-   (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
-        "\"http://www.w3.org/TR/html4/strict.dtd\">\n")
+   (raw-string "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
+               "\"http://www.w3.org/TR/html4/strict.dtd\">\n")
    :xhtml-strict
-   (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n")
+   (raw-string "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+               "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n")
    :xhtml-transitional
-   (str "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
-        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
+   (raw-string "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+               "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
    :html5
-   "<!DOCTYPE html>\n"})
+   (raw-string "<!DOCTYPE html>\n")})
 
 (defelem xhtml-tag
   "Create an XHTML element for the specified language."
@@ -28,7 +28,7 @@
 (defn xml-declaration
   "Create a standard XML declaration for the following encoding."
   [encoding]
-  (str "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
+  (raw-string "<?xml version=\"1.0\" encoding=\"" encoding "\"?>\n"))
 
 (defmacro html4
   "Create a HTML 4 document with the supplied contents. The first argument
