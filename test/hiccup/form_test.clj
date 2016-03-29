@@ -1,7 +1,7 @@
 (ns hiccup.form_test
-  (:use clojure.test
-        hiccup.core
-        hiccup.form))
+  (:require [clojure.test :refer :all]
+            [hiccup.core :refer [html]]
+            [hiccup.form :refer :all]))
 
 (deftest test-hidden-field
   (is (= (str (html (hidden-field :foo "bar")))

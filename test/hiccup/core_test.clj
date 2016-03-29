@@ -1,11 +1,11 @@
 (ns hiccup.core_test
-  (:use clojure.test
-        hiccup.core
-        hiccup.util))
+  (:require [clojure.test :refer :all]
+            [hiccup.core :refer :all]
+            [hiccup.util :as util]))
 
 (deftest return-types
   (testing "html returns a RawString"
-    (is (raw-string? (html [:div]))))
+    (is (util/raw-string? (html [:div]))))
   (testing "converting to string"
     (= (str (html [:div])) "<div></div>")))
 
@@ -164,7 +164,7 @@
     (is (= (str (html [:ul [:li "<foo>"]]))
            "<ul><li>&lt;foo&gt;</li></ul>")))
   (testing "raw strings"
-    (is (= (str (html (raw-string "<foo>"))) "<foo>"))
-    (is (= (str (html [:p (raw-string "<foo>")])) "<p><foo></p>"))
+    (is (= (str (html (util/raw-string "<foo>"))) "<foo>"))
+    (is (= (str (html [:p (util/raw-string "<foo>")])) "<p><foo></p>"))
     (is (= (str (html (html [:p "<>"]))) "<p>&lt;&gt;</p>"))
     (is (= (str (html [:ul (html [:li "<>"])])) "<ul><li>&lt;&gt;</li></ul>"))))

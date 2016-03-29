@@ -1,6 +1,6 @@
 (ns hiccup.page_test
-  (:use clojure.test
-        hiccup.page)
+  (:require [clojure.test :refer :all]
+            [hiccup.page :refer :all])
   (:import java.net.URI))
 
 (deftest html4-test

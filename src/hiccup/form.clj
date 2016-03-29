@@ -1,7 +1,7 @@
 (ns hiccup.form
   "Functions for generating HTML forms and input fields."
-  (:use hiccup.def
-        hiccup.util))
+  (:require [hiccup.def :refer [defelem]]
+            [hiccup.util :as util]))
 
 (def ^:dynamic *group* [])
 
@@ -9,20 +9,20 @@
   "Group together a set of related form fields for use with the Ring
   nested-params middleware."
   [group & body]
-  `(binding [*group* (conj *group* (as-str ~group))]
+  `(binding [*group* (conj *group* (util/as-str ~group))]
      (list ~@body)))
 
 (defn- make-name
   "Create a field name from the supplied argument the current field group."
   [name]
   (reduce #(str %1 "[" %2 "]")
-          (conj *group* (as-str name))))
+          (conj *group* (util/as-str name))))
 
 (defn- make-id
   "Create a field id from the supplied argument and current field group."
   [name]
   (reduce #(str %1 "-" %2)
-          (conj *group* (as-str name))))
+          (conj *group* (util/as-str name))))
 
 (defn- input-field
   "Creates a new <input> element."
@@ -70,7 +70,7 @@
   ([group checked? value]
     [:input {:type "radio"
              :name (make-name group)
-             :id   (make-id (str (as-str group) "-" (as-str value)))
+             :id   (make-id (str (util/as-str group) "-" (util/as-str value)))
              :value value
              :checked checked?}]))
 
@@ -126,7 +126,7 @@
          ...)"
   [[method action] & body]
   (let [method-str (.toUpperCase (name method))
-        action-uri (to-uri action)]
+        action-uri (util/to-uri action)]
     (-> (if (contains? #{:get :post} method)
           [:form {:method method-str, :action action-uri}]
           [:form {:method "POST", :action action-uri}

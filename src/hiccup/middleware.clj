@@ -1,6 +1,6 @@
 (ns hiccup.middleware
   "Ring middleware functions for Hiccup."
-  (:use hiccup.util))
+  (:require [hiccup.util :as util]))
 
 (defn wrap-base-url
   "Ring middleware that wraps the handler in the with-base-url function. The
@@ -8,5 +8,5 @@
   request map is used."
   [handler & [base-url]]
   (fn [request]
-    (with-base-url (or base-url (:context request))
+    (util/with-base-url (or base-url (:context request))
       (handler request))))

@@ -1,27 +1,27 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
-  (:use hiccup.util)
+  (:require [hiccup.util :as util])
   (:import [clojure.lang IPersistentVector ISeq Named]
            [hiccup.util RawString]))
 
 (defn- xml-mode? []
-  (#{:xml :xhtml} *html-mode*))
+  (#{:xml :xhtml} util/*html-mode*))
 
 (defn- html-mode? []
-  (#{:html :xhtml} *html-mode*))
+  (#{:html :xhtml} util/*html-mode*))
 
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
 
 (defn- xml-attribute [name value]
-  (str " " (as-str name) "=\"" (escape-html value) "\""))
+  (str " " (util/as-str name) "=\"" (util/escape-html value) "\""))
 
 (defn- render-attribute [[name value]]
   (cond
     (true? value)
       (if (xml-mode?)
         (xml-attribute name name)
-        (str " " (as-str name)))
+        (str " " (util/as-str name)))
     (not value)
       ""
     :else
@@ -59,7 +59,7 @@
   [[tag & content]]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
-  (let [[_ tag id class] (re-matches re-tag (as-str tag))
+  (let [[_ tag id class] (re-matches re-tag (util/as-str tag))
         tag-attrs        {:id id
                           :class (if class (.replace ^String class "." " "))}
         map-attrs        (first content)]
@@ -93,10 +93,10 @@
     (str this))
   Named
   (render-html [this]
-    (escape-html (name this)))
+    (util/escape-html (name this)))
   Object
   (render-html [this]
-    (escape-html (str this)))
+    (util/escape-html (str this)))
   nil
   (render-html [this]
     ""))
@@ -242,11 +242,11 @@
   (doall (for [expr content]
            (cond
             (vector? expr) (compile-element expr)
-            (string? expr) (escape-html expr)
-            (keyword? expr) (escape-html (name expr))
-            (raw-string? expr) expr
-            (literal? expr) (escape-html expr)
-            (hint? expr String) `(escape-html ~expr)
+            (string? expr) (util/escape-html expr)
+            (keyword? expr) (util/escape-html (name expr))
+            (util/raw-string? expr) expr
+            (literal? expr) (util/escape-html expr)
+            (hint? expr String) `(util/escape-html ~expr)
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
             :else `(render-html ~expr)))))

@@ -1,6 +1,6 @@
 (ns hiccup.def_test
-  (:use clojure.test
-        hiccup.def))
+  (:require [clojure.test :refer :all]
+            [hiccup.def :refer :all]))
 
 (deftest test-defhtml
   (testing "basic html function"

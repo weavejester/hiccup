@@ -1,6 +1,6 @@
 (ns hiccup.element_test
-  (:use clojure.test
-        hiccup.element)
+  (:require [clojure.test :refer :all]
+            [hiccup.element :refer :all])
   (:import java.net.URI))
 
 (deftest javascript-tag-test

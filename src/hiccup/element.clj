@@ -1,7 +1,7 @@
 (ns hiccup.element
   "Functions for creating HTML elements."
-  (:use hiccup.def
-        hiccup.util))
+  (:require [hiccup.def :refer [defelem]]
+            [hiccup.util :as util]))
 
 (defn javascript-tag
   "Wrap the supplied javascript up in script tags and a CDATA section."
@@ -12,7 +12,7 @@
 (defelem link-to
   "Wraps some content in a HTML hyperlink with the supplied URL."
   [url & content]
-  [:a {:href (to-uri url)} content])
+  [:a {:href (util/to-uri url)} content])
 
 (defelem mail-to
   "Wraps some content in a HTML hyperlink with the supplied e-mail
@@ -33,6 +33,6 @@
 
 (defelem image
   "Create an image element."
-  ([src]     [:img {:src (to-uri src)}])
-  ([src alt] [:img {:src (to-uri src), :alt alt}]))
+  ([src]     [:img {:src (util/to-uri src)}])
+  ([src alt] [:img {:src (util/to-uri src), :alt alt}]))
 

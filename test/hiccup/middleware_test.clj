@@ -1,8 +1,8 @@
 (ns hiccup.middleware_test
-  (:use clojure.test
-        hiccup.middleware
-        hiccup.core
-        hiccup.element))
+  (:require [clojure.test :refer :all]
+            [hiccup.core :refer [html]]
+            [hiccup.element :refer [link-to]]
+            [hiccup.middleware :refer :all]))
 
 (defn test-handler [request]
   {:status  200

@@ -1,6 +1,6 @@
 (ns hiccup.util_test
-  (:use clojure.test
-        hiccup.util)
+  (:require [clojure.test :refer :all]
+            [hiccup.util :refer :all])
   (:import java.net.URI))
 
 (deftest test-escaped-chars
