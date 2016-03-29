@@ -27,9 +27,10 @@
     :else
       (xml-attribute name value)))
 
-(defn- render-attr-map [attrs]
-  (apply str
-    (sort (map render-attribute attrs))))
+(defn render-attr-map
+  "Render a map of attributes."
+  [attrs]
+  (apply str (sort (map render-attribute attrs))))
 
 (def ^{:doc "Regular expression that parses a CSS-style id and class from an element name."
        :private true}
@@ -70,7 +71,7 @@
   (render-html [this]
     "Turn a Clojure data type into a string of HTML."))
 
-(defn- render-element
+(defn render-element
   "Render an element vector as a HTML element."
   [element]
   (let [[tag attrs content] (normalize-element element)]
@@ -112,7 +113,7 @@
   attributes."
   [attrs]
   (if (some unevaluated? (mapcat identity attrs))
-    `(#'render-attr-map ~attrs)
+    `(render-attr-map ~attrs)
     (render-attr-map attrs)))
 
 (defn- form-name
@@ -138,7 +139,7 @@
 
 (defmethod compile-form :default
   [expr]
-  `(#'render-html ~expr))
+  `(render-html ~expr))
 
 (defn- not-hint?
   "True if x is not hinted to be the supplied type."
@@ -214,11 +215,11 @@
        (if (map? ~attrs-sym)
          ~(if (container-tag? tag content)
             `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
+                  (render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
                   ~@(compile-seq content)
                   ~(str "</" tag ">"))
             `(str ~(str "<" tag)
-                  (#'render-attr-map (merge ~tag-attrs ~attrs-sym))
+                  (render-attr-map (merge ~tag-attrs ~attrs-sym))
                   ~(end-tag)))
          ~(if (container-tag? tag attrs)
             `(str ~(str "<" tag (render-attr-map tag-attrs) ">")
@@ -228,7 +229,7 @@
 
 (defmethod compile-element :default
   [element]
-  `(#'render-element
+  `(render-element
      [~(first element)
       ~@(for [x (rest element)]
           (if (vector? x)
@@ -248,7 +249,7 @@
             (hint? expr String) `(escape-html ~expr)
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
-            :else `(#'render-html ~expr)))))
+            :else `(render-html ~expr)))))
 
 (defn- collapse-strs
   "Collapse nested str expressions into one, where possible."
