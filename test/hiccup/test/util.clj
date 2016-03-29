@@ -59,11 +59,11 @@
       "&"   "%26"))
   (testing "parameter maps"
     (are [m e] (= (url-encode m) e)
-      {"a" "b"}       "a=b"
-      {:a "b"}        "a=b"
-      {:a "b" :c "d"} "a=b&c=d"
-      {:a "&"}        "a=%26"
-      {:é "è"}        "%C3%A9=%C3%A8"))
+      {"a" "b"}                  "a=b"
+      {:a "b"}                   "a=b"
+      (sorted-map :a "b" :c "d") "a=b&c=d"
+      {:a "&"}                   "a=%26"
+      {:é "è"}                   "%C3%A9=%C3%A8"))
   (testing "different encodings"
     (are [e s] (= (with-encoding e (url-encode {:iroha "いろは"})) s)
       "UTF-8"       "iroha=%E3%81%84%E3%82%8D%E3%81%AF"
