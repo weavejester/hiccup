@@ -1,0 +1,30 @@
+## 1.0.5 (2014-01-25)
+
+* Inverted container tag check to look for void tags instead
+* Added apostophes to list of characters to escape
+
+## 1.0.4 (2013-07-21)
+
+* Fixed merging of class and id attributes
+* Fixed keyword rendering
+* Added explicit ending tag for `<select>`
+
+## 1.0.3 (2013-03-23)
+
+* Allowed html5 root element to have arbitrary attributes
+* Added support for `<optgroup>`
+* Replaced render-html multimethod with protocol
+
+## 1.0.2 (2012-09-15)
+
+* Fixed bug with invalid URIs
+* Fixed resolving of base-url
+
+## 1.0.1 (2012-08-18)
+
+* Added explit ending tags to `<section>`, `<aside>` and others
+* Fixed to-uri to work with schemaless URLs
+
+## 1.0.0 (2012-04-23)
+
+* Initial release
