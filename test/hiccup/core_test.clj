@@ -168,3 +168,6 @@
     (is (= (str (html [:p (util/raw-string "<foo>")])) "<p><foo></p>"))
     (is (= (str (html (html [:p "<>"]))) "<p>&lt;&gt;</p>"))
     (is (= (str (html [:ul (html [:li "<>"])])) "<ul><li>&lt;&gt;</li></ul>"))))
+
+(deftest backward-compatibility
+  (is (= (str (html [:span (h "<>")])) "<span>&lt;&gt;</span>")))

@@ -12,3 +12,8 @@
       `(binding [util/*html-mode* ~mode]
          (util/raw-string ~(apply compiler/compile-html content))))
     `(util/raw-string ~(apply compiler/compile-html options content))))
+
+(def ^{:deprecated "2.0"} h
+  "Included for compatibility with Hiccup 1.0. Now just n alias for
+  hiccup.util/as-str."
+  util/as-str)
