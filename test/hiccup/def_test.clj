@@ -1,4 +1,4 @@
-(ns hiccup.test.def
+(ns hiccup.def_test
   (:use clojure.test
         hiccup.def))
 

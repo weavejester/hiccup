@@ -1,4 +1,4 @@
-(ns hiccup.test.element
+(ns hiccup.element_test
   (:use clojure.test
         hiccup.element)
   (:import java.net.URI))

@@ -1,4 +1,4 @@
-(ns hiccup.test.core
+(ns hiccup.core_test
   (:use clojure.test
         hiccup.core
         hiccup.util))

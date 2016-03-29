@@ -1,4 +1,4 @@
-(ns hiccup.test.form
+(ns hiccup.form_test
   (:use clojure.test
         hiccup.core
         hiccup.form))
