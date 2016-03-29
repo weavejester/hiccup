@@ -4,11 +4,11 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :plugins [[codox "0.7.4"]]
-  :codox {:exclude [hiccup.compiler]
-          :sources ["src"]
-          :src-dir-uri "http://github.com/weavejester/hiccup/blob/1.0.5/"
-          :src-linenum-anchor-prefix "L"}
+  :plugins [[lein-codox "0.9.4"]]
+  :codox
+  {:output-path "codox"
+   :source-uri  "http://github.com/weavejester/hiccup/blob/{version}/{filepath}#L{line}"
+   :namespaces  [#"^hiccup\.(?!compiler)"]}
   :aliases {"test-all" ["with-profile" "default:+1.6:+1.7:+1.8" "test"]}
   :profiles
   {:1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
