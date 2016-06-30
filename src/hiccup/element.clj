@@ -36,3 +36,29 @@
   ([src]     [:img {:src (util/to-uri src)}])
   ([src alt] [:img {:src (util/to-uri src), :alt alt}]))
 
+(def js-lazy-load-self-replace
+  "var xmlhttp:ID = new XMLHttpRequest();
+   xmlhttp:ID.onreadystatechange = function() {
+    if (xmlhttp:ID.readyState == XMLHttpRequest.DONE ) {
+	var innerHTML = xmlhttp:ID.responseText;
+        document.getElementById(':ID').innerHTML = innerHTML;
+        //console.log('done with ajax call. response'+innerHTML);
+    }
+  };
+
+  xmlhttp:ID.open('GET', ':URL', true);
+  xmlhttp:ID.send();")
+
+(defelem lazy-element
+  "Return a 'lazy' element which makes an AJAX request to the
+specified url, then overwrites itself with the reponse contents.
+An optinal tmp-contents are shown while AJAX is executed"
+  ([url] (lazy-element url nil))
+  ([url tmp-contents]
+   (let [id (str (rand-int Integer/MAX_VALUE))
+         javascript (util/format-keywords
+                     js-lazy-load-self-replace
+                     {:ID id :URL url})]
+     [:div {:id id}
+      (javascript-tag javascript)
+      tmp-contents])))
