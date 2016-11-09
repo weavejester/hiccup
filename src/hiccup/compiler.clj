@@ -14,7 +14,11 @@
   (if (xml-mode?) " />" ">"))
 
 (defn- xml-attribute [name value]
-  (str " " (util/as-str name) "=\"" (util/escape-html value) "\""))
+  (str " " (util/as-str name) "=\""
+       (if (util/raw-string? value)
+         value
+         (util/escape-html value))
+       "\""))
 
 (defn- render-attribute [[name value]]
   (cond
