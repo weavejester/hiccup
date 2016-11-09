@@ -168,6 +168,8 @@
     (is (= (str (html [:p (util/raw-string "<foo>")])) "<p><foo></p>"))
     (is (= (str (html (html [:p "<>"]))) "<p>&lt;&gt;</p>"))
     (is (= (str (html [:ul (html [:li "<>"])])) "<ul><li>&lt;&gt;</li></ul>"))
+    (is (= (str (html "'")) "&apos;"))
+    (is (= (str (html [:p {:data-x "'"}])) "<p data-x=\"&apos;\"></p>"))
     (is (= (str (html [:p {:data-x (util/raw-string "'")}]))
            "<p data-x=\"'\"></p>"))))
 
