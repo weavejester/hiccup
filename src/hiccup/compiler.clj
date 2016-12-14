@@ -1,6 +1,7 @@
 (ns hiccup.compiler
   "Internal functions for compilation."
-  (:require [hiccup.util :as util])
+  (:require [hiccup.util :as util]
+            [clojure.string :as str])
   (:import [clojure.lang IPersistentVector ISeq Named]
            [hiccup.util RawString]))
 
@@ -13,8 +14,23 @@
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
 
+(defn- render-style-map [value]
+  (->> value
+       (map (fn [[k v]] (str (util/as-str k) ":" v ";")))
+       (sort)
+       (apply str)))
+
+(defn- render-attr-value [value]
+  (cond
+    (map? value)
+      (render-style-map value)
+    (sequential? value)
+      (str/join " " value)
+    :else
+      value))
+
 (defn- xml-attribute [name value]
-  (str " " (util/as-str name) "=\"" (util/escape-html value) "\""))
+  (str " " (util/as-str name) "=\"" (util/escape-html (render-attr-value value)) "\""))
 
 (defn- render-attribute [[name value]]
   (cond
@@ -49,10 +65,16 @@
   (or content
       (and (html-mode?) (not (void-tags tag)))))
 
-(defn- merge-attributes [{:keys [id class]} map-attrs]
-  (->> map-attrs
-       (merge (if id {:id id}))
-       (merge-with #(if %1 (str %1 " " %2) %2) (if class {:class class}))))
+(defn- merge-classes [class classes]
+  (cond
+    (nil? class)    classes
+    (string? class) (str classes " " class)
+    :else           (str classes " " (str/join " " class))))
+
+(defn- merge-attributes [map-attrs id classes]
+  (-> map-attrs
+      (cond-> id      (assoc :id (or (:id map-attrs) id)))
+      (cond-> classes (assoc :class (merge-classes (:class map-attrs) classes)))))
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]."
@@ -60,12 +82,11 @@
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (util/as-str tag))
-        tag-attrs        {:id id
-                          :class (if class (.replace ^String class "." " "))}
+        classes          (if class (str/replace class "." " "))
         map-attrs        (first content)]
     (if (map? map-attrs)
-      [tag (merge-attributes tag-attrs map-attrs) (next content)]
-      [tag tag-attrs content])))
+      [tag (merge-attributes map-attrs id classes) (next content)]
+      [tag {:id id, :class classes} content])))
 
 (defprotocol HtmlRenderer
   (render-html [this]
