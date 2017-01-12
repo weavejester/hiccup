@@ -7,10 +7,14 @@
 (defmacro html
   "Render Clojure data structures to a string of HTML."
   [options & content]
-  (if-let [mode (and (map? options) (:mode options))]
-    (binding [util/*html-mode* mode]
-      `(binding [util/*html-mode* ~mode]
-         (util/raw-string ~(apply compiler/compile-html content))))
+  (if (map? options)
+    (let [{:keys [mode escape-strings?]
+           :or   {mode :xhtml, escape-strings? true}} options]
+      (binding [util/*html-mode*       mode
+                util/*escape-strings?* escape-strings?]
+        `(binding [util/*html-mode*       ~mode
+                   util/*escape-strings?* ~escape-strings?]
+           (util/raw-string ~(apply compiler/compile-html content)))))
     `(util/raw-string ~(apply compiler/compile-html options content))))
 
 (def ^{:deprecated "2.0"} h

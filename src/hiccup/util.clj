@@ -6,6 +6,8 @@
 
 (def ^:dynamic *html-mode* :xhtml)
 
+(def ^:dynamic *escape-strings?* true)
+
 (def ^:dynamic *base-url* nil)
 
 (defmacro with-base-url

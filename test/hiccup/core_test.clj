@@ -152,7 +152,7 @@
     (is (= (str (html "<>")) "&lt;&gt;"))
     (is (= (str (html :<>)) "&lt;&gt;"))
     (is (= (str (html ^String (str "<>"))) "&lt;&gt;"))
-    (is (= (str (html {"<foo>" "<bar>"})) "{&quot;&lt;foo&gt;&quot; &quot;&lt;bar&gt;&quot;}"))
+    (is (= (str (html {} {"<a>" "<b>"})) "{&quot;&lt;a&gt;&quot; &quot;&lt;b&gt;&quot;}"))
     (is (= (str (html #{"<>"})) "#{&quot;&lt;&gt;&quot;}"))
     (is (= (str (html 1)) "1"))
     (is (= (str (html ^Number (+ 1 1))) "2")))
@@ -182,6 +182,25 @@
     (is (= (str (html [:p (util/raw-string "<foo>")])) "<p><foo></p>"))
     (is (= (str (html (html [:p "<>"]))) "<p>&lt;&gt;</p>"))
     (is (= (str (html [:ul (html [:li "<>"])])) "<ul><li>&lt;&gt;</li></ul>"))))
+
+(deftest html-escaping
+  (testing "precompilation"
+    (is (= (str (html {:escape-strings? true}  [:p "<>"])) "<p>&lt;&gt;</p>"))
+    (is (= (str (html {:escape-strings? false} [:p "<>"])) "<p><></p>")))
+  (testing "dynamic generation"
+    (let [x [:p "<>"]]
+      (is (= (str (html {:escape-strings? true}  x)) "<p>&lt;&gt;</p>"))
+      (is (= (str (html {:escape-strings? false} x)) "<p><></p>"))))
+  (testing "attributes"
+    (is (= (str (html {:escape-strings? true}  [:p {:class "<>"}]))
+           "<p class=\"&lt;&gt;\"></p>"))
+    (is (= (str (html {:escape-strings? false} [:p {:class "<>"}]))
+           "<p class=\"&lt;&gt;\"></p>")))
+  (testing "raw strings"
+    (is (= (str (html {:escape-strings? true}  [:p (util/raw-string "<>")]))
+           "<p><></p>"))
+    (is (= (str (html {:escape-strings? false} [:p (util/raw-string "<>")]))
+           "<p><></p>"))))
 
 (deftest backward-compatibility
   (is (= (str (html [:span (h "<>")])) "<span>&lt;&gt;</span>")))

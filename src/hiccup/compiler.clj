@@ -11,6 +11,14 @@
 (defn- html-mode? []
   (#{:html :xhtml} util/*html-mode*))
 
+(defn escape-html
+  "Change special characters into HTML character entities if
+  hiccup.util/*escape-strings* is true."
+  [text]
+  (if util/*escape-strings?*
+    (util/escape-html text)
+    text))
+
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
 
@@ -114,10 +122,10 @@
     (str this))
   Named
   (render-html [this]
-    (util/escape-html (name this)))
+    (escape-html (name this)))
   Object
   (render-html [this]
-    (util/escape-html (str this)))
+    (escape-html (str this)))
   nil
   (render-html [this]
     ""))
@@ -263,11 +271,11 @@
   (doall (for [expr content]
            (cond
             (vector? expr) (compile-element expr)
-            (string? expr) (util/escape-html expr)
-            (keyword? expr) (util/escape-html (name expr))
+            (string? expr) (escape-html expr)
+            (keyword? expr) (escape-html (name expr))
             (util/raw-string? expr) expr
-            (literal? expr) (util/escape-html expr)
-            (hint? expr String) `(util/escape-html ~expr)
+            (literal? expr) (escape-html expr)
+            (hint? expr String) `(escape-html ~expr)
             (hint? expr Number) expr
             (seq? expr) (compile-form expr)
             :else `(render-html ~expr)))))
