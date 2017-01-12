@@ -1,7 +1,7 @@
 ## 1.0.5 (2014-01-25)
 
 * Inverted container tag check to look for void tags instead
-* Added apostophes to list of characters to escape
+* Added apostrophes to list of characters to escape
 
 ## 1.0.4 (2013-07-21)
 
