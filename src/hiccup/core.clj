@@ -23,3 +23,7 @@
   (if util/*escape-strings?*
     (util/as-str text)
     (util/escape-html text)))
+
+(def raw
+  "Alias for hiccup.util/raw-string."
+  util/raw-string)

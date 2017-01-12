@@ -200,6 +200,10 @@
     (is (= (str (html {:escape-strings? true}  [:p (util/raw-string "<>")]))
            "<p><></p>"))
     (is (= (str (html {:escape-strings? false} [:p (util/raw-string "<>")]))
+           "<p><></p>"))
+    (is (= (str (html {:escape-strings? true}  [:p (raw "<>")]))
+           "<p><></p>"))
+    (is (= (str (html {:escape-strings? false} [:p (raw "<>")]))
            "<p><></p>"))))
 
 (deftest backward-compatibility
