@@ -80,8 +80,20 @@
   (testing "nil attributes"
     (is (= (str (html [:span {:class nil} "foo"]))
            "<span>foo</span>")))
+  (testing "vector attributes"
+    (is (= (str (html [:span {:class ["bar" "baz"]} "foo"]))
+           "<span class=\"bar baz\">foo</span>"))
+    (is (= (str (html [:span {:class ["baz"]} "foo"]))
+           "<span class=\"baz\">foo</span>"))
+    (is (= (str (html [:span {:class "baz bar"} "foo"]))
+           "<span class=\"baz bar\">foo</span>")))
+  (testing "map attributes"
+    (is (= (str (html [:span {:style {:color "red" :opacity "100%"}} "foo"]))
+           "<span style=\"color:red;opacity:100%;\">foo</span>")))
   (testing "resolving conflicts between attributes in the map and tag"
     (is (= (str (html [:div.foo {:class "bar"} "baz"]))
+           "<div class=\"foo bar\">baz</div>"))
+    (is (= (str (html [:div.foo {:class ["bar"]} "baz"]))
            "<div class=\"foo bar\">baz</div>"))
     (is (= (str (html [:div#bar.foo {:id "baq"} "baz"]))
            "<div class=\"foo\" id=\"baq\">baz</div>"))))
@@ -160,6 +172,8 @@
     (is (= (str (html [:p {} #{"<foo>"}]))
            "<p>#{&quot;&lt;foo&gt;&quot;}</p>"))
     (is (= (str (html [:p {:class "<\">"}]))
+           "<p class=\"&lt;&quot;&gt;\"></p>"))
+    (is (= (str (html [:p {:class ["<\">"]}]))
            "<p class=\"&lt;&quot;&gt;\"></p>"))
     (is (= (str (html [:ul [:li "<foo>"]]))
            "<ul><li>&lt;foo&gt;</li></ul>")))
