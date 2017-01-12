@@ -17,7 +17,9 @@
            (util/raw-string ~(apply compiler/compile-html content)))))
     `(util/raw-string ~(apply compiler/compile-html options content))))
 
-(def ^{:deprecated "2.0"} h
-  "Included for compatibility with Hiccup 1.0. Now just n alias for
-  hiccup.util/as-str."
-  util/as-str)
+(defn h
+  "Escape strings when the :escape-strings? option is false."
+  [text]
+  (if util/*escape-strings?*
+    (util/as-str text)
+    (util/escape-html text)))

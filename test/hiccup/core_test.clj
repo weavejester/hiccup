@@ -203,4 +203,7 @@
            "<p><></p>"))))
 
 (deftest backward-compatibility
-  (is (= (str (html [:span (h "<>")])) "<span>&lt;&gt;</span>")))
+  (is (= (str (html [:span (h "<>")]))
+         "<span>&lt;&gt;</span>"))
+  (is (= (str (html {:escape-strings? false} [:span (h "<>")]))
+         "<span>&lt;&gt;</span>")))
