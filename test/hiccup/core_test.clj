@@ -145,7 +145,8 @@
            "<input checked type=\"checkbox\">")))
   (testing "laziness and binding scope"
     (is (= (str (html {:mode :sgml} [:html [:link] (list [:link])]))
-           "<html><link><link></html>"))))
+           "<html><link><link></html>")))
+  (testing ""))
 
 (deftest auto-escaping
   (testing "literals"

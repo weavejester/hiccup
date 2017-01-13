@@ -297,3 +297,33 @@
   "Pre-compile data structures into HTML where possible."
   [& content]
   (collapse-strs `(str ~@(compile-seq content))))
+
+(defn- binding* [var val func]
+  (push-thread-bindings {var val})
+  (try (func)
+       (finally (pop-thread-bindings))))
+
+(defn- compile-multi [var-sym vals step]
+  (let [var            (find-var var-sym)
+        compiled-forms (->> vals
+                            (map (fn [v] [v (binding* var v step)]))
+                            (into {}))
+        distinct-forms (->> compiled-forms
+                            (group-by second)
+                            (map (fn [[k v]] [(map first v) k])))]
+    (cond
+      (= (count distinct-forms) 1)
+        (second (first distinct-forms))
+      (= (set vals) #{true false})
+        `(if ~var-sym ~(compiled-forms true) ~(compiled-forms false))
+      :else
+        `(case ~var-sym ~@(apply concat distinct-forms)))))
+
+(defn compile-html-with-bindings
+  "Pre-compile data structures into HTML where possible, while taking into
+  account bindings that modify the result like *html-mode*."
+  [& content]
+  (let [step1 (fn [] (apply compile-html content))
+        step2 (fn [] (compile-multi `util/*escape-strings?* [true false] step1))
+        step3 (fn [] (compile-multi `util/*html-mode* [:html :xhtml :xml :sgml] step2))]
+    (step3)))
