@@ -145,7 +145,13 @@
            "<input checked type=\"checkbox\">")))
   (testing "laziness and binding scope"
     (is (= (str (html {:mode :sgml} [:html [:link] (list [:link])]))
-           "<html><link><link></html>"))))
+           "<html><link><link></html>")))
+  (testing "function binding scope"
+    (let [f #(html [:p "<>" [:br]])]
+      (is (= (str (html (f))) "<p>&lt;&gt;<br /></p>"))
+      (is (= (str (html {:escape-strings? false} (f))) "<p><><br /></p>"))
+      (is (= (str (html {:mode :html} (f))) "<p>&lt;&gt;<br></p>"))
+      (is (= (str (html {:escape-strings? false, :mode :html} (f))) "<p><><br></p>")))))
 
 (deftest auto-escaping
   (testing "literals"

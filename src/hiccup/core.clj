@@ -8,14 +8,12 @@
   "Render Clojure data structures to a string of HTML."
   [options & content]
   (if (map? options)
-    (let [{:keys [mode escape-strings?]
-           :or   {mode :xhtml, escape-strings? true}} options]
-      (binding [util/*html-mode*       mode
-                util/*escape-strings?* escape-strings?]
-        `(binding [util/*html-mode*       ~mode
-                   util/*escape-strings?* ~escape-strings?]
-           (util/raw-string ~(apply compiler/compile-html content)))))
-    `(util/raw-string ~(apply compiler/compile-html options content))))
+    (let [mode            (:mode options :xhtml)
+          escape-strings? (:escape-strings? options true)]
+      `(binding [util/*html-mode*       ~mode
+                 util/*escape-strings?* ~escape-strings?]
+         (util/raw-string ~(apply compiler/compile-html-with-bindings content))))
+    `(util/raw-string ~(apply compiler/compile-html-with-bindings options content))))
 
 (defn h
   "Escape strings when the :escape-strings? option is false."
