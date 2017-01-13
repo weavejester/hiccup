@@ -1,6 +1,6 @@
-(ns hiccup.core_test
+(ns hiccup2.core_test
   (:require [clojure.test :refer :all]
-            [hiccup.core :refer :all]
+            [hiccup2.core :refer :all]
             [hiccup.util :as util]))
 
 (deftest return-types
@@ -211,9 +211,3 @@
            "<p><></p>"))
     (is (= (str (html {:escape-strings? false} [:p (raw "<>")]))
            "<p><></p>"))))
-
-(deftest backward-compatibility
-  (is (= (str (html [:span (h "<>")]))
-         "<span>&lt;&gt;</span>"))
-  (is (= (str (html {:escape-strings? false} [:span (h "<>")]))
-         "<span>&lt;&gt;</span>")))

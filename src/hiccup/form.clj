@@ -98,7 +98,7 @@
   ([name] (text-area name nil))
   ([name value]
     [:textarea {:name (make-name name), :id (make-id name)}
-      value]))
+      (-> value util/escape-html util/raw-string)]))
 
 (defelem file-upload
   "Creates a file upload input."
