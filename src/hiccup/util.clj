@@ -4,15 +4,18 @@
   (:import java.net.URI
            java.net.URLEncoder))
 
-(def ^:dynamic *html-mode* :xhtml)
+(def ^:dynamic ^:no-doc *html-mode* :xhtml)
 
-(def ^:dynamic *escape-strings?* true)
+(def ^:dynamic ^:no-doc *escape-strings?* true)
 
-(def ^:dynamic *base-url* nil)
+(def ^:dynamic ^:no-doc *base-url* nil)
+
+(def ^:dynamic ^:no-doc *encoding* "UTF-8")
 
 (defmacro with-base-url
   "Sets a base URL that will be prepended onto relative URIs. Note that for this
-  to work correctly, it needs to be placed outside the html macro."
+  to work correctly, it needs to be placed outside the [[hiccup.core/html]] or
+  [[hiccup2.core/html]] macros."
   [base-url & body]
   `(binding [*base-url* ~base-url]
      ~@body))
@@ -41,7 +44,7 @@
   (to-str [_] ""))
 
 (defn ^String as-str
-  "Converts its arguments into a string using to-str."
+  "Converts its arguments into a string using [[to-str]]."
   [& xs]
   (apply str (map to-str xs)))
 
@@ -62,13 +65,15 @@
          (= s  (.toString other)))))
 
 (defn raw-string
-  "Wraps a string to an object that will be pasted to HTML without escaping."
+  "Converts one or more strings into an object that will not be escaped when
+  used with the [[hiccup2.core/html]] macro."
+  {:arglists '([& xs])}
   ([] (RawString. ""))
-  ([x] (RawString. x))
+  ([x] (RawString. (str x)))
   ([x & xs] (RawString. (apply str x xs))))
 
 (defn raw-string?
-  "Returns true if x is a RawString"
+  "Returns true if x is a RawString created by [[raw-string]]."
   [x]
   (instance? RawString x))
 
@@ -81,8 +86,6 @@
     (replace ">"  "&gt;")
     (replace "\"" "&quot;")
     (replace "'" (if (= *html-mode* :sgml) "&#39;" "&apos;"))))
-
-(def ^:dynamic *encoding* "UTF-8")
 
 (defmacro with-encoding
   "Sets a default encoding for URL encoding strings. Defaults to UTF-8."
@@ -107,8 +110,9 @@
 (defn url
   "Creates a URI instance from a variable list of arguments and an optional
   parameter map as the last argument. For example:
-    (url \"/group/\" 4 \"/products\" {:page 9})
-    => \"/group/4/products?page=9\""
+
+      (url \"/group/\" 4 \"/products\" {:page 9})
+      => \"/group/4/products?page=9\""
   [& args]
   (let [params (last args), args (butlast args)]
     (to-uri

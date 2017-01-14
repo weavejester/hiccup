@@ -3,7 +3,7 @@
   (:require [hiccup.def :refer [defelem]]
             [hiccup.util :as util]))
 
-(def ^:dynamic *group* [])
+(def ^:dynamic ^:no-doc *group* [])
 
 (defmacro with-group
   "Group together a set of related form fields for use with the Ring
@@ -87,7 +87,7 @@
         [:option {:selected (= x selected)} x]))))
 
 (defelem drop-down
-  "Creates a drop-down box using the <select> tag."
+  "Creates a drop-down box using the `<select>` tag."
   ([name options] (drop-down name options nil))
   ([name options selected]
     [:select {:name (make-name name), :id (make-id name)}
@@ -122,8 +122,10 @@
 
 (defelem form-to
   "Create a form that points to a particular method and route.
-  e.g. (form-to [:put \"/post\"]
-         ...)"
+  For example:
+
+      (form-to [:put \"/post\"]
+        ...)"
   [[method action] & body]
   (let [method-str (.toUpperCase (name method))
         action-uri (util/to-uri action)]

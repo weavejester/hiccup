@@ -1,5 +1,5 @@
 (ns hiccup.element
-  "Functions for creating HTML elements."
+  "Functions for creating generic HTML elements."
   (:require [hiccup.def :refer [defelem]]
             [hiccup.util :as util]))
 

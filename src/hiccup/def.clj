@@ -3,7 +3,8 @@
   (:require [hiccup.core :refer [html]]))
 
 (defmacro defhtml
-  "Define a function, but wrap its output in an implicit html macro."
+  "Define a function, but wrap its output in an implicit [[hiccup.core/html]]
+  macro."
   [name & fdecl]
   (let [[fhead fbody] (split-with #(not (or (list? %) (vector? %))) fdecl)
         wrap-html     (fn [[args & body]] `(~args (html ~@body)))]
@@ -14,7 +15,8 @@
            (map wrap-html fbody)))))
 
 (defn wrap-attrs
-  "Add an optional attribute argument to a function that returns a element vector."
+  "Add an optional attribute argument to a function that returns a element
+  vector."
   [func]
   (fn [& args]
     (if (map? (first args))

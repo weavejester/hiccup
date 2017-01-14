@@ -8,7 +8,8 @@
   :codox
   {:output-path "codox"
    :source-uri  "http://github.com/weavejester/hiccup/blob/{version}/{filepath}#L{line}"
-   :namespaces  [#"^hiccup2?\.(?!compiler)"]}
+   :namespaces  [#"^hiccup2?\.(?!compiler)"]
+   :metadata    {:doc/format :markdown}}
   :aliases {"test-all" ["with-profile" "default:+1.6:+1.7:+1.8" "test"]}
   :profiles
   {:dev {:dependencies [[criterium "0.4.4"]]}
