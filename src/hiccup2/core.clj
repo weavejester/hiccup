@@ -1,6 +1,7 @@
 (ns hiccup2.core
   "Library for rendering a tree of vectors into HTML. Pre-compiles where
   possible for performance. Strings are automatically escaped."
+  {:added "2.0"}
   (:require [hiccup.compiler :as compiler]
             [hiccup.util :as util]))
 
@@ -19,6 +20,7 @@
 
   `:escape-strings?`
   : True if strings should be escaped (defaults to true)."
+  {:added "2.0"}
   [options & content]
   (if (map? options)
     (let [mode            (:mode options :xhtml)
@@ -28,6 +30,6 @@
          (util/raw-string ~(apply compiler/compile-html-with-bindings content))))
     `(util/raw-string ~(apply compiler/compile-html-with-bindings options content))))
 
-(def raw
+(def ^{:added "2.0"} raw
   "Short alias for [[hiccup.util/raw-string]]."
   util/raw-string)
