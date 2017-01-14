@@ -7,7 +7,7 @@
 (defn test-handler [request]
   {:status  200
    :headers {"Content-Type" "text/html"}
-   :body    (str (html [:html [:body (link-to "/bar" "bar")]]))})
+   :body    (html [:html [:body (link-to "/bar" "bar")]])})
 
 (deftest test-wrap-base-url
   (let [resp ((wrap-base-url test-handler "/foo") {})]
