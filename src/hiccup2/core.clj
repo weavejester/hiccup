@@ -9,7 +9,7 @@
   "Render Clojure data structures to a compiled representation of HTML. To turn
   the representation into a string, use clojure.core/str. Strings inside the
   macro are automatically HTML-escaped. To insert a string without it being
-  escaped, use the raw function.
+  escaped, use the [[raw]] function.
 
   A literal option map may be specified as the first argument. It accepts two
   keys that control how the HTML is outputted:
