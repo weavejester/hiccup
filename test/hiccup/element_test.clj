@@ -20,7 +20,7 @@
   (is (= (mail-to "foo@example.com")
          [:a {:href "mailto:foo@example.com"} "foo@example.com"]))
   (is (= (mail-to "foo@example.com" "foo")
-         [:a {:href "mailto:foo@example.com"} "foo"])))
+         [:a {:href "mailto:foo@example.com"} (list "foo")])))
 
 (deftest unordered-list-test
   (is (= (unordered-list ["foo" "bar" "baz"])

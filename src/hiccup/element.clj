@@ -17,9 +17,9 @@
 (defelem mail-to
   "Wraps some content in a HTML hyperlink with the supplied e-mail
   address. If no content provided use the e-mail address as content."
-  [e-mail & [content]]
+  [e-mail & content]
   [:a {:href (str "mailto:" e-mail)}
-   (or content e-mail)])
+   (or (seq content) e-mail)])
 
 (defelem unordered-list
   "Wrap a collection in an unordered list."
