@@ -121,3 +121,11 @@
             (str "?" (url-encode params))
             params)))))
 
+
+(defn format-keywords [string keywords-map]
+  ;;(->> (clojure.walk/stringify-keys keywords-map)
+  (->> (map (juxt (comp str first) second) keywords-map)
+       flatten
+       (apply hash-map)
+       (reduce-kv clojure.string/replace
+                  string)))
