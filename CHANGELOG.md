@@ -1,3 +1,9 @@
+## 2.0.0-alpha1 (2017-01-15)
+
+* Added `hiccup2.core` namespace that escapes strings automatically
+* Added new syntax for class and style attributes
+* Fixed issue with pre-compiled `html` macro accepting new mode bindings
+
 ## 1.0.5 (2014-01-25)
 
 * Inverted container tag check to look for void tags instead
