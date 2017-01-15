@@ -41,10 +41,14 @@
 
 (defmacro xhtml
   "Create a XHTML 1.0 strict document with the supplied contents. The first
-  argument may be an optional attribute may. The following attributes are
+  argument may be an optional attribute map. The following attributes are
   treated specially:
-    :lang     - The language of the document
-    :encoding - The character encoding of the document, defaults to UTF-8."
+
+  `:lang`
+  : The language of the document
+
+  `:encoding`
+  : The character encoding of the document (defaults to UTF-8)."
   [options & contents]
   (if-not (map? options)
     `(xhtml {} ~options ~@contents)
