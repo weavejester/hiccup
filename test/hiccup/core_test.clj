@@ -124,7 +124,13 @@
     (is (= (html [:div (if true
                          [:span "foo"]
                          [:span "bar"])])
-           "<div><span>foo</span></div>")))
+           "<div><span>foo</span></div>"))
+    (is (= (html (let [x "foo"] [:span x]))
+           "<span>foo</span>"))
+    (is (= (html (when true [:span "true"]))
+           "<span>true</span>"))
+    (is (= (html (when false [:span "true"]))
+           "")))
   (testing "values are evaluated only once"
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
