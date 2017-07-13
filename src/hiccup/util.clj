@@ -25,7 +25,10 @@
 
 (extend-protocol ToString
   clojure.lang.Keyword
-  (to-str [k] (name k))
+  (to-str [k]
+    (if-let [n (namespace k)]
+      (str n "-" (name k))
+      (name k)))
   clojure.lang.Ratio
   (to-str [r] (str (float r)))
   java.net.URI
@@ -120,4 +123,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-
