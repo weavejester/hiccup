@@ -2,8 +2,12 @@
   "Internal functions for compilation."
   (:require [hiccup.util :as util]
             [clojure.string :as str])
-  (:import [clojure.lang IPersistentVector ISeq Named]
-           [hiccup.util RawString]))
+  #?(:clj
+     (:import [clojure.lang IPersistentVector ISeq Named]
+              [hiccup.util RawString])
+     :clje
+     (:import [clojerl Vector List INamed String Integer Float]
+              [hiccup.util RawString])))
 
 (defn- xml-mode? []
   (#{:xml :xhtml} util/*html-mode*))
@@ -88,7 +92,8 @@
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
-    (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
+    (throw #?(:clj (IllegalArgumentException. (str tag " is not a valid element name."))
+              :clje (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (util/as-str tag))
         classes          (if class (str/replace class "." " "))
         map-attrs        (first content)]
@@ -110,25 +115,46 @@
            "</" tag ">")
       (str "<" tag (render-attr-map attrs) (end-tag)))))
 
-(extend-protocol HtmlRenderer
-  IPersistentVector
-  (render-html [this]
-    (render-element this))
-  ISeq
-  (render-html [this]
-    (apply str (map render-html this)))
-  RawString
-  (render-html [this]
-    (str this))
-  Named
-  (render-html [this]
-    (escape-html (name this)))
-  Object
-  (render-html [this]
-    (escape-html (str this)))
-  nil
-  (render-html [this]
-    ""))
+#?(:clj
+   (extend-protocol HtmlRenderer
+     IPersistentVector
+     (render-html [this]
+       (render-element this))
+     ISeq
+     (render-html [this]
+       (apply str (map render-html this)))
+     RawString
+     (render-html [this]
+       (str this))
+     Named
+     (render-html [this]
+       (escape-html (name this)))
+     Object
+     (render-html [this]
+       (escape-html (str this)))
+     nil
+     (render-html [this]
+       ""))
+   :clje
+   (extend-protocol HtmlRenderer
+     Vector
+     (render-html [this]
+       (render-element this))
+     RawString
+     (render-html [this]
+       (str this))
+     default
+     (render-html [this]
+       (cond
+         (seq? this)
+           (apply str (map render-html this))
+         (satisfies? clojerl.INamed this)
+           (escape-html (name this))
+         :else
+           (escape-html (str this))))
+     nil
+     (render-html [this]
+       "")))
 
 (defn- unevaluated?
   "True if the expression has not been evaluated."
@@ -194,7 +220,10 @@
   [x]
   (or (= (form-name x) "for")
       (not (unevaluated? x))
-      (not-hint? x java.util.Map)))
+      #?(:clj
+         (not-hint? x java.util.Map)
+         :clje
+         (not-hint? x clojerl.Map))))
 
 (defn- element-compile-strategy
   "Returns the compilation strategy to use for a given element."
@@ -276,7 +305,9 @@
             (util/raw-string? expr) expr
             (literal? expr) (escape-html expr)
             (hint? expr String) `(escape-html ~expr)
-            (hint? expr Number) expr
+            #?@(:clj [(hint? expr Number) expr]
+                :clje [(or (hint? expr Float)
+                           (hint? expr Integer)) expr])
             (seq? expr) (compile-form expr)
             :else `(render-html ~expr)))))
 
@@ -317,7 +348,8 @@
       (= (set vals) #{true false})
         `(if ~var-sym ~(compiled-forms true) ~(compiled-forms false))
       :else
-        `(case ~var-sym ~@(apply concat distinct-forms)))))
+      #?(:clj `(case ~var-sym ~@(apply concat distinct-forms))
+         :clje `(case ~var-sym ~@(apply concat compiled-forms))))))
 
 (defn compile-html-with-bindings
   "Pre-compile data structures into HTML where possible, while taking into

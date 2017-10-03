@@ -1,8 +1,9 @@
 (ns hiccup.util
   "Utility functions for Hiccup."
   (:require [clojure.string :as str])
-  (:import java.net.URI
-           java.net.URLEncoder))
+  #?(:clj (:import java.net.URI
+                   java.net.URLEncoder)
+     :clje (:import clojerl.String)))
 
 (def ^:dynamic ^:no-doc *html-mode* :xhtml)
 
@@ -23,46 +24,74 @@
 (defprotocol ToString
   (^String to-str [x] "Convert a value into a string."))
 
-(extend-protocol ToString
-  clojure.lang.Keyword
-  (to-str [k] (name k))
-  clojure.lang.Ratio
-  (to-str [r] (str (float r)))
-  java.net.URI
-  (to-str [u]
-    (if (or (.getHost u)
-            (nil? (.getPath u))
-            (not (-> (.getPath u) (.startsWith "/"))))
-      (str u)
-      (let [base (str *base-url*)]
-        (if (.endsWith base "/")
-          (str (subs base 0 (dec (count base))) u)
-          (str base u)))))
-  Object
-  (to-str [x] (str x))
-  nil
-  (to-str [_] ""))
+#?(:clj
+   (extend-protocol ToString
+     clojure.lang.Keyword
+     (to-str [k] (name k))
+     clojure.lang.Ratio
+     (to-str [r] (str (float r)))
+     java.net.URI
+     (to-str [u]
+       (if (or (.getHost u)
+               (nil? (.getPath u))
+               (not (-> (.getPath u) (.startsWith "/"))))
+         (str u)
+         (let [base (str *base-url*)]
+           (if (.endsWith base "/")
+             (str (subs base 0 (dec (count base))) u)
+             (str base u)))))
+     Object
+     (to-str [x] (str x))
+     nil
+     (to-str [_] ""))
+
+   :clje
+   (extend-protocol ToString
+     clojerl.Keyword
+     (to-str [k] (name k))
+     default
+     (to-str [x] (str x))
+     nil
+     (to-str [_] "")))
 
 (defn ^String as-str
   "Converts its arguments into a string using [[to-str]]."
   [& xs]
   (apply str (map to-str xs)))
 
-(defprotocol ToURI
-  (^java.net.URI to-uri [x] "Convert a value into a URI."))
+#?(:clj
+  (defprotocol ToURI
+    (^java.net.URI to-uri [x] "Convert a value into a URI."))
+  :clje
+  (defprotocol ToURI
+    (^clojerl.String to-uri [x] "Convert a value into a URI.")))
 
-(extend-protocol ToURI
-  java.net.URI
-  (to-uri [u] u)
-  String
-  (to-uri [s] (URI. s)))
+#?(:clj
+   (extend-protocol ToURI
+     java.net.URI
+     (to-uri [u] u)
+     String
+     (to-uri [s] (URI. s)))
+   :clje
+   (extend-protocol ToURI
+     String
+     (to-uri [s] s)))
 
-(deftype RawString [^String s]
-  Object
-  (^String toString [this] s)
-  (^boolean equals [this other]
-    (and (instance? RawString other)
-         (= s  (.toString other)))))
+#?(:clj
+   (deftype RawString [^String s]
+     Object
+     (^String toString [this] s)
+     (^boolean equals [this other]
+      (and (instance? RawString other)
+           (= s  (.toString other)))))
+   :clje
+   (deftype RawString [^String s]
+     clojerl.IStringable
+     (^String str [this] s)
+     clojerl.IEquiv
+     (^clojerl.Boolean equiv [this other]
+      (and (instance? RawString other)
+           (= s (str other))))))
 
 (defn raw-string
   "Converts one or more strings into an object that will not be escaped when
@@ -96,16 +125,28 @@
 (defprotocol URLEncode
   (url-encode [x] "Turn a value into a URL-encoded string."))
 
-(extend-protocol URLEncode
-  String
-  (url-encode [s] (URLEncoder/encode s *encoding*))
-  java.util.Map
-  (url-encode [m]
-    (str/join "&"
-      (for [[k v] m]
-        (str (url-encode k) "=" (url-encode v)))))
-  Object
-  (url-encode [x] (url-encode (to-str x))))
+#?(:clj
+   (extend-protocol URLEncode
+     String
+     (url-encode [s] (URLEncoder/encode s *encoding*))
+     java.util.Map
+     (url-encode [m]
+       (str/join "&"
+                 (for [[k v] m]
+                   (str (url-encode k) "=" (url-encode v)))))
+     Object
+     (url-encode [x] (url-encode (to-str x))))
+   :clje
+   (extend-protocol URLEncode
+     String
+     (url-encode [s] (http_uri/encode.e s))
+     clojerl.Map
+     (url-encode [m]
+       (str/join "&"
+                 (for [[k v] m]
+                   (str (url-encode k) "=" (url-encode v)))))
+     default
+     (url-encode [x] (url-encode (to-str x)))))
 
 (defn url
   "Creates a URI instance from a variable list of arguments and an optional
@@ -120,4 +161,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-

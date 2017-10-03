@@ -35,6 +35,9 @@
   passed to the resulting function is a map, it merges it with the attribute
   map of the returned element value."
   [name & fdecl]
-  `(do (defn ~name ~@fdecl)
-       (alter-meta! (var ~name) update-in [:arglists] #'update-arglists)
-       (alter-var-root (var ~name) wrap-attrs)))
+  #?(:clj
+     `(do (defn ~name ~@fdecl)
+          (alter-meta! (var ~name) update-in [:arglists] #'update-arglists)
+          (alter-var-root (var ~name) wrap-attrs))
+     :clje
+     `(defn ~name ~@fdecl)))
