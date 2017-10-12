@@ -1,6 +1,6 @@
 { application
 , hiccup,
-  [ {description, "Compile clojerl projects"}
+  [ {description, "A fast library for rendering HTML in Clojure"}
   , {vsn, git}
   , {registered, []}
   , {applications, [kernel, stdlib]}
