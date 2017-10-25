@@ -139,7 +139,7 @@
    :clje
    (extend-protocol URLEncode
      String
-     (url-encode [s] (http_uri/encode.e s))
+     (url-encode [s] (http_uri/encode s))
      clojerl.Map
      (url-encode [m]
        (str/join "&"
