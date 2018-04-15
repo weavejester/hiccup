@@ -110,7 +110,11 @@
     (let [times-called (atom 0)
           foo #(swap! times-called inc)]
       (html [:div (foo)])
-      (is (= @times-called 1)))))
+      (is (= @times-called 1))))
+  (testing "defer evaluation of non-literal class names when combined with tag classes"
+    (let [x "attr-class"]
+      (is  (= (html [:div.tag-class {:class x}])
+              "<div class=\"tag-class attr-class\"></div>")))))
 
 (deftest render-modes
   (testing "closed tag"
