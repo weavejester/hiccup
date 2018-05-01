@@ -73,28 +73,48 @@
   (or content
       (and (html-mode?) (not (void-tags tag)))))
 
-(defn- merge-classes [class classes]
+(defn merge-classes [class classes]
   (cond
     (nil? class)    classes
     (string? class) (str classes " " class)
     :else           (str classes " " (str/join " " class))))
+
+(declare literal?)
+
+(defn- merge-classes-form [class-form classes]
+  (if (literal? class-form)
+    (merge-classes class-form classes)
+    `(merge-classes ~class-form ~classes)))
 
 (defn- merge-attributes [map-attrs id classes]
   (-> map-attrs
       (cond-> id      (assoc :id (or (:id map-attrs) id)))
       (cond-> classes (assoc :class (merge-classes (:class map-attrs) classes)))))
 
-(defn normalize-element
-  "Ensure an element vector is of the form [tag-name attrs content]."
-  [[tag & content]]
+(defn- merge-attributes-form [map-attrs id classes]
+  (-> map-attrs
+      (cond-> id      (assoc :id (or (:id map-attrs) id)))
+      (cond-> classes (assoc :class (merge-classes-form (:class map-attrs) classes)))))
+
+(defn- normalize-element*
+  [[tag & content] merge-attributes-fn]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
   (let [[_ tag id class] (re-matches re-tag (util/as-str tag))
         classes          (if class (str/replace class "." " "))
         map-attrs        (first content)]
     (if (map? map-attrs)
-      [tag (merge-attributes map-attrs id classes) (next content)]
+      [tag (merge-attributes-fn map-attrs id classes) (next content)]
       [tag {:id id, :class classes} content])))
+
+(defn normalize-element
+  "Ensure an element vector is of the form [tag-name attrs content]." 
+  [[tag & content :as tag-content]]
+  (normalize-element* tag-content merge-attributes))
+
+(defn- normalize-element-form
+  [[tag & content :as tag-content]]
+  (normalize-element* tag-content merge-attributes-form))
 
 (defprotocol HtmlRenderer
   (render-html [this]
@@ -225,7 +245,7 @@
 
 (defmethod compile-element ::literal-tag-and-attributes
   [[tag attrs & content]]
-  (let [[tag attrs _] (normalize-element [tag attrs])]
+  (let [[tag attrs _] (normalize-element-form [tag attrs])]
     (if (container-tag? tag content)
       `(str ~(str "<" tag) ~(compile-attr-map attrs) ">"
             ~@(compile-seq content)
@@ -238,7 +258,7 @@
 
 (defmethod compile-element ::literal-tag
   [[tag attrs & content]]
-  (let [[tag tag-attrs _] (normalize-element [tag])
+  (let [[tag tag-attrs _] (normalize-element-form [tag])
         attrs-sym         (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
