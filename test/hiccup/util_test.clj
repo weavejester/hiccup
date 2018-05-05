@@ -15,6 +15,8 @@
 (deftest test-as-str
   (is (= (as-str "foo") "foo"))
   (is (= (as-str :foo) "foo"))
+  (is (= (as-str :foo/bar) "foo-bar"))
+  (is (= (as-str ::bar) "hiccup.util_test-bar"))
   (is (= (as-str 100) "100"))
   (is (= (as-str 4/3) (str (float 4/3))))
   (is (= (as-str "a" :b 3) "ab3"))
