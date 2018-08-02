@@ -110,7 +110,7 @@
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]." 
   [[tag & content :as tag-content]]
-  (normalize-element* tag-content merge-attributes))
+  (normalize-element* (if (fn? tag) (apply tag content) tag-content) merge-attributes))
 
 (defn- normalize-element-form
   [[tag & content :as tag-content]]
