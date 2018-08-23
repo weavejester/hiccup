@@ -219,4 +219,14 @@
     (defn greet-comp [greeting]
       [:h1 greeting])
     (is (= (str (html [hello-comp])) "<h1>Hello World</h1>"))
+    (is (= (str (html [greet-comp "Hello Friend"])) "<h1>Hello Friend</h1>")))
+
+  (testing "form-2"
+    (defn hello-comp []
+      (fn []
+        [:h1 "Hello World"]))
+    (defn greet-comp [greeting]
+      (fn [greeting]
+        [:h1 greeting]))
+    (is (= (str (html [hello-comp])) "<h1>Hello World</h1>"))
     (is (= (str (html [greet-comp "Hello Friend"])) "<h1>Hello Friend</h1>"))))
