@@ -76,10 +76,18 @@
       (str "<option selected=\"selected\">foo</option>"
            "<option selected=\"selected\">bar</option>"
            "<option>baz</option>")
+    (select-options ["foo" "bar" "baz"] '("foo" "bar"))
+      (str "<option selected=\"selected\">foo</option>"
+           "<option selected=\"selected\">bar</option>"
+           "<option>baz</option>")
     (select-options [["Foo" 1] ["Bar" 2] ["Baz" 3]] [1 3])
       (str "<option selected=\"selected\" value=\"1\">Foo</option>"
            "<option value=\"2\">Bar</option>"
-           "<option selected=\"selected\" value=\"3\">Baz</option>")))
+           "<option selected=\"selected\" value=\"3\">Baz</option>")
+    (select-options ["foo" "bar" "baz"] #(= \b (nth % 0)))
+      (str "<option>foo</option>"
+           "<option selected=\"selected\">bar</option>"
+           "<option selected=\"selected\">baz</option>")))
 
 
 

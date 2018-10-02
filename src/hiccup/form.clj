@@ -74,13 +74,11 @@
              :value value
              :checked checked?}]))
 
-(defn- selected?
-  "If selected is sequential, return whether selected contains x,
-  else return if x is equal to selected"
-  [x selected]
-  (if (sequential? selected)
-    (or (some (partial = x) selected) false)
-    (= x selected)))
+(defn- selected? [x selected]
+  (cond (or (list? selected) (vector? selected))
+          (or (some (partial = x) selected) false)
+        (ifn? selected) (selected x)
+        :else (= x selected)))
 
 (defelem select-options
   "Creates a seq of option tags from a collection."
