@@ -1,3 +1,7 @@
+## 2.0.0-alpha2 (2019-01-22)
+
+* Fixed issue with dot-notation and non-literal classes (#151)
+
 ## 2.0.0-alpha1 (2017-01-15)
 
 * Added `hiccup2.core` namespace that escapes strings automatically

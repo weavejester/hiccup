@@ -1,4 +1,4 @@
-(defproject hiccup "2.0.0-alpha1"
+(defproject hiccup "2.0.0-alpha2"
   :description "A fast library for rendering HTML in Clojure"
   :url "http://github.com/weavejester/hiccup"
   :license {:name "Eclipse Public License"
