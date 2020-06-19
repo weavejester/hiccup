@@ -77,7 +77,7 @@
   (cond
     (nil? class)    classes
     (string? class) (str classes " " class)
-    :else           (str classes " " (str/join " " class))))
+    :else           (str classes " " (str/join " " (map name class)))))
 
 (declare literal?)
 

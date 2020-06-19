@@ -77,7 +77,18 @@
     (is (= (html [:div.foo {:class "bar"} "baz"])
            "<div class=\"foo bar\">baz</div>"))
     (is (= (html [:div#bar.foo {:id "baq"} "baz"])
-           "<div class=\"foo\" id=\"baq\">baz</div>"))))
+           "<div class=\"foo\" id=\"baq\">baz</div>")))
+  (testing "tag with vector class"
+    (is (= (html [:div.foo {:class ["bar"]} "baz"])
+           "<div class=\"foo bar\">baz</div>"))
+    (is (= (html [:div.foo {:class [:bar]} "baz"])
+           "<div class=\"foo bar\">baz</div>"))
+    (is (= (html [:div.foo {:class [:bar "box"]} "baz"])
+           "<div class=\"foo bar box\">baz</div>"))
+    (is (= (html [:div.foo {:class ["bar" "box"]} "baz"])
+           "<div class=\"foo bar box\">baz</div>"))
+    (is (= (html [:div.foo {:class [:bar :box]} "baz"])
+           "<div class=\"foo bar box\">baz</div>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
