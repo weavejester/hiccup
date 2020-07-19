@@ -33,7 +33,7 @@
     (map? value)
       (render-style-map value)
     (sequential? value)
-      (str/join " " (map util/as-str value))
+      (str/join " " (map util/to-str value))
     :else
       value))
 
