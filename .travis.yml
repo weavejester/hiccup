@@ -1,2 +1,17 @@
+os: linux
+arch:
+ - amd64
+ - ppc64le
+
+install:
+  - curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+  - sudo mv lein /usr/local/bin/lein
+  - sudo chmod a+x /usr/local/bin/lein
+
+addons:
+  apt:
+    packages:
+      - openjdk-8-jdk 
+      
 language: clojure
 script: lein test-all
