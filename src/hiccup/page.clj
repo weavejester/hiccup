@@ -78,7 +78,11 @@
   "Include a list of external javascript files."
   [& scripts]
   (for [script scripts]
-    [:script {:type "text/javascript", :src (util/to-uri script)}]))
+    (if (:src script)
+      [:script
+       (merge {:type "text/javascript", :src (util/to-uri (:src script))}
+              (dissoc script :src))]
+      [:script {:type "text/javascript", :src (util/to-uri script)}])))
 
 (defn include-css
   "Include a list of external stylesheet files."
