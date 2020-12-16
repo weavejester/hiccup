@@ -78,7 +78,7 @@
   "Include a list of external javascript files."
   [& scripts]
   (for [script scripts]
-    (if (:src script)
+    (if (map? script)
       [:script
        (merge {:type "text/javascript", :src (util/to-uri (:src script))}
               (dissoc script :src))]
