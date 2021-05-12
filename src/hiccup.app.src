@@ -1,0 +1,13 @@
+{ application
+, hiccup,
+  [ {description, "A fast library for rendering HTML in Clojure"}
+  , {vsn, git}
+  , {registered, []}
+  , {applications, [kernel, stdlib]}
+  , {env,[]}
+  , {modules, []}
+  , {maintainers, []}
+  , {licenses, []}
+  , {links, []}
+  ]
+}.
