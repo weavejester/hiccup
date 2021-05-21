@@ -58,6 +58,10 @@
   (testing "tag with blank attribute map"
     (is (= (html [:xml {}]) "<xml></xml>")))
   (testing "tag with populated attribute map"
+    (is (= (html [:xml {:a 123}]) "<xml a=\"123\"></xml>"))
+    (is (= (html [:xml {:a 'sym}]) "<xml a=\"sym\"></xml>"))
+    (is (= (html [:xml {:a :kw}]) "<xml a=\"kw\"></xml>"))
+    (is (= (html [:xml {:a [:kw :ns/ns-kw "str" 3 'sym]}]) "<xml a=\"kw ns-kw str 3 sym\"></xml>"))
     (is (= (html [:xml {:a "1", :b "2"}]) "<xml a=\"1\" b=\"2\"></xml>"))
     (is (= (html [:img {"id" "foo"}]) "<img id=\"foo\" />"))
     (is (= (html [:img {'id "foo"}]) "<img id=\"foo\" />"))
@@ -79,6 +83,8 @@
     (is (= (html [:div#bar.foo {:id "baq"} "baz"])
            "<div class=\"foo\" id=\"baq\">baz</div>")))
   (testing "tag with vector class"
+    (is (= (html [:div {:class [:bar]} "baz"])
+           "<div class=\"bar\">baz</div>"))
     (is (= (html [:div.foo {:class ["bar"]} "baz"])
            "<div class=\"foo bar\">baz</div>"))
     (is (= (html [:div.foo {:class [:bar]} "baz"])
