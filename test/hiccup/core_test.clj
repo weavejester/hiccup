@@ -88,7 +88,9 @@
     (is (= (html [:div.foo {:class ["bar" "box"]} "baz"])
            "<div class=\"foo bar box\">baz</div>"))
     (is (= (html [:div.foo {:class [:bar :box]} "baz"])
-           "<div class=\"foo bar box\">baz</div>"))))
+           "<div class=\"foo bar box\">baz</div>"))
+    (is (= (html [:div.foo {:class [nil :bar nil]} "baz"])
+           "<div class=\"foo  bar \">baz</div>"))))
 
 (deftest compiled-tags
   (testing "tag content can be vars"
