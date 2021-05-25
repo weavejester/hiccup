@@ -3,6 +3,7 @@
 /codox
 /classes
 /checkouts
+/ebin
 pom.xml
 pom.xml.asc
 *.jar
