@@ -104,7 +104,7 @@ Is equivalent to:
 This is particularly useful for iteration. For example:
 
 ```clojure
-[:ul (for [i (range 3)] [:ul i])]
+[:ul (for [i (range 3)] [:li i])]
 ```
 
 ```html
