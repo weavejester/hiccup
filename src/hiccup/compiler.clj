@@ -186,6 +186,18 @@
   [[_ condition & body]]
   `(if ~condition ~@(for [x body] (compile-html x))))
 
+(defmethod compile-form "when"
+  [[_ condition & body]]
+  `(when ~condition
+     ~@(butlast body)
+     ~(compile-html (last body))))
+
+(defmethod compile-form "let"
+  [[_ bindings & body]]
+  `(let ~bindings
+     ~@(butlast body)
+     ~(compile-html (last body))))
+
 (defmethod compile-form :default
   [expr]
   `(render-html ~expr))
