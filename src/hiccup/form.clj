@@ -74,6 +74,12 @@
              :value value
              :checked checked?}]))
 
+(defn- selected? [x selected]
+  (cond (or (list? selected) (vector? selected))
+          (or (some (partial = x) selected) false)
+        (ifn? selected) (selected x)
+        :else (= x selected)))
+
 (defelem select-options
   "Creates a seq of option tags from a collection."
   ([coll] (select-options coll nil))
@@ -83,8 +89,8 @@
         (let [[text val] x]
           (if (sequential? val)
             [:optgroup {:label text} (select-options val selected)]
-            [:option {:value val :selected (= val selected)} text]))
-        [:option {:selected (= x selected)} x]))))
+            [:option {:value val :selected (selected? val selected)} text]))
+        [:option {:selected (selected? x selected)} x]))))
 
 (defelem drop-down
   "Creates a drop-down box using the `<select>` tag."
