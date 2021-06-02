@@ -74,7 +74,12 @@
          (list [:script {:type "text/javascript", :src (URI. "foo.js")}])))
   (is (= (include-js "foo.js" "bar.js")
          (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
-               [:script {:type "text/javascript", :src (URI. "bar.js")}]))))
+               [:script {:type "text/javascript", :src (URI. "bar.js")}])))
+  (is (= (include-js "foo.js" "bar.js" {:src "baz.js" :defer true})
+         (list [:script {:type "text/javascript", :src (URI. "foo.js")}]
+               [:script {:type "text/javascript", :src (URI. "bar.js")}]
+               [:script {:type "text/javascript", :src (URI. "baz.js")
+                         :defer true}]))))
 
 (deftest include-css-test
   (is (= (include-css "foo.css")
