@@ -4,6 +4,8 @@
   (:import java.net.URI
            java.net.URLEncoder))
 
+(set! *warn-on-reflection* true)
+
 (def ^:dynamic ^:no-doc *html-mode* :xhtml)
 
 (def ^:dynamic ^:no-doc *escape-strings?* true)
@@ -98,7 +100,7 @@
 
 (extend-protocol URLEncode
   String
-  (url-encode [s] (URLEncoder/encode s *encoding*))
+  (url-encode [s] (URLEncoder/encode s (str *encoding*)))
   java.util.Map
   (url-encode [m]
     (str/join "&"
