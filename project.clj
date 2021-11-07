@@ -15,4 +15,5 @@
   {:dev {:dependencies [[criterium "0.4.4"]]}
    :1.6 {:dependencies [[org.clojure/clojure "1.6.0"]]}
    :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
-   :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}})
+   :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}}
+  :global-vars {*warn-on-reflection* true})

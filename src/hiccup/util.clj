@@ -98,7 +98,7 @@
 
 (extend-protocol URLEncode
   String
-  (url-encode [s] (URLEncoder/encode s *encoding*))
+  (url-encode [s] (URLEncoder/encode ^String s ^String *encoding*))
   java.util.Map
   (url-encode [m]
     (str/join "&"
