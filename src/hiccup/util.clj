@@ -105,7 +105,9 @@
       (for [[k v] m]
         (str (url-encode k) "=" (url-encode v)))))
   Object
-  (url-encode [x] (url-encode (to-str x))))
+  (url-encode [x] (url-encode (to-str x)))
+  nil
+  (url-encode [x] ""))
 
 (defn url
   "Creates a URI instance from a variable list of arguments and an optional
