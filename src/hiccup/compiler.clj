@@ -24,7 +24,7 @@
 
 (defn- render-style-map [value]
   (->> value
-       (map (fn [[k v]] (str (util/as-str k) ":" v ";")))
+       (map (fn [[k v]] (str (util/as-str k) ":" (util/as-str v) ";")))
        (sort)
        (apply str)))
 
