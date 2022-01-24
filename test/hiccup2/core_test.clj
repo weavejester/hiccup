@@ -88,8 +88,9 @@
     (is (= (str (html [:span {:class "baz bar"} "foo"]))
            "<span class=\"baz bar\">foo</span>")))
   (testing "map attributes"
-    (is (= (str (html [:span {:style {:color "red" :opacity "100%"}} "foo"]))
-           "<span style=\"color:red;opacity:100%;\">foo</span>")))
+    (is (= (str (html [:span {:style {:background-color :blue, :color "red",
+                                      :line-width 1.2, :opacity "100%"}} "foo"]))
+           "<span style=\"background-color:blue;color:red;line-width:1.2;opacity:100%;\">foo</span>")))
   (testing "resolving conflicts between attributes in the map and tag"
     (is (= (str (html [:div.foo {:class "bar"} "baz"]))
            "<div class=\"foo bar\">baz</div>"))
