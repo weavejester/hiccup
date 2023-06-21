@@ -1,3 +1,7 @@
+## 2.0.0-RC1 (2023-06-21)
+
+* Reverted behaviour of `hiccup.core/h` to 1.0 (#198)
+
 ## 2.0.0-alpha2 (2019-01-22)
 
 * Fixed issue with dot-notation and non-literal classes (#151)
