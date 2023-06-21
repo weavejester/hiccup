@@ -15,7 +15,7 @@ Add the following dependency to your `project.clj` file:
 
 * [Wiki](https://github.com/weavejester/hiccup/wiki)
 * [API Docs](http://weavejester.github.io/hiccup)
-    
+
 ## Syntax
 
 Here is a basic example of Hiccup syntax:
