@@ -1,6 +1,4 @@
-# Hiccup
-
-[![Build Status](https://travis-ci.org/weavejester/hiccup.svg?branch=master)](https://travis-ci.org/weavejester/hiccup)
+# Hiccup [![Build Status](https://github.com/weavejester/hiccup/actions/workflows/test.yml/badge.svg)](https://github.com/weavejester/hiccup/actions/workflows/test.yml)
 
 Hiccup is a library for representing HTML in Clojure. It uses vectors
 to represent elements, and maps to represent an element's attributes.
