@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]]
-  :plugins [[lein-codox "0.10.2"]]
+  :plugins [[lein-codox "0.10.8"]]
   :codox
   {:output-path "codox"
    :source-uri  "http://github.com/weavejester/hiccup/blob/{version}/{filepath}#L{line}"
