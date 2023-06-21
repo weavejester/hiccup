@@ -21,10 +21,6 @@
     `(str (hiccup2/html ~(assoc options :escape-strings? false) ~@content))
     `(str (hiccup2/html {:escape-strings? false} ~options ~@content))))
 
-(defn h
+(def ^{:deprecated 2.0} h
   "Escape strings within the [[html]] macro."
-  {:deprecated "2.0"}
-  [text]
-  (if util/*escape-strings?*
-    (util/as-str text)
-    (util/escape-html text)))
+  util/escape-html)
