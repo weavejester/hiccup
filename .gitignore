@@ -9,3 +9,5 @@ pom.xml.asc
 *.class
 .lein-*
 .nrepl-port
+.clj-kondo/*
+!.clj-kodo/config.edn
