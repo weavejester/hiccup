@@ -3,6 +3,7 @@
   (:require [hiccup.util :as util]
             [clojure.string :as str])
   (:import [clojure.lang IPersistentVector ISeq Named]
+           [java.util Iterator]
            [hiccup.util RawString]))
 
 (defn- xml-mode? []
@@ -22,11 +23,28 @@
 (defn- end-tag []
   (if (xml-mode?) " />" ">"))
 
+(defn iterate! [callback coll]
+  (when coll
+    (let [^Iterator iterator (.iterator ^Iterable coll)]
+      (while (.hasNext iterator)
+        (callback (.next iterator))))))
+
+(defmacro build-string [& strs]
+  (let [w (gensym)]
+    `(let [~w (StringBuilder.)]
+       ~@(map (fn [arg] `(.append ~w (or ~arg ""))) strs)
+       (.toString ~w))))
+
 (defn- render-style-map [value]
-  (->> value
-       (map (fn [[k v]] (str (util/as-str k) ":" (util/as-str v) ";")))
-       (sort)
-       (apply str)))
+  (let [sb (StringBuilder.)]
+    (iterate!
+     (fn [[k v]]
+       (.append sb (util/to-str k))
+       (.append sb ":")
+       (.append sb (util/to-str v))
+       (.append sb ";"))
+     (sort-by #(util/to-str (key %)) value))
+    (.toString sb)))
 
 (defn- render-attr-value [value]
   (cond
@@ -38,14 +56,15 @@
       value))
 
 (defn- xml-attribute [name value]
-  (str " " (util/as-str name) "=\"" (util/escape-html (render-attr-value value)) "\""))
+  (build-string " " (util/to-str name) "=\""
+                (util/escape-html (render-attr-value value)) "\""))
 
 (defn- render-attribute [[name value]]
   (cond
     (true? value)
       (if (xml-mode?)
         (xml-attribute name name)
-        (str " " (util/as-str name)))
+        (build-string " " (util/to-str name)))
     (not value)
       ""
     :else
@@ -54,11 +73,12 @@
 (defn render-attr-map
   "Render a map of attributes."
   [attrs]
-  (apply str (sort (map render-attribute attrs))))
-
-(def ^{:doc "Regular expression that parses a CSS-style id and class from an element name."
-       :private true}
-  re-tag #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
+  (if (= {} attrs)
+    ""
+    (let [sb (StringBuilder.)]
+      (iterate! #(.append sb (render-attribute %))
+                (sort-by #(util/to-str (key %)) attrs))
+      (.toString sb))))
 
 (def ^{:doc "A list of elements that must be rendered without a closing tag."
        :private true}
@@ -73,11 +93,27 @@
   (or content
       (and (html-mode?) (not (void-tags tag)))))
 
+
+(defn- parse-tag [^String tag]
+  (let [id-index    (let [index (.indexOf tag "#")] (when (pos? index) index))
+        class-index (let [index (.indexOf tag ".")] (when (pos? index) index))]
+    [(cond
+       id-index    (.substring tag 0 id-index)
+       class-index (.substring tag 0 class-index)
+       :else tag)
+     (when id-index
+       (if class-index
+         (.substring tag (unchecked-inc-int id-index) class-index)
+         (.substring tag (unchecked-inc-int id-index))))
+     (when class-index
+       (.substring tag (unchecked-inc-int class-index)))]))
+
 (defn merge-classes [class classes]
   (cond
     (nil? class)    classes
-    (string? class) (str classes " " class)
-    :else           (str classes " " (str/join " " (keep #(some-> % name) class)))))
+    (string? class) (build-string classes " " class)
+    :else           (build-string classes " "
+                                  (str/join " " (keep #(some-> % name) class)))))
 
 (declare literal?)
 
@@ -100,16 +136,19 @@
   [[tag & content] merge-attributes-fn]
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (IllegalArgumentException. (str tag " is not a valid element name."))))
-  (let [[_ tag id class] (re-matches re-tag (util/as-str tag))
+  (let [[tag id class]   (parse-tag (util/to-str tag))
         classes          (if class (str/replace class "." " "))
         map-attrs        (first content)]
     (if (map? map-attrs)
       [tag (merge-attributes-fn map-attrs id classes) (next content)]
-      [tag {:id id, :class classes} content])))
+      [tag (cond-> {}
+             id (assoc :id id)
+             classes (assoc :class classes))
+       content])))
 
 (defn normalize-element
   "Ensure an element vector is of the form [tag-name attrs content]." 
-  [[tag & content :as tag-content]]
+  [tag-content]
   (normalize-element* tag-content merge-attributes))
 
 (defn- normalize-element-form
@@ -125,10 +164,10 @@
   [element]
   (let [[tag attrs content] (normalize-element element)]
     (if (container-tag? tag content)
-      (str "<" tag (render-attr-map attrs) ">"
-           (render-html content)
-           "</" tag ">")
-      (str "<" tag (render-attr-map attrs) (end-tag)))))
+      (build-string "<" tag (render-attr-map attrs) ">"
+                    (render-html content)
+                    "</" tag ">")
+      (build-string "<" tag (render-attr-map attrs) (end-tag)))))
 
 (extend-protocol HtmlRenderer
   IPersistentVector
@@ -136,7 +175,9 @@
     (render-element this))
   ISeq
   (render-html [this]
-    (apply str (map render-html this)))
+    (let [sb (StringBuilder.)]
+      (iterate! #(.append sb (render-html %)) this)
+      (.toString sb)))
   RawString
   (render-html [this]
     (str this))
@@ -180,7 +221,9 @@
 
 (defmethod compile-form "for"
   [[_ bindings body]]
-  `(apply str (for ~bindings ~(compile-html body))))
+  `(let [sb# (StringBuilder.)]
+     (iterate! #(.append sb# %) (for ~bindings ~(compile-html body)))
+     (.toString sb#)))
 
 (defmethod compile-form "if"
   [[_ condition & body]]
@@ -259,10 +302,10 @@
   [[tag attrs & content]]
   (let [[tag attrs _] (normalize-element-form [tag attrs])]
     (if (container-tag? tag content)
-      `(str ~(str "<" tag) ~(compile-attr-map attrs) ">"
-            ~@(compile-seq content)
-            ~(str "</" tag ">"))
-      `(str "<" ~tag ~(compile-attr-map attrs) ~(end-tag)))))
+      `(build-string ~(str "<" tag) ~(compile-attr-map attrs) ">"
+                     ~@(compile-seq content)
+                     ~(str "</" tag ">"))
+      `(build-string "<" ~tag ~(compile-attr-map attrs) ~(end-tag)))))
 
 (defmethod compile-element ::literal-tag-and-no-attributes
   [[tag & content]]
@@ -275,18 +318,18 @@
     `(let [~attrs-sym ~attrs]
        (if (map? ~attrs-sym)
          ~(if (container-tag? tag content)
-            `(str ~(str "<" tag)
-                  (render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
-                  ~@(compile-seq content)
-                  ~(str "</" tag ">"))
-            `(str ~(str "<" tag)
-                  (render-attr-map (merge ~tag-attrs ~attrs-sym))
-                  ~(end-tag)))
+            `(build-string ~(str "<" tag)
+                           (render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
+                           ~@(compile-seq content)
+                           ~(str "</" tag ">"))
+            `(build-string ~(str "<" tag)
+                           (render-attr-map (merge ~tag-attrs ~attrs-sym))
+                           ~(end-tag)))
          ~(if (container-tag? tag attrs)
-            `(str ~(str "<" tag (render-attr-map tag-attrs) ">")
-                  ~@(compile-seq (cons attrs-sym content))
-                  ~(str "</" tag ">"))
-            (str "<" tag (render-attr-map tag-attrs) (end-tag)))))))
+            `(build-string ~(str "<" tag (render-attr-map tag-attrs) ">")
+                           ~@(compile-seq (cons attrs-sym content))
+                           ~(str "</" tag ">"))
+            (build-string "<" tag (render-attr-map tag-attrs) (end-tag)))))))
 
 (defmethod compile-element :default
   [element]
@@ -319,7 +362,9 @@
     (cons
      (first expr)
      (mapcat
-      #(if (and (seq? %) (symbol? (first %)) (= (first %) (first expr) `str))
+      #(if (and (seq? %)
+                (symbol? (first %))
+                (= (first %) (first expr) `build-string))
          (rest (collapse-strs %))
          (list (collapse-strs %)))
       (rest expr)))
@@ -328,7 +373,7 @@
 (defn compile-html
   "Pre-compile data structures into HTML where possible."
   [& content]
-  (collapse-strs `(str ~@(compile-seq content))))
+  (collapse-strs `(build-string ~@(compile-seq content))))
 
 (defn- binding* [var val func]
   (push-thread-bindings {var val})

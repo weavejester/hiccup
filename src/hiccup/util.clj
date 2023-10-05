@@ -80,7 +80,7 @@
 (defn escape-html
   "Change special characters into HTML character entities."
   [text]
-  (.. ^String (as-str text)
+  (.. ^String (to-str text)
     (replace "&"  "&amp;")
     (replace "<"  "&lt;")
     (replace ">"  "&gt;")
@@ -122,4 +122,3 @@
           (if (map? params)
             (str "?" (url-encode params))
             params)))))
-
