@@ -11,3 +11,4 @@ pom.xml.asc
 .nrepl-port
 .clj-kondo/*
 !.clj-kodo/config.edn
+/.cpcache
