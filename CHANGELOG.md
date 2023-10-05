@@ -1,3 +1,7 @@
+## 2.0.0-RC2 (2023-10-05)
+
+* Improved performance (#204)
+
 ## 2.0.0-RC1 (2023-06-21)
 
 * Reverted behaviour of `hiccup.core/h` to 1.0 (#198)
