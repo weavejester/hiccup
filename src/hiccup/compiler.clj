@@ -356,11 +356,11 @@
 (defmethod compile-element ::default
   [element]
   `(render-element
-     [~(first element)
-      ~@(for [x (rest element)]
-          (if (vector? x)
-            (compile-element x)
-            x))]))
+    [~(first element)
+     ~@(for [x (rest element)]
+         (if (vector? x)
+           (util/raw-string (compile-element x))
+           x))]))
 
 (defn- compile-seq
   "Compile a sequence of data-structures into HTML."

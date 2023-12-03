@@ -1,6 +1,15 @@
 (ns hiccup.compiler-test
   (:require [clojure.test :refer :all]
-            [hiccup2.core :refer [html]]))
+            [clojure.walk :as walk]
+            [hiccup2.core :refer [html]])
+  (:import (hiccup.util RawString)))
+
+(defn- extract-strings [code]
+  (->> (tree-seq coll? seq code)
+       (filter #(or (string? %)
+                    (instance? RawString %)))
+       (map str)
+       (set)))
 
 (deftest test-compile-element-literal-tag
   ;; `compile-element ::literal-tag` behavior varies based on the following
@@ -93,21 +102,19 @@
            "<p>x</p>")))
 
   (testing "runtime tag with child elements"
-    ;; FIXME: this should return "<p><span>x</span></p>"
     (is (= (str (html {:mode :xhtml} [(identity :p) [:span "x"]]))
-           "<p>&lt;span&gt;x&lt;/span&gt;</p>"))
+           (str (html {:mode :xhtml} [(identity :p) (identity [:span "x"])]))
+           "<p><span>x</span></p>"))
     (is (= (str (html {:mode :html} [(identity :p) [:span "x"]]))
-           "<p>&lt;span&gt;x&lt;/span&gt;</p>"))
+           (str (html {:mode :html} [(identity :p) (identity [:span "x"])]))
+           "<p><span>x</span></p>"))
     (is (= (str (html {:mode :xml} [(identity :p) [:span "x"]]))
-           "<p>&lt;span&gt;x&lt;/span&gt;</p>"))
+           (str (html {:mode :xml} [(identity :p) (identity [:span "x"])]))
+           "<p><span>x</span></p>"))
     (is (= (str (html {:mode :sgml} [(identity :p) [:span "x"]]))
-           "<p>&lt;span&gt;x&lt;/span&gt;</p>"))
+           (str (html {:mode :sgml} [(identity :p) (identity [:span "x"])]))
+           "<p><span>x</span></p>")))
 
-    (is (= (str (html {:mode :xhtml} [(identity :p) (identity [:span "x"])]))
-           "<p><span>x</span></p>"))
-    (is (= (str (html {:mode :html} [(identity :p) (identity [:span "x"])]))
-           "<p><span>x</span></p>"))
-    (is (= (str (html {:mode :xml} [(identity :p) (identity [:span "x"])]))
-           "<p><span>x</span></p>"))
-    (is (= (str (html {:mode :sgml} [(identity :p) (identity [:span "x"])]))
-           "<p><span>x</span></p>"))))
+  (testing "compiles literal child elements"
+    (let [code (walk/macroexpand-all `(html [(identity :p) [:span "x"]]))]
+      (is (= (extract-strings code) #{"" "<span>x</span>"})))))
