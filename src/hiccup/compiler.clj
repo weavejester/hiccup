@@ -29,11 +29,30 @@
       (while (.hasNext iterator)
         (callback (.next iterator))))))
 
+(defn- concatenate-strings [coll]
+  (->> coll
+       (partition-by string?)
+       (mapcat (fn [group]
+                 (if (string? (first group))
+                   [(apply str group)]
+                   group)))))
+
 (defmacro build-string [& strs]
-  (let [w (gensym)]
-    `(let [~w (StringBuilder.)]
-       ~@(map (fn [arg] `(.append ~w (or ~arg ""))) strs)
-       (.toString ~w))))
+  (let [strs (concatenate-strings strs)
+        w    (gensym)]
+    (case (count strs)
+      0 ""
+      1 (let [arg (first strs)]
+          (if (string? arg)
+            arg
+            `(String/valueOf (or ~arg ""))))
+      `(let [~w (StringBuilder.)]
+         ~@(map (fn [arg]
+                  (if (string? arg)
+                    `(.append ~w ~arg)
+                    `(.append ~w (or ~arg ""))))
+                strs)
+         (.toString ~w)))))
 
 (defn- render-style-map [value]
   (let [sb (StringBuilder.)]
@@ -316,20 +335,23 @@
   (let [[tag tag-attrs _] (normalize-element-form [tag])
         attrs-sym         (gensym "attrs")]
     `(let [~attrs-sym ~attrs]
-       (if (map? ~attrs-sym)
-         ~(if (container-tag? tag content)
-            `(build-string ~(str "<" tag)
-                           (render-attr-map (merge ~tag-attrs ~attrs-sym)) ">"
-                           ~@(compile-seq content)
-                           ~(str "</" tag ">"))
-            `(build-string ~(str "<" tag)
-                           (render-attr-map (merge ~tag-attrs ~attrs-sym))
-                           ~(end-tag)))
-         ~(if (container-tag? tag attrs)
-            `(build-string ~(str "<" tag (render-attr-map tag-attrs) ">")
-                           ~@(compile-seq (cons attrs-sym content))
-                           ~(str "</" tag ">"))
-            (build-string "<" tag (render-attr-map tag-attrs) (end-tag)))))))
+       (build-string
+        (if (map? ~attrs-sym)
+          ~(if (container-tag? tag content)
+             `(build-string ~(str "<" tag)
+                            (render-attr-map (merge ~tag-attrs ~attrs-sym))
+                            ">")
+             `(build-string ~(str "<" tag)
+                            (render-attr-map (merge ~tag-attrs ~attrs-sym))
+                            ~(end-tag)))
+          (build-string ~(str "<" tag (render-attr-map tag-attrs) ">")
+                        ~@(compile-seq [attrs-sym])))
+        ~@(compile-seq content)
+        ;; ending tag, when the above code did not emit an ending tag
+        ~(if (container-tag? tag content)
+           (str "</" tag ">")
+           `(when-not (map? ~attrs-sym)
+              ~(str "</" tag ">")))))))
 
 (defmethod compile-element :default
   [element]
