@@ -331,26 +331,34 @@
   (compile-element (apply vector tag {} content)))
 
 (defmethod compile-element ::literal-tag
-  [[tag attrs & content]]
+  [[tag attrs-or-content & content]]
   (let [[tag tag-attrs _] (normalize-element-form [tag])
-        attrs-sym         (gensym "attrs")]
-    `(let [~attrs-sym ~attrs]
+        attrs-or-content-sym (gensym "attrs_or_content__")
+        attrs?-sym           (gensym "attrs?__")
+        content?-sym         (gensym "content?__")]
+    `(let [~attrs-or-content-sym ~attrs-or-content
+           ~attrs?-sym (map? ~attrs-or-content-sym)
+           ~content?-sym (and (not ~attrs?-sym)
+                              (some? ~attrs-or-content-sym))]
        (build-string
-        (if (map? ~attrs-sym)
-          ~(if (container-tag? tag content)
-             `(build-string ~(str "<" tag)
-                            (render-attr-map (merge ~tag-attrs ~attrs-sym))
-                            ">")
-             `(build-string ~(str "<" tag)
-                            (render-attr-map (merge ~tag-attrs ~attrs-sym))
-                            ~(end-tag)))
-          (build-string ~(str "<" tag (render-attr-map tag-attrs) ">")
-                        ~@(compile-seq [attrs-sym])))
+        ;; start tag
+        "<" ~tag
+        (if ~attrs?-sym
+          (render-attr-map (merge ~tag-attrs ~attrs-or-content-sym))
+          ~(render-attr-map tag-attrs))
+        ~(if (container-tag? tag content)
+           ">"
+           `(if ~content?-sym ">" ~(end-tag)))
+
+        ;; contents
+        (when ~content?-sym
+          (render-html ~attrs-or-content-sym))
         ~@(compile-seq content)
-        ;; ending tag, when the above code did not emit an ending tag
+
+        ;; end tag
         ~(if (container-tag? tag content)
            (str "</" tag ">")
-           `(when-not (map? ~attrs-sym)
+           `(when ~content?-sym
               ~(str "</" tag ">")))))))
 
 (defmethod compile-element ::default

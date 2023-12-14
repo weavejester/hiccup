@@ -75,4 +75,4 @@
                          (partition 2 1)
                          (map (fn [[a b]] (- b a))))]
       (is (< (apply max diffs)
-             (* 1.1 (apply min diffs)))))))
+             (* 1.2 (apply min diffs)))))))

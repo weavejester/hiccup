@@ -53,18 +53,17 @@
       (is (= (str (html {:mode :sgml} [:br (identity "x")])) "<br>x</br>"))))
 
   (testing "runtime nil,"
+    ;; use case: a function which returns a map of attributes or nil
     (testing "normal tag"
       (is (= (str (html {:mode :xhtml} [:p (identity nil)])) "<p></p>"))
       (is (= (str (html {:mode :html} [:p (identity nil)])) "<p></p>"))
-      (is (= (str (html {:mode :xml} [:p (identity nil)])) "<p></p>"))
-      (is (= (str (html {:mode :sgml} [:p (identity nil)])) "<p></p>")))
+      (is (= (str (html {:mode :xml} [:p (identity nil)])) "<p />"))
+      (is (= (str (html {:mode :sgml} [:p (identity nil)])) "<p>")))
     (testing "void tag"
-      ;; TODO: this might not be desired behavior (use case: the user has
-      ;;       a function which returns a map of attributes or nil)
-      (is (= (str (html {:mode :xhtml} [:br (identity nil)])) "<br></br>"))
-      (is (= (str (html {:mode :html} [:br (identity nil)])) "<br></br>"))
-      (is (= (str (html {:mode :xml} [:br (identity nil)])) "<br></br>"))
-      (is (= (str (html {:mode :sgml} [:br (identity nil)])) "<br></br>")))))
+      (is (= (str (html {:mode :xhtml} [:br (identity nil)])) "<br />"))
+      (is (= (str (html {:mode :html} [:br (identity nil)])) "<br>"))
+      (is (= (str (html {:mode :xml} [:br (identity nil)])) "<br />"))
+      (is (= (str (html {:mode :sgml} [:br (identity nil)])) "<br>")))))
 
 (deftest test-compile-element-default
   (testing "runtime tag"
