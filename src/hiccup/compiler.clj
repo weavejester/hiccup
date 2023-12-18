@@ -353,7 +353,7 @@
            `(when-not (map? ~attrs-sym)
               ~(str "</" tag ">")))))))
 
-(defmethod compile-element :default
+(defmethod compile-element ::default
   [element]
   `(render-element
      [~(first element)
