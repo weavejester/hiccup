@@ -1,3 +1,9 @@
+## 2.0.0-RC3 (2024-02-11)
+
+* Optimized amount of bytecode generated (#206)
+* Fixed literal child elements from being escaped (#207)
+* Fixed formatting of nil elements at runtime (#208)
+
 ## 2.0.0-RC2 (2023-10-05)
 
 * Improved performance (#204)
