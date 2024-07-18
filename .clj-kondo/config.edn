@@ -1,1 +1,2 @@
-{:config-paths ["../resources/clj-kondo.exports/hiccup/hiccup"]}
+{:config-paths ["../resources/clj-kondo.exports/hiccup/hiccup"]
+ :ignore [:deprecated-var :deprecated-namespace]}

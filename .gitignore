@@ -10,5 +10,5 @@ pom.xml.asc
 .lein-*
 .nrepl-port
 .clj-kondo/*
-!.clj-kodo/config.edn
+!.clj-kondo/config.edn
 /.cpcache
