@@ -77,6 +77,38 @@ user=> (str (h/html [:p (h/raw "Hello <em>World</em>")]))
 "<p>Hello <em>World</em></p>"
 ```
 
+This can also be used for doctype declarations:
+
+```clojure
+user=> (str (h/html (h/raw "<!DOCTYPE html>") [:html {:lang "en"}]))
+"<!DOCTYPE html><html lang=\"en\"></html>"
+```
+
+## Differences between Hiccup 1 and 2
+
+In brief: Hiccup 1 doesn't escape strings by default, while Hiccup 2
+does. They occupy different namespaces to ensure backward compatibility.
+
+In Hiccup 1, you use the `h` function to escape a string - that is,
+ensure that unsafe characters like `<`, `>` and `&` are converted into
+their equivalent entity codes:
+
+```clojure
+(h1/html [:div "Username: " (h1/h username)])
+```
+
+In Hiccup 2 strings are escaped automatically, but the return value from
+the `html` macro is a `RawString`, rather than a `String`. This ensures
+that the `html` macro can still be nested.
+
+```clojure
+(str (h2/html [:div "Username: " username]))
+```
+
+It's recommended to use Hiccup 2 where possible, particularly if your
+app handles user data. Use of the non-core namespaces, such as
+`hiccup.page`, should be avoided with Hiccup 2.
+
 ## License
 
 Copyright © 2023 James Reeves
