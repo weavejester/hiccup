@@ -45,7 +45,7 @@
       1 (let [arg (first strs)]
           (if (string? arg)
             arg
-            `(String/valueOf (or ~arg ""))))
+            `(str (or ~arg ""))))
       `(let [~w (StringBuilder.)]
          ~@(map (fn [arg]
                   (if (string? arg)
