@@ -112,10 +112,16 @@
   (or content
       (and (html-mode?) (not (void-tags tag)))))
 
+(def str-index-of 
+  (or (resolve 'str/index-of)
+      (fn [^String tag ^String value] 
+        (let [index (.indexOf tag value)]
+          (when (pos? index) 
+            index)))))
 
-(defn- parse-tag [^String tag]
-  (let [id-index    (let [index (.indexOf tag "#")] (when (pos? index) index))
-        class-index (let [index (.indexOf tag ".")] (when (pos? index) index))]
+(defn- parse-tag [tag]
+  (let [id-index (str-index-of tag "#")
+        class-index (str-index-of tag ".")]
     [(cond
        id-index    (subs tag 0 id-index)
        class-index (subs tag 0 class-index)
