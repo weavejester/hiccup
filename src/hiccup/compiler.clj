@@ -117,15 +117,15 @@
   (let [id-index    (let [index (.indexOf tag "#")] (when (pos? index) index))
         class-index (let [index (.indexOf tag ".")] (when (pos? index) index))]
     [(cond
-       id-index    (.substring tag 0 id-index)
-       class-index (.substring tag 0 class-index)
+       id-index    (subs tag 0 id-index)
+       class-index (subs tag 0 class-index)
        :else tag)
      (when id-index
        (if class-index
-         (.substring tag (unchecked-inc-int id-index) class-index)
-         (.substring tag (unchecked-inc-int id-index))))
+         (subs tag (unchecked-inc-int id-index) class-index)
+         (subs tag (unchecked-inc-int id-index))))
      (when class-index
-       (.substring tag (unchecked-inc-int class-index)))]))
+       (subs tag (unchecked-inc-int class-index)))]))
 
 (defn merge-classes [class classes]
   (cond
