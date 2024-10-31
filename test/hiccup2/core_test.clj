@@ -7,7 +7,7 @@
   (testing "html returns a RawString"
     (is (util/raw-string? (html [:div]))))
   (testing "converting to string"
-    (= (str (html [:div])) "<div></div>")))
+    (is (= (str (html [:div])) "<div></div>"))))
 
 (deftest tag-names
   (testing "basic tags"
@@ -115,6 +115,15 @@
            "<img src=\"/foo/bar\" />"))
     (is (= (str (html [:div {:id (str "a" "b")} (str "foo")]))
            "<div id=\"ab\">foo</div>")))
+  (testing "vector attributes are evaluated"
+    (let [x "bar"]
+      (is (= (str (html [:span {:class ["foo" x]}]))
+             "<span class=\"foo bar\"></span>"))))
+  (testing "map attributes are evaluated"
+    (let [color "red"
+          bg-color :blue]
+      (is (= (str (html [:span {:style {:background-color bg-color, :color color}} "foo"]))
+             "<span style=\"background-color:blue;color:red;\">foo</span>"))))
   (testing "type hints"
     (let [string "x"]
       (is (= (str (html [:span ^String string])) "<span>x</span>"))))

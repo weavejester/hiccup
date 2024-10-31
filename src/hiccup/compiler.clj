@@ -166,7 +166,7 @@
        content])))
 
 (defn normalize-element
-  "Ensure an element vector is of the form [tag-name attrs content]." 
+  "Ensure an element vector is of the form [tag-name attrs content]."
   [tag-content]
   (normalize-element* tag-content merge-attributes))
 
@@ -217,13 +217,20 @@
       (and (seq? expr)
            (not= (first expr) `quote))))
 
+(defn- literal?
+  "True if x is a literal value that can be rendered as-is."
+  [x]
+  (and (not (unevaluated? x))
+       (or (not (or (vector? x) (map? x)))
+           (every? literal? x))))
+
 (defn compile-attr-map
   "Returns an unevaluated form that will render the supplied map as HTML
   attributes."
   [attrs]
-  (if (some unevaluated? (mapcat identity attrs))
-    `(render-attr-map ~attrs)
-    (render-attr-map attrs)))
+  (if (every? literal? (mapcat identity attrs))
+    (render-attr-map attrs)
+    `(render-attr-map ~attrs)))
 
 (defn- form-name
   "Get the name of the supplied form."
@@ -275,13 +282,6 @@
   [x type]
   (if-let [hint (-> x meta :tag)]
     (isa? (eval hint) type)))
-
-(defn- literal?
-  "True if x is a literal value that can be rendered as-is."
-  [x]
-  (and (not (unevaluated? x))
-       (or (not (or (vector? x) (map? x)))
-           (every? literal? x))))
 
 (defn- not-implicit-map?
   "True if we can infer that x is not a map."
