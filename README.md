@@ -7,11 +7,11 @@ to represent elements, and maps to represent an element's attributes.
 
 Add the following dependency to your `deps.edn` file:
 
-    hiccup/hiccup {:mvn/version "2.0.0-RC3"}
+    hiccup/hiccup {:mvn/version "2.0.0-RC4"}
 
 Or to your Leiningen `project.clj` file:
 
-    [hiccup "2.0.0-RC3"]
+    [hiccup "2.0.0-RC4"]
 
 ## Documentation
 

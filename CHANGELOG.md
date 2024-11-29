@@ -1,3 +1,7 @@
+## 2.0.0-RC4 (2024-11-29)
+
+* Fixed compiler bug that emitted unevaluated forms (#214)
+
 ## 2.0.0-RC3 (2024-02-11)
 
 * Optimized amount of bytecode generated (#206)
