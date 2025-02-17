@@ -103,15 +103,19 @@
   (testing "runtime tag with child elements"
     (is (= (str (html {:mode :xhtml} [(identity :p) [:span "x"]]))
            (str (html {:mode :xhtml} [(identity :p) (identity [:span "x"])]))
+           (str (html {:mode :xhtml} [(identity :p) [:span (identity "x")]]))
            "<p><span>x</span></p>"))
     (is (= (str (html {:mode :html} [(identity :p) [:span "x"]]))
            (str (html {:mode :html} [(identity :p) (identity [:span "x"])]))
+           (str (html {:mode :html} [(identity :p) [:span (identity "x")]]))
            "<p><span>x</span></p>"))
     (is (= (str (html {:mode :xml} [(identity :p) [:span "x"]]))
            (str (html {:mode :xml} [(identity :p) (identity [:span "x"])]))
+           (str (html {:mode :xml} [(identity :p) [:span (identity "x")]]))
            "<p><span>x</span></p>"))
     (is (= (str (html {:mode :sgml} [(identity :p) [:span "x"]]))
            (str (html {:mode :sgml} [(identity :p) (identity [:span "x"])]))
+           (str (html {:mode :sgml} [(identity :p) [:span (identity "x")]]))
            "<p><span>x</span></p>")))
 
   (testing "compiles literal child elements"
