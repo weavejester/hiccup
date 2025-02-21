@@ -367,7 +367,7 @@
     [~(first element)
      ~@(for [x (rest element)]
          (if (vector? x)
-           (util/raw-string (compile-element x))
+           `(util/raw-string ~(compile-element x))
            x))]))
 
 (defn- compile-seq
