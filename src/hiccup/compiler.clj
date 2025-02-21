@@ -45,7 +45,7 @@
       1 (let [arg (first strs)]
           (if (string? arg)
             arg
-            `(String/valueOf (or ~arg ""))))
+            `(str (or ~arg ""))))
       `(let [~w (StringBuilder.)]
          ~@(map (fn [arg]
                   (if (string? arg)
@@ -112,20 +112,26 @@
   (or content
       (and (html-mode?) (not (void-tags tag)))))
 
+(def str-index-of 
+  (or (resolve 'str/index-of)
+      (fn [^String tag ^String value] 
+        (let [index (.indexOf tag value)]
+          (when (pos? index) 
+            index)))))
 
-(defn- parse-tag [^String tag]
-  (let [id-index    (let [index (.indexOf tag "#")] (when (pos? index) index))
-        class-index (let [index (.indexOf tag ".")] (when (pos? index) index))]
+(defn- parse-tag [tag]
+  (let [id-index (str-index-of tag "#")
+        class-index (str-index-of tag ".")]
     [(cond
-       id-index    (.substring tag 0 id-index)
-       class-index (.substring tag 0 class-index)
+       id-index    (subs tag 0 id-index)
+       class-index (subs tag 0 class-index)
        :else tag)
      (when id-index
        (if class-index
-         (.substring tag (unchecked-inc-int id-index) class-index)
-         (.substring tag (unchecked-inc-int id-index))))
+         (subs tag (unchecked-inc-int id-index) class-index)
+         (subs tag (unchecked-inc-int id-index))))
      (when class-index
-       (.substring tag (unchecked-inc-int class-index)))]))
+       (subs tag (unchecked-inc-int class-index)))]))
 
 (defn merge-classes [class classes]
   (cond
