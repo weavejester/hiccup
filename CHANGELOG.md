@@ -1,3 +1,7 @@
+## 2.0.0-RC5 (2025-05-21)
+
+* Fixed emitting unevaluated forms for non-literal tags (#217)
+
 ## 2.0.0-RC4 (2024-11-29)
 
 * Fixed compiler bug that emitted unevaluated forms (#214)
