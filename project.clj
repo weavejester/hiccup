@@ -10,11 +10,13 @@
    :source-uri  "http://github.com/weavejester/hiccup/blob/{version}/{filepath}#L{line}"
    :namespaces  [#"^hiccup2?\.(?!compiler)"]
    :metadata    {:doc/format :markdown}}
-  :aliases {"test-all" ["with-profile" "default:+1.8:+1.9:+1.10:+1.11" "test"]}
+  :aliases
+  {"test-all" ["with-profile" "default:+1.8:+1.9:+1.10:+1.11:+1.12" "test"]}
   :profiles
   {:dev {:dependencies [[criterium "0.4.4"]]}
    :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}
    :1.9 {:dependencies [[org.clojure/clojure "1.9.0"]]}
    :1.10 {:dependencies [[org.clojure/clojure "1.10.3"]]}
-   :1.11 {:dependencies [[org.clojure/clojure "1.11.1"]]}}
+   :1.11 {:dependencies [[org.clojure/clojure "1.11.4"]]}
+   :1.12 {:dependencies [[org.clojure/clojure "1.12.1"]]}}
   :global-vars {*warn-on-reflection* true})
