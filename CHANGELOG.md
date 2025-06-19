@@ -1,3 +1,7 @@
+## 2.0.0 (2025-06-19)
+
+* Identical to 2.0.0-RC5
+
 ## 2.0.0-RC5 (2025-05-21)
 
 * Fixed emitting unevaluated forms for non-literal tags (#217)
